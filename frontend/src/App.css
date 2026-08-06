@@ -1,0 +1,7 @@
+/*
+ * This file is intentionally empty.
+ *
+ * Global styling lives in src/styles/ and is loaded through src/index.css.
+ * Keeping this note prevents the old Vite starter styles from accidentally
+ * constraining the full-screen POS and admin layouts.
+ */

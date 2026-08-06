@@ -1,0 +1,49 @@
+@page {
+  margin: 0;
+  size: 80mm auto;
+}
+
+.print-receipt-wrapper {
+  display: none;
+}
+
+@media print {
+  #root, [data-radix-portal] {
+    display: none !important;
+  }
+
+  html, body {
+    height: auto !important;
+    min-height: auto !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow: visible !important;
+    background: white !important;
+  }
+
+  .print-receipt-wrapper {
+    display: block !important;
+  }
+
+  .print-receipt {
+    width: 80mm;
+    padding: 0 2mm !important; /* minimal left margin */
+    background: white !important;
+    color: black !important;
+    font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif !important;
+  }
+
+  .print-receipt * {
+    color: black !important;
+  }
+  
+  .print-receipt .text-gray-400,
+  .print-receipt .text-gray-500,
+  .print-receipt .text-gray-600 {
+    color: #333 !important;
+  }
+
+  .no-print {
+    display: none !important;
+  }
+}

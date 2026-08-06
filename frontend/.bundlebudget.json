@@ -1,0 +1,41 @@
+{
+  "bundles": [
+    {
+      "name": "main",
+      "maxSize": "1.5mb",
+      "warn": "1.3mb"
+    },
+    {
+      "name": "css",
+      "maxSize": "200kb",
+      "warn": "150kb"
+    }
+  ],
+  "baseline": {
+    "main": {
+      "size": "1498.62 kb",
+      "gzip": "398.98 kb",
+      "timestamp": "2026-06-14",
+      "note": "With offline sync + validation schemas"
+    },
+    "css": {
+      "size": "149.23 kb",
+      "gzip": "23.18 kb",
+      "timestamp": "2026-06-14"
+    }
+  },
+  "targets": {
+    "phase1": {
+      "main": "1400 kb",
+      "goal": "Code-split admin section (lazy load)"
+    },
+    "phase2": {
+      "main": "1200 kb",
+      "goal": "Dynamic imports for heavy features"
+    },
+    "production": {
+      "main": "1000 kb",
+      "goal": "Full tree-shake unused code + minify"
+    }
+  }
+}

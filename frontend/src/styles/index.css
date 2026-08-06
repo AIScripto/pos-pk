@@ -1,0 +1,12 @@
+@import "./tokens.css";
+@import "./base.css";
+@import "./components.css";
+@import "./admin.css";
+@import "./pos.css";
+@import "./pos-theme.css";
+@import "./utilities.css";
+@import "./print.css";
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;

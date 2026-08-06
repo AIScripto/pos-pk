@@ -1,0 +1,155 @@
+@layer base {
+  :root {
+    color-scheme: light;
+
+    /* Light Mode: Pro-Level Restaurant POS (High Contrast & Visual Depth) */
+    /* Background & Ambient Canvas */
+    --background: 215 25% 95.5%;       /* Soft warm-slate background for crisp card contrast */
+    --foreground: 222 47% 11%;          /* Slate 900 high-contrast text */
+
+    --card: 0 0% 100%;                 /* Pure white cards */
+    --card-foreground: 222 47% 11%;     /* Slate 900 text on cards */
+
+    --popover: 0 0% 100%;              /* Pure white popovers */
+    --popover-foreground: 222 47% 11%;  /* Slate 900 text */
+
+    /* Primary Brand Color - Deep Vibrant Blue */
+    --primary: 221.2 83.2% 53.3%;      /* Professional Blue (#2563EB) */
+    --primary-foreground: 0 0% 100%;   /* White text on primary */
+
+    /* Secondary - Cool Slate Surface */
+    --secondary: 214 20% 92.5%;        /* Slate 100/200 surface (#e2e8f0) */
+    --secondary-foreground: 222 47% 11%;/* Slate 900 text */
+
+    /* Muted - Soft Slate Text & Backgrounds */
+    --muted: 214 20% 92.5%;
+    --muted-foreground: 215 16% 45%;   /* Slate 500 text */
+
+    /* Accent - Emerald Green (Success / Checkout / In-Stock) */
+    --accent: 158 75% 38%;             /* Emerald 600 (#059669) */
+    --accent-foreground: 0 0% 100%;
+
+    /* Destructive - Rose Red (Clear / Delete) */
+    --destructive: 350 84% 56%;        /* Rose 600 (#E11D48) */
+    --destructive-foreground: 0 0% 100%;
+
+    /* Form Elements & Structural Borders */
+    --border: 214 20% 86%;             /* Slate 200 defined border (#cbd5e1) */
+    --input: 0 0% 100%;                /* White input background */
+    --ring: 221.2 83.2% 53.3%;         /* Primary focus ring */
+
+    --radius: 0.75rem;                 /* 12px border radius */
+
+    /* Sidebar - Admin Panel */
+    --sidebar-background: 222 47% 11%; /* Slate 900 dark sidebar */
+    --sidebar-foreground: 210 40% 98%;
+    --sidebar-primary: 221.2 83.2% 53.3%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 158 75% 38%;
+    --sidebar-accent-foreground: 0 0% 100%;
+    --sidebar-border: 217 33% 18%;
+    --sidebar-ring: 221.2 83.2% 53.3%;
+
+    /* Status Indicators */
+    --status-success: 158 75% 38%;
+    --status-warning: 28 95% 53%;      /* Warm Amber (#EA580C) */
+    --status-info: 198 88% 48%;       /* Sky Blue (#0EA5E9) */
+    --status-danger: 350 84% 56%;
+
+    /* POS-specific Colors */
+    --pos-success: 158 75% 38%;
+    --pos-warning: 28 95% 53%;
+    --pos-info: 198 88% 48%;
+    --pos-surface: 0 0% 100%;
+    --pos-surface-elevated: 0 0% 100%;
+    --pos-surface2: 214 20% 92.5%;
+    --pos-surface3: 214 20% 86%;
+  }
+
+  .dark {
+    color-scheme: dark;
+
+    /* Dark Mode: Modern & Professional */
+    /* Background & Surfaces */
+    --background: 240 10% 3.9%;        /* Zinc 950 background */
+    --foreground: 0 0% 98%;            /* Zinc 50 text */
+
+    --card: 240 10% 5.9%;              /* Zinc 900 background */
+    --card-foreground: 0 0% 98%;       /* Zinc 50 text */
+
+    --popover: 240 10% 5.9%;
+    --popover-foreground: 0 0% 98%;
+
+    /* Primary Brand Color - Bright Blue */
+    --primary: 217.2 91.2% 59.8%;      /* Bright Blue (#3B82F6) */
+    --primary-foreground: 222.2 47.4% 11.2%;
+
+    /* Secondary - Dark Gray */
+    --secondary: 240 3.7% 15.9%;       /* Zinc 800 background */
+    --secondary-foreground: 0 0% 98%;
+
+    /* Muted - Subtle Text */
+    --muted: 240 3.7% 15.9%;
+    --muted-foreground: 240 5% 64.9%;  /* Zinc 400 text */
+
+    /* Accent - Bright Green */
+    --accent: 142.1 70.6% 45.3%;
+    --accent-foreground: 144.4 61.9% 9.2%;
+
+    /* Destructive - Bright Red */
+    --destructive: 346.8 84.1% 54.3%;
+    --destructive-foreground: 355.7 100% 97.3%;
+
+    /* Form Elements */
+    --border: 240 3.7% 15.9%;          /* Zinc 800 border */
+    --input: 240 3.7% 15.9%;
+    --ring: 240 4.9% 83.9%;
+
+    /* Sidebar - Admin Panel */
+    --sidebar-background: 240 10% 2%;
+    --sidebar-foreground: 240 5% 96%;
+    --sidebar-primary: 217.2 91.2% 59.8%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 142.1 70.6% 45.3%;
+    --sidebar-accent-foreground: 0 0% 100%;
+    --sidebar-border: 240 3.7% 15.9%;
+    --sidebar-ring: 240 4.9% 83.9%;
+
+    /* Status Indicators */
+    --status-success: 142.1 70.6% 45.3%;
+    --status-warning: 37.9 92.1% 50.2%;
+    --status-info: 198.6 88.7% 48.4%;
+    --status-danger: 346.8 84.1% 54.3%;
+
+    /* POS-specific Colors */
+    --pos-success: 142.1 70.6% 45.3%;
+    --pos-warning: 37.9 92.1% 50.2%;
+    --pos-info: 198.6 88.7% 48.4%;
+    --pos-surface: 240 10% 5.9%;
+    --pos-surface-elevated: 240 3.7% 15.9%;
+    --pos-surface2: 240 3.7% 13.9%;
+    --pos-surface3: 240 3.7% 18%;
+  }
+}
+
+/* Ensure excellent text contrast and readability */
+@layer base {
+  /* Light mode text */
+  :root {
+    /* Primary text on light backgrounds - 7:1 contrast ratio (WCAG AAA) */
+    --text-primary: 240 10% 3.9%;
+    /* Secondary text on light backgrounds */
+    --text-secondary: 240 3.8% 46.1%;
+    /* Tertiary text on light backgrounds */
+    --text-tertiary: 240 3.8% 60%;
+  }
+
+  .dark {
+    /* Light text on dark backgrounds - 15:1 contrast ratio (WCAG AAA) */
+    --text-primary: 0 0% 98%;
+    /* Secondary text on dark backgrounds */
+    --text-secondary: 240 5% 80%;
+    /* Tertiary text on dark backgrounds */
+    --text-tertiary: 240 5% 65%;
+  }
+}

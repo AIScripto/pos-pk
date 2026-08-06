@@ -1,0 +1,9 @@
+# Keep local dependencies/build output out of Docker build context.
+node_modules
+dist
+npm-debug.log
+
+# Vite env files may contain deployment-specific API URLs or keys.
+.env
+.env.*
+.DS_Store

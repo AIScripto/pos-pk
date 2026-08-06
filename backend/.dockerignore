@@ -1,0 +1,12 @@
+# Keep local dependencies/build output out of Docker build context.
+node_modules
+dist
+npm-debug.log
+
+# Never copy local secrets into images.
+.env
+.env.*
+
+# Runtime uploads should be mounted or created inside the container, not baked in.
+uploads
+.DS_Store

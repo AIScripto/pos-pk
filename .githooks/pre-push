@@ -1,0 +1,119 @@
+#!/usr/bin/env bash
+
+# Git Pre-Push Hook for Crip-Crumbs Monorepo
+# Runs full builds for both frontend and backend before allowing push to remote.
+# Generates a detailed Error Report if any verification fails.
+
+# Colors and formatting
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+CYAN='\033[0;36m'
+BOLD='\033[1m'
+NC='\033[0m' # No Color
+
+# Setup temporary directory for log outputs
+TMP_DIR=$(mktemp -d 2>/dev/null || mktemp -d -t 'githook_push')
+trap 'rm -rf "$TMP_DIR"' EXIT
+
+LOG_FE_BUILD="$TMP_DIR/fe_build.log"
+LOG_BE_BUILD="$TMP_DIR/be_build.log"
+
+REPORT_LOG=".git/githooks_prepush_error.log"
+
+STATUS_FE_BUILD="SKIPPED"
+STATUS_BE_BUILD="SKIPPED"
+
+FAILED=0
+
+echo -e "${CYAN}======================================================${NC}"
+echo -e "${CYAN}${BOLD}  🚀 Running Pre-Push Build Verification...           ${NC}"
+echo -e "${CYAN}======================================================${NC}"
+
+# 1. Frontend Build Verification
+echo -e "\n${BOLD}[1/2] Verifying Frontend Production Build...${NC}"
+if [ -d "frontend" ]; then
+  pushd frontend > /dev/null
+  echo "  -> Running frontend build (npm run build)..."
+  if ! npm run build > "$LOG_FE_BUILD" 2>&1; then
+    cat "$LOG_FE_BUILD"
+    echo -e "${RED}❌ Frontend build failed.${NC}"
+    STATUS_FE_BUILD="FAILED"
+    FAILED=1
+  else
+    echo -e "${GREEN}  ✓ Frontend build succeeded.${NC}"
+    STATUS_FE_BUILD="PASSED"
+  fi
+  popd > /dev/null
+else
+  echo -e "${YELLOW}  Frontend directory not found, skipping.${NC}"
+  STATUS_FE_BUILD="SKIPPED (Directory missing)"
+fi
+
+# 2. Backend Build Verification
+echo -e "\n${BOLD}[2/2] Verifying Backend Production Build...${NC}"
+if [ -d "backend" ]; then
+  pushd backend > /dev/null
+  echo "  -> Running backend build (npm run build)..."
+  if ! npm run build > "$LOG_BE_BUILD" 2>&1; then
+    cat "$LOG_BE_BUILD"
+    echo -e "${RED}❌ Backend build failed.${NC}"
+    STATUS_BE_BUILD="FAILED"
+    FAILED=1
+  else
+    echo -e "${GREEN}  ✓ Backend build succeeded.${NC}"
+    STATUS_BE_BUILD="PASSED"
+  fi
+  popd > /dev/null
+else
+  echo -e "${YELLOW}  Backend directory not found, skipping.${NC}"
+  STATUS_BE_BUILD="SKIPPED (Directory missing)"
+fi
+
+# Final Output & Detailed Error Report
+echo ""
+if [ $FAILED -ne 0 ]; then
+  {
+    echo "================================================================================"
+    echo " ❌ PRE-PUSH VERIFICATION FAILURE REPORT"
+    echo "================================================================================"
+    echo "SUMMARY OF VERIFICATION CHECKS:"
+    echo "  [1/2] Frontend Production Build: $STATUS_FE_BUILD"
+    echo "  [2/2] Backend Production Build:  $STATUS_BE_BUILD"
+    echo ""
+
+    if [ "$STATUS_FE_BUILD" = "FAILED" ]; then
+      echo "--------------------------------------------------------------------------------"
+      echo "🔴 FAILED: [1/2] Frontend Production Build"
+      echo "Command to rerun: cd frontend && npm run build"
+      echo "--------------------------------------------------------------------------------"
+      cat "$LOG_FE_BUILD"
+      echo ""
+    fi
+
+    if [ "$STATUS_BE_BUILD" = "FAILED" ]; then
+      echo "--------------------------------------------------------------------------------"
+      echo "🔴 FAILED: [2/2] Backend Production Build"
+      echo "Command to rerun: cd backend && npm run build"
+      echo "--------------------------------------------------------------------------------"
+      cat "$LOG_BE_BUILD"
+      echo ""
+    fi
+
+    echo "================================================================================"
+    echo "💡 HOW TO RESOLVE:"
+    echo "  • Fix the build errors reported above before pushing."
+    echo "  • To bypass pre-push verification in emergency: git push --no-verify"
+    echo "================================================================================"
+  } | tee "$REPORT_LOG"
+
+  exit 1
+fi
+
+# Clean up report log on success if it existed previously
+rm -f "$REPORT_LOG"
+
+echo -e "${GREEN}======================================================${NC}"
+echo -e "${GREEN}${BOLD} 🎉 Pre-push verification successful! Ready to push! ${NC}"
+echo -e "${GREEN}======================================================${NC}"
+exit 0

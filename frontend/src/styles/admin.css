@@ -1,0 +1,97 @@
+@layer components {
+  .admin-shell {
+    @apply flex min-h-screen bg-background text-foreground;
+  }
+
+  .admin-sidebar {
+    @apply flex flex-col border-r border-sidebar-border bg-sidebar text-sidebar-foreground transition-all duration-300;
+  }
+
+  .admin-sidebar-header {
+    @apply flex items-center justify-between border-b border-sidebar-border p-4;
+  }
+
+  .admin-sidebar-logo {
+    @apply flex h-8 w-8 items-center justify-center rounded-md bg-sidebar-primary text-sidebar-primary-foreground;
+  }
+
+  .admin-sidebar-toggle {
+    @apply app-focus-ring ml-auto rounded-md p-2 transition-colors hover:bg-sidebar-accent hover:text-sidebar-accent-foreground;
+  }
+
+  .admin-sidebar-item {
+    @apply app-focus-ring flex w-full items-center gap-3 rounded-md px-3 py-2.5 text-sidebar-foreground transition-colors hover:bg-sidebar-accent hover:text-sidebar-accent-foreground;
+  }
+
+  .admin-sidebar-item-active {
+    @apply bg-sidebar-primary text-sidebar-primary-foreground hover:bg-sidebar-primary hover:text-sidebar-primary-foreground;
+  }
+
+  .admin-sidebar-sublist {
+    @apply space-y-1 border-l border-sidebar-border pl-4;
+  }
+
+  .admin-main {
+    @apply flex-1 overflow-auto;
+  }
+
+  .admin-main-inner {
+    @apply p-4 sm:p-6 lg:p-8;
+  }
+
+  .admin-page {
+    @apply min-h-screen space-y-6 rounded-lg bg-background p-0;
+  }
+
+  .admin-page-header {
+    @apply flex flex-col gap-4 border-b border-border pb-5 sm:flex-row sm:items-center sm:justify-between;
+  }
+
+  .admin-page-title {
+    @apply text-2xl font-bold tracking-normal text-foreground sm:text-3xl;
+  }
+
+  .admin-page-description {
+    @apply mt-1 text-sm text-muted-foreground;
+  }
+
+  .admin-page-icon {
+    @apply flex h-10 w-10 shrink-0 items-center justify-center rounded-md bg-primary text-primary-foreground shadow-sm;
+  }
+
+  .admin-panel {
+    @apply rounded-lg border border-border bg-card text-card-foreground shadow-sm;
+  }
+
+  .admin-panel-header {
+    @apply border-b border-border bg-muted/35 px-4 py-3;
+  }
+
+  .admin-table {
+    @apply w-full border-collapse text-sm;
+  }
+
+  .admin-table-head {
+    @apply bg-muted/70 text-xs font-semibold uppercase text-muted-foreground;
+  }
+
+  .admin-table-row {
+    @apply border-b border-border transition-colors hover:bg-muted/45;
+  }
+
+  .admin-metric-card {
+    @apply rounded-lg border border-border bg-card p-4 text-card-foreground shadow-sm;
+  }
+
+  .admin-empty-state {
+    @apply flex min-h-32 items-center justify-center rounded-lg border border-dashed border-border bg-muted/35 text-sm text-muted-foreground;
+  }
+
+  .report-filter-panel {
+    @apply rounded-lg border border-border bg-card p-4 shadow-sm;
+  }
+
+  .report-summary-grid {
+    @apply grid gap-4 sm:grid-cols-2 xl:grid-cols-4;
+  }
+}

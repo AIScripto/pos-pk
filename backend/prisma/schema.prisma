@@ -1,0 +1,1193 @@
+// =============================================================================
+// Crip & Crumbs — Enterprise POS Database Schema
+// Database: PostgreSQL with auto-generated numeric IDs
+// Money:    All amounts stored as INTEGER in smallest unit (paisa / cents)
+// Audit:    Every model has isActive, createdAt, updatedAt, createdBy
+// Refs:     Every transaction carries orgId, cityId, branchId, terminalId
+// =============================================================================
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// ORGANISATION HIERARCHY
+// ─────────────────────────────────────────────────────────────────────────────
+
+model Organisation {
+  id        BigInt   @id @default(autoincrement())
+  name      String
+  slug      String   @unique
+  logo      String?
+  website   String?
+  email     String?
+  phone     String?
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  createdBy String   @default("system")
+
+  // Address (flattened for SQLite compatibility)
+  addrLine1   String  @default("")
+  addrLine2   String?
+  addrCity    String  @default("")
+  addrState   String  @default("")
+  addrCountry String  @default("PK")
+  addrPostCode String @default("")
+
+  states          State[]
+  cities          City[]
+  areas           Area[]
+  brands          Brand[]
+  roles           Role[]
+  users           User[]
+  rolePermissions OrgRolePermission[]
+  foodTypes    FoodType[]
+  categories   Category[]
+  products     Product[]
+  deals        Deal[]
+  orgConfig    OrgConfig?
+  taxConfigs   TaxConfig[]
+  discountPresets DiscountPreset[]
+  loyaltyConfig   LoyaltyConfig?
+  customers    Customer[]
+  campaigns    Campaign[]
+  msgTemplates MessageTemplate[]
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// BRAND — One org can operate multiple brands (e.g. "Crip Crumbs", "Crip Bites")
+// ─────────────────────────────────────────────────────────────────────────────
+
+model Brand {
+  id       BigInt       @id @default(autoincrement())
+  orgId    BigInt
+  org      Organisation @relation(fields: [orgId], references: [id])
+
+  tag      String       // "CC", "CB" — unique identifier per org
+  name     String       // "Crisp Crumbs"
+  logo     String?      // URL
+  tagline  String?
+  primaryColor  String? @default("#F97316")  // brand colour for receipts
+  isActive Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  createdBy String   @default("system")
+
+  branches Branch[]
+
+  @@unique([orgId, tag])
+}
+
+model State {
+  id       BigInt   @id @default(autoincrement())
+  orgId    BigInt
+  org      Organisation @relation(fields: [orgId], references: [id])
+
+  tag      String       // Unique identifier — "PB", "CA", "NY"
+  name     String       // Full name — "Punjab", "California", "New York"
+  code     String       // ISO 3166-2 code — "PK-PB", "US-CA", "GB-ENG"
+  zipCode  String?      // Postal code range or example — "75000-75500", "90001", "EC1A"
+  country  String  @default("PK")  // Country code — "PK", "US", "GB"
+  region   String?      // Region for larger countries — "South Asia", "North America"
+
+  isActive Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  createdBy String   @default("system")
+
+  cities   City[]
+
+  @@unique([orgId, tag])
+  @@index([orgId])
+  @@index([country])
+}
+
+model City {
+  id       BigInt       @id @default(autoincrement())
+  orgId    BigInt
+  org      Organisation @relation(fields: [orgId], references: [id])
+  stateId  BigInt?
+  state    State?       @relation(fields: [stateId], references: [id])
+
+  name      String       // "Lahore"
+  code      String       // "LHR" — used as prefix in branch labels
+
+  // Geographic coordinates (optional, GPS accuracy to ~1.1cm)
+  latitude  Decimal?     @db.Decimal(10, 8)   // -90 to 90
+  longitude Decimal?     @db.Decimal(11, 8)   // -180 to 180
+
+  country  String  @default("PK")
+  isActive Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  createdBy String   @default("system")
+
+  branches  Branch[]
+  areas     Area[]
+
+  @@unique([orgId, name])
+  @@unique([orgId, code])
+  @@index([orgId])
+  @@index([stateId])
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// AREA — Operational zones within cities (delivery zones, coverage areas, etc)
+// ─────────────────────────────────────────────────────────────────────────────
+
+model Area {
+  id       BigInt       @id @default(autoincrement())
+  cityId   BigInt
+  city     City         @relation(fields: [cityId], references: [id])
+  orgId    BigInt
+  org      Organisation @relation(fields: [orgId], references: [id])
+
+  tag       String       // Identifier (e.g., "DHA", "FD-01")
+  name      String       // Display name (e.g., "DHA Phase 1-4")
+  details   String?      // Description/notes
+
+  // Geographic coordinates (optional, GPS accuracy to ~1.1cm)
+  latitude  Decimal?     @db.Decimal(10, 8)   // -90 to 90
+  longitude Decimal?     @db.Decimal(11, 8)   // -180 to 180
+
+  isActive  Boolean      @default(true)
+  createdAt DateTime     @default(now())
+  updatedAt DateTime     @updatedAt
+  createdBy String       @default("system")
+
+  branches  Branch[]
+
+  @@unique([cityId, tag])  // Tag unique per city
+  @@index([cityId])
+  @@index([orgId])
+}
+
+model Branch {
+  id      BigInt @id @default(autoincrement())
+  orgId   BigInt
+  brandId BigInt
+  brand   Brand  @relation(fields: [brandId], references: [id])
+  cityId  BigInt
+  city    City   @relation(fields: [cityId], references: [id])
+  areaId  BigInt?
+  area    Area?  @relation(fields: [areaId], references: [id])
+
+  // ── Human-readable identifiers ───────────────────────────────────────────
+  // label  format: {CITY_CODE}-{SEQ}-{AREA}  e.g. "LHR-001-DHA", "KHI-002-CLI"
+  // Shown on receipts, reports, and the management UI
+  label  String          // "LHR-001-DHA"  — unique per org
+  name   String          // "DHA Phase 5 Branch, Lahore"
+
+  // ── Contact ──────────────────────────────────────────────────────────────
+  phone      String?
+  email      String?
+  managerId  String?
+
+  // ── Hours ────────────────────────────────────────────────────────────────
+  openTime  String  @default("09:00")
+  closeTime String  @default("23:00")
+
+  taxConfigId BigInt?
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  createdBy   String   @default("system")
+
+  // ── Full address ─────────────────────────────────────────────────────────
+  addrLine1    String  @default("")
+  addrLine2    String?
+  addrArea     String  @default("")    // Area / neighbourhood e.g. "DHA Phase 5"
+  addrCity     String  @default("")
+  addrState    String  @default("")
+  addrCountry  String  @default("PK")
+  addrPostCode String  @default("")
+  addrLat      Float?                  // GPS latitude
+  addrLng      Float?                  // GPS longitude
+
+  terminals     Terminal[]
+  shiftTemplates ShiftTemplate[]
+  businessDays  BusinessDay[]
+  shiftSessions ShiftSession[]
+  tillSessions  TillSession[]
+  invoices      Invoice[]
+  inventory     Inventory[]
+  productConfig ProductBranchConfig[]
+  tableSections TableSection[]
+  tables        Table[]
+  reservations  Reservation[]
+  loyaltyTx     LoyaltyTransaction[]
+  heldOrders    HeldOrder[]
+  orgConfigs    OrgConfig[]
+  operationAuditLogs OperationAuditLog[]
+
+  @@unique([orgId, label])            // e.g. LHR-001-DHA unique per org
+}
+
+model Terminal {
+  id          BigInt   @id @default(autoincrement())
+  branchId    BigInt
+  branch      Branch   @relation(fields: [branchId], references: [id])
+  name        String   // Display name shown to cashiers, e.g. "Till 1"
+  code        String?
+  type        String   @default("counter") // "counter" | "drive_thru" | "delivery" | "kiosk" | "backup"
+  description String   @default("")
+  sortOrder   Int      @default(0)
+  lastSeenAt  DateTime?
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  createdBy   String   @default("system")
+
+  tillSessions TillSession[]
+  invoices     Invoice[]
+
+  @@unique([branchId, name])
+  @@unique([branchId, code])
+}
+
+model ShiftTemplate {
+  id          BigInt   @id @default(autoincrement())
+  branchId    BigInt
+  branch      Branch   @relation(fields: [branchId], references: [id])
+  name        String
+  startTime   String   // HH:mm in branch local time
+  endTime     String   // HH:mm in branch local time; can cross midnight
+  sortOrder   Int      @default(0)
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  createdBy   String   @default("system")
+
+  tillSessions TillSession[]
+  shiftSessions ShiftSession[]
+
+  @@unique([branchId, name])
+  @@index([branchId, isActive, sortOrder])
+}
+
+model BusinessDay {
+  id           BigInt   @id @default(autoincrement())
+  orgId        BigInt
+  cityId       BigInt
+  branchId     BigInt
+  branch       Branch   @relation(fields: [branchId], references: [id])
+  businessDate DateTime
+  status       String   @default("open") // "open" | "closed" | "locked"
+  openedAt     DateTime @default(now())
+  openedBy     String
+  openedByName String   @default("")
+  closedAt     DateTime?
+  closedBy     String?
+  closedByName String?
+  notes        String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  shiftSessions ShiftSession[]
+  tillSessions  TillSession[]
+
+  @@unique([branchId, businessDate])
+  @@index([branchId, status])
+}
+
+model ShiftSession {
+  id              BigInt        @id @default(autoincrement())
+  businessDayId   BigInt
+  businessDay     BusinessDay   @relation(fields: [businessDayId], references: [id])
+  branchId        BigInt
+  branch          Branch        @relation(fields: [branchId], references: [id])
+  shiftTemplateId BigInt
+  shiftTemplate   ShiftTemplate @relation(fields: [shiftTemplateId], references: [id])
+  name            String
+  startTime       String
+  endTime         String
+  status          String        @default("open") // "open" | "closed"
+  openedAt        DateTime      @default(now())
+  openedBy        String
+  openedByName    String        @default("")
+  closedAt        DateTime?
+  closedBy        String?
+  closedByName    String?
+  notes           String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  tillSessions TillSession[]
+
+  @@unique([businessDayId, shiftTemplateId])
+  @@index([branchId, status])
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// CONFIGURATION
+// ─────────────────────────────────────────────────────────────────────────────
+
+model OrgConfig {
+  id    BigInt       @id @default(autoincrement())
+  orgId BigInt       @unique
+  org   Organisation @relation(fields: [orgId], references: [id])
+
+  // Currency
+  currencyCode    String @default("PKR")
+  currencySymbol  String @default("Rs")
+  symbolPosition  String @default("before")  // "before" | "after"
+  decimalPlaces  Int    @default(2)
+  thousandSep    String @default(",")
+  decimalSep     String @default(".")
+
+  // Locale
+  locale           String @default("en-PK")
+  timezone         String @default("Asia/Karachi")
+  dateFormat       String @default("DD/MM/YYYY")
+  timeFormat       String @default("24h")
+  country          String @default("PK")
+  phoneCountryCode String @default("+92")
+
+  // Receipt
+  receiptHeader        String  @default("Thank you for visiting Crip & Crumbs!")
+  receiptFooter        String  @default("Please visit again soon.")
+  showLoyaltyOnReceipt Boolean @default(true)
+
+  // Business info (org-level only — address comes from defaultBranch)
+  businessName  String @default("")
+  businessEmail String @default("")
+  businessPhone String @default("")
+  taxRegLabel   String @default("NTN")
+  taxRegNumber  String @default("")
+  logoUrl       String @default("")
+
+  // Default branch — drives address, city, area on receipts & config
+  defaultBranchId BigInt?
+  defaultBranch   Branch? @relation(fields: [defaultBranchId], references: [id])
+
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  createdBy String   @default("system")
+}
+
+model TaxConfig {
+  id        BigInt       @id @default(autoincrement())
+  orgId     BigInt
+  org       Organisation @relation(fields: [orgId], references: [id])
+  branchId  BigInt?      // null = org-wide; set = branch override
+  name          String
+  label         String  @default("GST")
+  rate          Float   @default(16.0)
+  mode          String  @default("exclusive")   // "exclusive" | "inclusive"
+  appliesTo     String  @default("all")         // "all"|"dine_in"|"takeaway"|"delivery"
+  paymentMethod String  @default("all")         // "all"|"card"|"cash"|"wallet"
+  isDefault     Boolean @default(false)
+  isActive      Boolean @default(true)
+  createdAt DateTime     @default(now())
+  updatedAt DateTime     @updatedAt
+  createdBy String       @default("system")
+}
+
+model DiscountPreset {
+  id                 BigInt       @id @default(autoincrement())
+  orgId              BigInt
+  org                Organisation @relation(fields: [orgId], references: [id])
+  name               String
+  type               String       // "percent" | "fixed"
+  value              Float
+  level              String       // "line_item" | "order"
+  reason             String       @default("promotional")
+  requiresManagerPin Boolean      @default(false)
+  maxValuePaisa      Int?
+  sortOrder          Int          @default(0)
+  isActive           Boolean      @default(true)
+  createdAt          DateTime     @default(now())
+  updatedAt          DateTime     @updatedAt
+  createdBy          String       @default("system")
+
+  @@unique([orgId, name])
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// ROLES — User roles per organization
+// ─────────────────────────────────────────────────────────────────────────────
+
+model Role {
+  id          BigInt   @id @default(autoincrement())
+  orgId       BigInt
+  org         Organisation @relation(fields: [orgId], references: [id])
+
+  name        String   // "Admin", "Manager", "Cashier", "Kitchen Staff"
+  tag         String   // "admin", "manager", "cashier", "kitchen" — unique identifier per org
+  description String?
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  createdBy   String   @default("system")
+
+  permissions OrgRolePermission[]
+  assignments UserRoleAssignment[]
+  users        User[]  // Users who have this as their role
+
+  @@unique([orgId, tag])
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// USERS & AUTH
+// ─────────────────────────────────────────────────────────────────────────────
+
+model User {
+  id           BigInt       @id @default(autoincrement())
+  orgId        BigInt
+  org          Organisation @relation(fields: [orgId], references: [id])
+  roleId       BigInt?
+  role         Role?        @relation(fields: [roleId], references: [id])
+
+  username     String       // Login username e.g., "john.doe"
+  name         String       // Full name e.g., "John Doe"
+  email        String?
+  phone        String?
+  passwordHash String?
+  pinHash      String?      // bcrypt-hashed 4-digit PIN for counter login
+  isActive     Boolean      @default(true)
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+  createdBy    String       @default("system")
+
+  roles        UserRoleAssignment[]
+  otpCodes     OtpCode[]
+
+  @@unique([orgId, username])
+  @@unique([orgId, email])
+}
+
+model UserRoleAssignment {
+  id        BigInt @id @default(autoincrement())
+  userId    BigInt
+  user      User   @relation(fields: [userId], references: [id])
+  roleId    BigInt
+  role      Role   @relation(fields: [roleId], references: [id])
+  scopeType String // "platform"|"organisation"|"city"|"branch"
+  scopeId   String
+
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  createdBy String   @default("system")
+
+  @@unique([userId, roleId, scopeId])
+  @@index([userId])
+  @@index([scopeType, scopeId])
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// ORG ROLE PERMISSIONS — override the default permission set per role, per org
+// Use to grant extra permissions or revoke defaults (e.g. let cashiers void)
+// ─────────────────────────────────────────────────────────────────────────────
+
+model OrgRolePermission {
+  id         BigInt @id @default(autoincrement())
+  orgId      BigInt
+  org        Organisation @relation(fields: [orgId], references: [id])
+  roleId     BigInt
+  role       Role   @relation(fields: [roleId], references: [id])
+
+  permission String  // Permission — e.g. "invoice.void"
+  granted    Boolean // true = grant extra | false = revoke default
+
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  createdBy String   @default("system")
+
+  @@unique([roleId, permission])
+}
+
+model OtpCode {
+  id         BigInt   @id @default(autoincrement())
+  userId     BigInt?
+  user       User?    @relation(fields: [userId], references: [id])
+  phone      String
+  code       String
+  purpose    String   // "register"|"login"|"redeem"
+  expiresAt  DateTime
+  usedAt     DateTime?
+  isActive   Boolean  @default(true)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  createdBy  String   @default("system")
+
+  @@index([phone, purpose])
+  @@index([expiresAt])
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// PRODUCTS & DEALS
+// ─────────────────────────────────────────────────────────────────────────────
+
+model Product {
+  id              BigInt       @id @default(autoincrement())
+  orgId           BigInt
+  org             Organisation @relation(fields: [orgId], references: [id])
+  categoryId      BigInt?
+  category        Category?    @relation(fields: [categoryId], references: [id])
+
+  name            String
+  sku             String
+  basePricePaisa  Int          // stored in paisa
+  salePricePaisa  Int?         // set when discounted
+  imageUrl        String       @default("")
+  description     String       @default("")
+  isFeatured      Boolean      @default(false)
+  sortOrder       Int          @default(0)
+  isActive        Boolean      @default(true)
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
+  createdBy       String       @default("system")
+
+  branchConfigs   ProductBranchConfig[]
+  inventory       Inventory[]
+
+  @@unique([orgId, sku])
+  @@index([orgId, isActive])
+  @@index([categoryId])
+}
+
+model ProductBranchConfig {
+  id             BigInt  @id @default(autoincrement())
+  productId      BigInt
+  product        Product @relation(fields: [productId], references: [id])
+  branchId       BigInt
+  branch         Branch  @relation(fields: [branchId], references: [id])
+  pricePaisa     Int
+  salePricePaisa Int?
+  isActive       Boolean  @default(true)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  createdBy      String   @default("system")
+
+  @@unique([productId, branchId])
+}
+
+model Deal {
+  id                  BigInt       @id @default(autoincrement())
+  orgId               BigInt
+  org                 Organisation @relation(fields: [orgId], references: [id])
+  categoryId          BigInt?
+  category            Category?    @relation(fields: [categoryId], references: [id])
+  name                String
+  tag                 String       // Deal tag/identifier (e.g., "combo-burger-special")
+  description         String?      // Deal description
+  productIdsJson      String?      // JSON array of product IDs included in the deal
+  basePricePaisa      Int          // Original/base price in paisa
+  salePricePaisa      Int?         // Sale price in paisa (when discounted)
+  discountPercentage  Float?       // Discount percentage (0-100)
+  availabilityType    String       @default("all_time") // "all_time" | "scheduled"
+  availableDays       String?      // Comma-separated days e.g. "MON,TUE,WED,THU,FRI,SAT,SUN"
+  startTime           String?      // HH:mm e.g. "09:00"
+  endTime             String?      // HH:mm e.g. "23:00"
+  isActive            Boolean      @default(true)
+  createdAt           DateTime     @default(now())
+  updatedAt           DateTime     @updatedAt
+  createdBy           String       @default("system")
+
+  @@unique([orgId, tag])
+  @@index([orgId])
+  @@index([categoryId])
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// FOOD TYPE — Cuisine/Food type classification (Fast Food, Chinese, Western, etc)
+// ─────────────────────────────────────────────────────────────────────────────
+
+model FoodType {
+  id        BigInt       @id @default(autoincrement())
+  orgId     BigInt
+  org       Organisation @relation(fields: [orgId], references: [id])
+
+  name      String       // Display name (e.g., "Fast Food", "Chinese", "Western")
+  slug      String       // 3-letter identifier (e.g., "FFD", "CHN", "WST")
+  sortOrder Int          @default(0)
+
+  isActive  Boolean      @default(true)
+  createdAt DateTime     @default(now())
+  updatedAt DateTime     @updatedAt
+  createdBy String       @default("system")
+
+  categories Category[]
+
+  @@unique([orgId, name])
+  @@unique([orgId, slug])
+  @@index([orgId])
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// CATEGORIES — Product categories per organization, grouped under Food Types
+// ─────────────────────────────────────────────────────────────────────────────
+
+model Category {
+  id          BigInt       @id @default(autoincrement())
+  orgId       BigInt
+  org         Organisation @relation(fields: [orgId], references: [id])
+  foodTypeId  BigInt?
+  foodType    FoodType?    @relation(fields: [foodTypeId], references: [id])
+
+  name        String       // Display name (e.g., "Burgers")
+  tag         String       // Identifier (e.g., "BRG") — used in SKU generation
+  sortOrder   Int          @default(0)
+
+  isActive    Boolean      @default(true)
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  createdBy   String       @default("system")
+
+  products    Product[]
+  deals       Deal[]
+
+  @@unique([orgId, name])
+  @@unique([orgId, tag])
+  @@index([orgId])
+  @@index([foodTypeId])
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// INVENTORY
+// ─────────────────────────────────────────────────────────────────────────────
+
+model Inventory {
+  id           BigInt   @id @default(autoincrement())
+  productId    BigInt
+  product      Product  @relation(fields: [productId], references: [id])
+  branchId     BigInt
+  branch       Branch   @relation(fields: [branchId], references: [id])
+  quantity     Float    @default(0)
+  minThreshold Float    @default(5)
+  unit         String   @default("units")
+  isActive     Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  createdBy    String   @default("system")
+
+  @@unique([productId, branchId])
+  @@index([branchId])
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// TABLE MANAGEMENT
+// ─────────────────────────────────────────────────────────────────────────────
+
+model TableSection {
+  id        BigInt   @id @default(autoincrement())
+  branchId  BigInt
+  branch    Branch   @relation(fields: [branchId], references: [id])
+  name      String
+  color     String   @default("#3B82F6")
+  sortOrder Int      @default(0)
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  createdBy String   @default("system")
+
+  tables    Table[]
+
+  @@unique([branchId, name])
+}
+
+model Table {
+  id          BigInt        @id @default(autoincrement())
+  branchId    BigInt
+  branch      Branch        @relation(fields: [branchId], references: [id])
+  sectionId   BigInt?
+  section     TableSection? @relation(fields: [sectionId], references: [id])
+  number      Int           // 1, 2, 3 ...
+  name        String        // "T1", "VIP-3", "BAR-1"
+  seats       Int           @default(4)
+  shape       String        @default("square")  // "square"|"round"|"rectangle"
+  posX        Float         @default(0)
+  posY        Float         @default(0)
+  status      String        @default("available")
+  assignedTo  String?       // userId
+  occupiedAt  DateTime?
+  covers      Int           @default(0)
+  isActive    Boolean       @default(true)
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  createdBy   String        @default("system")
+
+  invoices     Invoice[]
+  reservations Reservation[]
+
+  @@unique([sectionId, number])
+}
+
+model Reservation {
+  id          BigInt   @id @default(autoincrement())
+  branchId    BigInt
+  branch      Branch   @relation(fields: [branchId], references: [id])
+  tableId     BigInt?
+  table       Table?   @relation(fields: [tableId], references: [id])
+  guestName   String
+  guestPhone  String
+  covers      Int
+  date        DateTime
+  durationMin Int      @default(90)
+  status      String   @default("confirmed")
+  // "confirmed"|"seated"|"completed"|"cancelled"|"no_show"
+  notes       String?
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  createdBy   String   @default("system")
+
+  @@index([branchId, date])
+  @@index([tableId])
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// TILL SESSIONS
+// ─────────────────────────────────────────────────────────────────────────────
+
+model TillSession {
+  id           BigInt   @id @default(autoincrement())
+  orgId        BigInt
+  cityId       BigInt
+  branchId     BigInt
+  branch       Branch   @relation(fields: [branchId], references: [id])
+  terminalId   BigInt
+  terminal     Terminal @relation(fields: [terminalId], references: [id])
+  businessDayId BigInt?
+  businessDay   BusinessDay? @relation(fields: [businessDayId], references: [id])
+  shiftSessionId BigInt?
+  shiftSession   ShiftSession? @relation(fields: [shiftSessionId], references: [id])
+  shiftTemplateId BigInt?
+  shiftTemplate   ShiftTemplate? @relation(fields: [shiftTemplateId], references: [id])
+  shiftName       String?
+  businessDate    DateTime @default(now()) // Operational trading date, not calendar close date.
+
+  status            String   @default("open")  // "open" | "pending_close_approval" | "closed"
+  openedAt          DateTime @default(now())
+  openedBy          String   // userId
+  openedByName      String   @default("")
+  openingCashPaisa  Int      @default(0)
+  openingDenom      Json     @default("[]")  // DenominationEntry[]
+
+  closedAt          DateTime?
+  closedBy          String?
+  closedByName      String?
+  closingCashPaisa  Int?
+  closingDenom      Json?    // DenominationEntry[]
+  variance          Int?     // paisa — closingCash − expectedCash
+  closeSubmittedAt  DateTime?
+  closeSubmittedBy  String?
+  approvedAt        DateTime?
+  approvedBy        String?
+  approvedByName    String?
+  notes             String?
+
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  createdBy String   @default("system")
+
+  synced    Boolean  @default(false)
+  syncedAt  DateTime?
+
+  invoices  Invoice[]
+  logs      TillSessionLog[]
+
+  @@index([branchId, businessDate])
+  @@index([businessDayId])
+  @@index([shiftSessionId])
+  @@index([shiftTemplateId])
+  @@index([terminalId, status])
+  @@index([branchId, status])
+}
+
+model TillSessionLog {
+  id            BigInt      @id @default(autoincrement())
+  tillSessionId BigInt
+  tillSession   TillSession @relation(fields: [tillSessionId], references: [id])
+  terminalId    BigInt
+  userId        String
+  userName      String      @default("")
+  action        String
+  actionAt      DateTime    @default(now())
+  notes         String?
+  metadata      Json        @default("{}")
+
+  @@index([tillSessionId, actionAt])
+  @@index([terminalId, actionAt])
+  @@index([userId, actionAt])
+}
+
+model OperationAuditLog {
+  id           BigInt   @id @default(autoincrement())
+  orgId        BigInt
+  cityId       BigInt?
+  branchId     BigInt
+  branch       Branch   @relation(fields: [branchId], references: [id])
+  businessDayId BigInt?
+  shiftSessionId BigInt?
+  tillSessionId BigInt?
+  action       String
+  actorId      String
+  actorName    String   @default("")
+  notes        String?
+  metadata     Json     @default("{}")
+  createdAt    DateTime @default(now())
+
+  @@index([branchId, createdAt])
+  @@index([businessDayId, createdAt])
+  @@index([shiftSessionId, createdAt])
+  @@index([tillSessionId, createdAt])
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// INVOICES  — the core financial transaction record
+// ─────────────────────────────────────────────────────────────────────────────
+
+model Invoice {
+  id             BigInt      @id @default(autoincrement())
+
+  // ── Complete organisational reference ─────────────────────────────────────
+  orgId          BigInt
+  cityId         BigInt
+  branchId       BigInt
+  branch         Branch      @relation(fields: [branchId], references: [id])
+  terminalId     BigInt
+  terminal       Terminal    @relation(fields: [terminalId], references: [id])
+  tillSessionId  BigInt
+  tillSession    TillSession @relation(fields: [tillSessionId], references: [id])
+  cashierId      String      // userId
+
+  // ── Table reference ────────────────────────────────────────────────────────
+  tableId        BigInt?
+  table          Table?      @relation(fields: [tableId], references: [id])
+  tableName      String?     // denormalised
+  covers         Int?
+
+  // ── Order metadata ─────────────────────────────────────────────────────────
+  orderType      String      @default("dine_in")
+  date           DateTime    @default(now())
+  orderNotes     String?
+
+  // ── Customer ───────────────────────────────────────────────────────────────
+  customerId     String?
+  customerName   String?
+  customerPhone  String?
+  loyaltyPointsEarned   Int @default(0)
+  loyaltyPointsRedeemed Int @default(0)
+
+  // ── Financials (all INTEGER paisa) ─────────────────────────────────────────
+  subtotalPaisa       Int  @default(0)
+  lineDiscountPaisa   Int  @default(0)
+  orderDiscountPaisa  Int  @default(0)
+  totalDiscountPaisa  Int  @default(0)
+  taxablePaisa        Int  @default(0)
+  taxRate             Float @default(0)
+  taxPaisa            Int  @default(0)
+  grandTotalPaisa     Int  @default(0)
+  roundingPaisa       Int  @default(0)
+
+  // ── Discounts JSON ─────────────────────────────────────────────────────────
+  discountsJson  Json    @default("[]")   // AppliedDiscount[]
+
+  // ── Payment ────────────────────────────────────────────────────────────────
+  paymentMethod  String  @default("cash")
+  paymentStatus  String  @default("paid")
+  paidAt         DateTime?
+  allocationsJson Json   @default("[]")  // PaymentAllocation[]
+
+  // ── Void ───────────────────────────────────────────────────────────────────
+  voidReason     String?
+  voidedBy       String?
+
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  createdBy String   @default("system")
+
+  synced    Boolean  @default(false)
+  syncedAt  DateTime?
+
+  items         InvoiceItem[]
+  loyaltyTx     LoyaltyTransaction[]
+
+  @@index([orgId, date])
+  @@index([branchId, date])
+  @@index([terminalId, date])
+  @@index([tillSessionId])
+  @@index([paymentStatus, branchId])
+  @@index([customerId])
+  @@index([synced, branchId])
+}
+
+model InvoiceItem {
+  id                  BigInt  @id @default(autoincrement())
+  invoiceId           BigInt
+  invoice             Invoice @relation(fields: [invoiceId], references: [id])
+  productId           BigInt?
+  dealId              BigInt?
+  productName         String
+  productCode         String  @default("")
+  category            String  @default("other")
+  unitPricePaisa      Int
+  quantity            Int
+  discountPercent     Float   @default(0)
+  lumpDiscountPaisa   Int     @default(0)
+  lineTotalPaisa      Int
+  isDeal              Boolean @default(false)
+
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  createdBy String   @default("system")
+
+  @@index([invoiceId])
+  @@index([productId])
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// CUSTOMERS & LOYALTY
+// ─────────────────────────────────────────────────────────────────────────────
+
+model Customer {
+  id              BigInt       @id @default(autoincrement())
+  orgId           BigInt
+  org             Organisation @relation(fields: [orgId], references: [id])
+  name            String
+  phone           String
+  email           String?
+  dateOfBirth     DateTime?
+  phoneVerified   Boolean      @default(false)
+  marketingOptIn  Boolean      @default(false)
+  smsOptIn        Boolean      @default(false)
+  loyaltyPoints   Int          @default(0)
+  lifetimePoints  Int          @default(0)
+  tierId          String?
+  totalOrders     Int          @default(0)
+  totalSpentPaisa Int          @default(0)
+  lastOrderAt     DateTime?
+  lastBranchId    String?
+  isActive        Boolean      @default(true)
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
+  createdBy       String       @default("system")
+
+  loyaltyTx       LoyaltyTransaction[]
+  messages        CustomerMessage[]
+
+  @@unique([orgId, phone])
+  @@index([orgId])
+  @@index([orgId, lastOrderAt])
+}
+
+model LoyaltyConfig {
+  id              BigInt       @id @default(autoincrement())
+  orgId           BigInt       @unique
+  org             Organisation @relation(fields: [orgId], references: [id])
+  isEnabled       Boolean      @default(true)
+  earnRatePaisa   Int          @default(1000)   // spend Rs 10 = 1 point
+  pointValuePaisa Int          @default(50)     // 1 point = Rs 0.50
+  minPointsRedeem Int          @default(100)
+  maxRedeemPct    Float        @default(20)
+  pointsExpireDays Int?
+  tiersEnabled    Boolean      @default(false)
+  isActive        Boolean      @default(true)
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
+  createdBy       String       @default("system")
+
+  tiers           LoyaltyTier[]
+}
+
+model LoyaltyTier {
+  id              BigInt        @id @default(autoincrement())
+  configId        BigInt
+  config          LoyaltyConfig @relation(fields: [configId], references: [id])
+  name            String
+  minPoints       Int
+  color           String        @default("#CD7F32")
+  icon            String        @default("🥉")
+  earnMultiplier  Float         @default(1.0)
+  discountPct     Float         @default(0)
+  isActive        Boolean       @default(true)
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+  createdBy       String        @default("system")
+}
+
+model LoyaltyTransaction {
+  id          BigInt   @id @default(autoincrement())
+  customerId  BigInt
+  customer    Customer @relation(fields: [customerId], references: [id])
+  orgId       BigInt
+  branchId    BigInt
+  branch      Branch   @relation(fields: [branchId], references: [id])
+  invoiceId   BigInt?
+  invoice     Invoice? @relation(fields: [invoiceId], references: [id])
+  type        String   // "earn"|"redeem"|"expire"|"manual_add"|"manual_deduct"
+  points      Int
+  balance     Int
+  description String
+  approvedBy  String?
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  createdBy   String   @default("system")
+
+  @@index([customerId, createdAt])
+  @@index([branchId, createdAt])
+  @@index([invoiceId])
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// MESSAGING / SMS
+// ─────────────────────────────────────────────────────────────────────────────
+
+model CustomerMessage {
+  id          BigInt   @id @default(autoincrement())
+  customerId  BigInt
+  customer    Customer @relation(fields: [customerId], references: [id])
+  orgId       BigInt
+  channel     String   // "sms"|"whatsapp"|"email"
+  type        String   // "otp"|"deal"|"birthday"|"points_earned"|...
+  content     String
+  status      String   @default("pending")
+  sentAt      DateTime?
+  deliveredAt DateTime?
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  createdBy   String   @default("system")
+
+  @@index([customerId])
+  @@index([orgId, status])
+}
+
+model MessageTemplate {
+  id       BigInt       @id @default(autoincrement())
+  orgId    BigInt
+  org      Organisation @relation(fields: [orgId], references: [id])
+  type     String
+  channel  String
+  subject  String?
+  body     String
+  isActive Boolean      @default(true)
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
+  createdBy String      @default("system")
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// HELD ORDERS — cart snapshots put on hold; branch-shared so any till can resume
+// ─────────────────────────────────────────────────────────────────────────────
+
+model HeldOrder {
+  id            BigInt   @id @default(autoincrement())
+  orgId         BigInt
+  cityId        BigInt
+  branchId      BigInt
+  branch        Branch   @relation(fields: [branchId], references: [id])
+  terminalId    BigInt   // terminal that held it — informational only
+  cashierId     String
+
+  label         String   @default("Held Order")
+  itemsJson     Json     @default("[]")          // CartItem[] snapshot
+  activeCustomerJson Json?                        // ActiveCustomer | null
+  orderType     String   @default("dine-in")
+  tableId       BigInt?
+  tableName     String?
+  covers        Int?
+  customerId    String?
+  customerName  String?
+  customerPhone String?
+  orderNotes    String?
+
+  heldAt    DateTime @default(now())
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  createdBy String   @default("system")
+
+  @@index([branchId])
+  @@index([branchId, isActive])
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// KITCHEN DISPLAY SYSTEM (KDS)
+// ─────────────────────────────────────────────────────────────────────────────
+
+model KitchenOrder {
+  id          BigInt   @id @default(autoincrement())
+  invoiceId   BigInt   @unique
+  orgId       BigInt
+  branchId    BigInt
+  terminalId  BigInt
+  orderNumber String   // "#042"
+  orderType   String   // "dine_in" | "takeaway" | "delivery"
+  tableId     BigInt?
+  tableName   String?
+  covers      Int?
+  cashierName String   @default("")
+  notes       String?
+  status      String   @default("new")
+  // "new" | "acknowledged" | "in_progress" | "ready" | "served"
+  priority    String   @default("normal") // "normal" | "rush"
+
+  placedAt       DateTime  @default(now())
+  acknowledgedAt DateTime?
+  startedAt      DateTime?
+  readyAt        DateTime?
+  servedAt       DateTime?
+
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  items KitchenOrderItem[]
+
+  @@index([branchId])
+  @@index([status])
+  @@index([branchId, status])
+}
+
+model KitchenOrderItem {
+  id             BigInt       @id @default(autoincrement())
+  kitchenOrderId BigInt
+  kitchenOrder   KitchenOrder @relation(fields: [kitchenOrderId], references: [id])
+  productId      BigInt?
+  productName    String
+  quantity       Int
+  notes          String?
+  status         String       @default("pending") // "pending" | "done"
+
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([kitchenOrderId])
+}
+
+model Campaign {
+  id          BigInt       @id @default(autoincrement())
+  orgId       BigInt
+  org         Organisation @relation(fields: [orgId], references: [id])
+  name        String
+  channel     String
+  template    String
+  targetTier  String?
+  scheduledAt DateTime
+  sentAt      DateTime?
+  status      String       @default("draft")
+  totalSent   Int          @default(0)
+  isActive    Boolean      @default(true)
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  createdBy   String       @default("system")
+}

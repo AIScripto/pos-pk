@@ -1,0 +1,37 @@
+@layer components {
+  .app-focus-ring {
+    @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background;
+  }
+
+  .ui-panel {
+    @apply rounded-lg border border-border bg-card text-card-foreground shadow-sm;
+  }
+
+  .ui-panel-muted {
+    @apply rounded-lg border border-border/80 bg-muted/45 text-foreground;
+  }
+
+  .ui-toolbar {
+    @apply flex flex-wrap items-center gap-3 rounded-lg border border-border bg-card p-3 shadow-sm;
+  }
+
+  .status-badge {
+    @apply inline-flex items-center rounded-md border px-2.5 py-1 text-xs font-semibold;
+  }
+
+  .status-badge-success {
+    @apply status-badge border-[hsl(var(--status-success)/0.24)] bg-[hsl(var(--status-success)/0.12)] text-[hsl(var(--status-success))];
+  }
+
+  .status-badge-warning {
+    @apply status-badge border-[hsl(var(--status-warning)/0.28)] bg-[hsl(var(--status-warning)/0.14)] text-[hsl(var(--status-warning))];
+  }
+
+  .status-badge-danger {
+    @apply status-badge border-[hsl(var(--status-danger)/0.24)] bg-[hsl(var(--status-danger)/0.12)] text-[hsl(var(--status-danger))];
+  }
+
+  .status-badge-info {
+    @apply status-badge border-[hsl(var(--status-info)/0.24)] bg-[hsl(var(--status-info)/0.12)] text-[hsl(var(--status-info))];
+  }
+}

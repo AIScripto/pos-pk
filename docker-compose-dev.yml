@@ -1,0 +1,30 @@
+services:
+  backend:
+    platform: linux/amd64
+    image: tariqsulehri/aipos-be:latest
+    container_name: aipos-backend
+    ports:
+      - "4999:3500"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    env_file:
+      - .env
+    restart: unless-stopped
+    networks:
+      - aipos-network
+
+  frontend:
+    platform: linux/amd64
+    image: tariqsulehri/aipos-fe:latest
+    container_name: aipos-frontend
+    ports:
+      - "3999:80"
+    depends_on:
+      - backend
+    restart: unless-stopped
+    networks:
+      - aipos-network
+
+networks:
+  aipos-network:
+    driver: bridge
