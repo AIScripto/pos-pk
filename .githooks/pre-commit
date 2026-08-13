@@ -36,7 +36,11 @@ echo -e "${CYAN}======================================================${NC}"
 
 # 1. Check for Git merge conflict markers in staged files
 echo -e "\n${BOLD}[1/4] Checking for unresolved merge conflicts...${NC}"
-CONFLICT_FILES=$(git diff --cached --name-only | xargs grep -E -l "^(<<<<<<<|=======|>>>>>>>)" 2>/dev/null || true)
+CONFLICT_FILES=$(git diff --cached --name-only | while IFS= read -r file; do
+  if [ -f "$file" ] && grep -E -l '^<<<<<<< |^=======$|^>>>>>>> ' "$file" >/dev/null 2>&1; then
+    echo "$file"
+  fi
+done)
 if [ -n "$CONFLICT_FILES" ]; then
   echo -e "${RED}❌ Merge conflict markers found in staged files.${NC}"
   echo "$CONFLICT_FILES" > "$LOG_CONFLICT"
