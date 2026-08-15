@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { PaymentAllocation } from '@/types/pos';
 import { formatCurrency } from '@/utils/pos';
+import { playPaymentChime } from '@/utils/audio';
 import { X, CreditCard, Banknote, Check, Loader2 } from 'lucide-react';
 import { loadStripe } from '@stripe/stripe-js';
 import { Elements, PaymentElement, useStripe, useElements } from '@stripe/react-stripe-js';
@@ -99,10 +100,12 @@ export function PaymentModal({ grandTotal, onConfirm, onCancel }: PaymentModalPr
 
   const confirm = () => {
     if (!isValid || activeMethod === 'card') return;
+    playPaymentChime();
     onConfirm([{ method: activeMethod, amount: roundedTotal }]);
   };
 
   const onStripeSuccess = () => {
+    playPaymentChime();
     onConfirm([{ method: 'card', amount: roundedTotal }]);
     setStripeProcessing(false);
   };
@@ -177,6 +180,7 @@ export function PaymentModal({ grandTotal, onConfirm, onCancel }: PaymentModalPr
         <div className="p-4 sm:p-5 min-h-[170px] space-y-4">
 
           {/* Cash Payment Mode */}
+          {/* Cash Payment Mode */}
           {activeMethod === 'cash' && (
             <div className="space-y-3.5">
               <div className="space-y-2">
@@ -184,31 +188,64 @@ export function PaymentModal({ grandTotal, onConfirm, onCancel }: PaymentModalPr
                   <label htmlFor="cash-input" className="text-xs font-bold text-slate-300 uppercase tracking-wide">
                     Cash Tendered
                   </label>
-                  <button
-                    type="button"
-                    onClick={() => setCashTendered(String(roundedTotal))}
-                    className="rounded-lg bg-emerald-500/15 border border-emerald-500/30 px-2.5 py-1 text-[11px] font-black uppercase tracking-wide text-emerald-300 hover:bg-emerald-500/25 transition-colors cursor-pointer"
-                  >
-                    Exact Amount
-                  </button>
+                  <div className="flex items-center gap-1.5">
+                    <button
+                      type="button"
+                      onClick={() => setCashTendered(String(roundedTotal))}
+                      className="rounded-lg bg-emerald-500/15 border border-emerald-500/30 px-2.5 py-1 text-[11px] font-black uppercase tracking-wide text-emerald-300 hover:bg-emerald-500/25 transition-colors cursor-pointer"
+                    >
+                      Exact Amount
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setCashTendered('0')}
+                      className="rounded-lg bg-slate-800 border border-slate-700 px-2 py-1 text-[11px] font-bold text-slate-400 hover:text-white transition-colors cursor-pointer"
+                    >
+                      Clear
+                    </button>
+                  </div>
                 </div>
 
-                {/* Quick PKR Banknote Tender Buttons (44px touch targets) */}
+                {/* Direct PKR Banknote Preset Row */}
                 <div className="grid grid-cols-5 gap-1.5 pt-0.5">
                   {[
                     { label: 'Exact', val: roundedTotal },
-                    { label: '100', val: 100 },
-                    { label: '500', val: 500 },
-                    { label: '1k', val: 1000 },
-                    { label: '5k', val: 5000 },
+                    { label: 'Rs 100', val: 100 },
+                    { label: 'Rs 500', val: 500 },
+                    { label: 'Rs 1k', val: 1000 },
+                    { label: 'Rs 5k', val: 5000 },
                   ].map((btn) => (
                     <button
                       key={btn.label}
                       type="button"
                       onClick={() => setCashTendered(String(btn.val))}
-                      className="h-11 rounded-xl border border-slate-700 bg-slate-800/90 hover:bg-emerald-950/40 hover:border-emerald-500/60 active:scale-95 text-xs font-bold text-slate-200 hover:text-emerald-300 transition-all flex items-center justify-center cursor-pointer font-mono"
+                      className="h-10 rounded-xl border border-slate-700 bg-slate-800/90 hover:bg-emerald-950/40 hover:border-emerald-500/60 active:scale-95 text-xs font-bold text-slate-200 hover:text-emerald-300 transition-all flex items-center justify-center cursor-pointer font-mono"
                     >
-                      {btn.label === 'Exact' ? 'Exact' : `Rs ${btn.label}`}
+                      {btn.label}
+                    </button>
+                  ))}
+                </div>
+
+                {/* Fast Increment Row (+1 Rupee, +5, +10, +50, +100, +500) */}
+                <div className="grid grid-cols-6 gap-1 pt-0.5">
+                  {[
+                    { label: '+1', add: 1 },
+                    { label: '+5', add: 5 },
+                    { label: '+10', add: 10 },
+                    { label: '+50', add: 50 },
+                    { label: '+100', add: 100 },
+                    { label: '+500', add: 500 },
+                  ].map((inc) => (
+                    <button
+                      key={inc.label}
+                      type="button"
+                      onClick={() => {
+                        const current = parseFloat(cashTendered) || 0;
+                        setCashTendered(String(current + inc.add));
+                      }}
+                      className="h-8 rounded-lg border border-slate-700/80 bg-slate-850 hover:bg-slate-750 active:scale-95 text-[11px] font-bold text-emerald-400 hover:text-emerald-300 transition-all flex items-center justify-center cursor-pointer font-mono"
+                    >
+                      {inc.label}
                     </button>
                   ))}
                 </div>

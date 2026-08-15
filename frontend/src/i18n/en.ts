@@ -1,0 +1,70 @@
+// ─────────────────────────────────────────────────────────────────────────────
+// Primary English POS Localization Dictionary
+// Default Active Language: English (en)
+// ─────────────────────────────────────────────────────────────────────────────
+
+export const en = {
+  common: {
+    appName: 'Crip & Crumbs POS',
+    currency: 'Rs.',
+    exact: 'Exact',
+    cancel: 'Cancel',
+    confirm: 'Confirm',
+    save: 'Save',
+    search: 'Search products or scan barcode (F1)…',
+    clear: 'Clear',
+    close: 'Close',
+    loading: 'Loading…',
+    offline: 'Offline Mode',
+    online: 'Online',
+    syncNow: 'Sync Now',
+  },
+  pos: {
+    collectPayment: 'Collect Payment',
+    tenderCheckout: 'Tender Checkout',
+    totalPayable: 'Total Payable',
+    cashTendered: 'Cash Tendered',
+    changeDue: 'Change Due to Customer',
+    exactAmount: 'Exact Amount',
+    cash: 'Cash',
+    card: 'Card',
+    digital: 'Digital / QR',
+    udhaar: 'Credit / Khata',
+    holdOrder: 'Hold Cart',
+    resumeOrder: 'Resume Order',
+    heldOrders: 'Held Orders',
+    cartEmpty: 'Cart is empty',
+    subtotal: 'Subtotal',
+    discount: 'Discount',
+    tax: 'Tax',
+    grandTotal: 'Grand Total',
+    confirmPrint: 'Confirm & Print Receipt (↵)',
+    underTendered: 'Tendered amount is less than total payable',
+    customerPhone: 'Customer Phone',
+    customerName: 'Customer Name',
+    openTill: 'Open Till',
+    closeTill: 'Close Shift',
+    quickScan: 'Scan Barcode',
+    dineIn: 'Dine-In',
+    takeaway: 'Takeaway',
+    delivery: 'Delivery',
+  },
+  till: {
+    startShift: 'Start Shift / Open Till',
+    endShift: 'Close Shift & Reconcile',
+    openingFloat: 'Opening Cash Float',
+    closingCash: 'Counted Closing Cash',
+    expectedCash: 'System Expected Cash',
+    variance: 'Cash Variance',
+    balanced: 'Cash Drawer Balanced',
+    shortage: 'Cash Shortage',
+    excess: 'Cash Excess',
+    zReport: 'Print Z-Report Slip',
+  },
+  audio: {
+    scanBeep: 'Scan Beep',
+    paymentSuccess: 'Payment Success Chime',
+  },
+} as const;
+
+export type TranslationKey = typeof en;

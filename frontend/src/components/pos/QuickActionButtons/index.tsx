@@ -34,11 +34,10 @@ export function QuickActionButtons({
         <button
           onClick={onDiscount}
           className="flex items-center justify-center gap-1.5 h-9 px-2 rounded-lg bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-slate-950 font-black text-[11px] uppercase tracking-wider shadow-sm active:scale-[0.97] transition-all cursor-pointer"
-          title="Apply discount to order (F2)"
+          title="Apply discount to order"
         >
           <Tag className="w-3.5 h-3.5 shrink-0 text-slate-950 stroke-[2.5]" />
           <span>Discount</span>
-          <span className="font-mono text-[9px] bg-amber-600/30 text-slate-950 px-1 rounded">F2</span>
         </button>
 
         {/* 3. Park / Hold */}
@@ -46,11 +45,10 @@ export function QuickActionButtons({
           onClick={onHold}
           disabled={cartItemCount === 0}
           className="flex items-center justify-center gap-1.5 h-9 px-2 rounded-lg bg-amber-50 dark:bg-amber-950/40 border border-amber-300 dark:border-amber-700/60 hover:bg-amber-100 dark:hover:bg-amber-900/50 text-amber-700 dark:text-amber-300 font-extrabold text-[11px] uppercase tracking-wider shadow-xs active:scale-[0.97] transition-all disabled:opacity-40 disabled:pointer-events-none disabled:shadow-none cursor-pointer"
-          title={cartItemCount === 0 ? 'Add items to cart first' : 'Park this order (F3)'}
+          title={cartItemCount === 0 ? 'Add items to cart first' : 'Park this order'}
         >
           <PauseCircle className="w-3.5 h-3.5 shrink-0 text-amber-600 dark:text-amber-400 stroke-[2.5]" />
           <span>Park</span>
-          <span className="font-mono text-[9px] bg-amber-200/80 dark:bg-amber-800/60 px-1 rounded">F3</span>
         </button>
       </div>
     </div>

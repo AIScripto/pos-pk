@@ -17,6 +17,7 @@ import {
   Product,
 } from '@/types/pos';
 import { OrderType, PaymentMethod } from '@/types/order';
+import { playScanBeep } from '@/utils/audio';
 import {
   calculateCartTotals,
   calculateLoyaltyPoints,
@@ -600,10 +601,12 @@ export function CartProvider({
   }, [isLoggedIn]);
 
   const addProduct = (product: Product) => {
+    playScanBeep();
     dispatch({ type: 'ADD_PRODUCT', payload: product });
   };
 
   const addDeal = (deal: Deal) => {
+    playScanBeep();
     dispatch({ type: 'ADD_DEAL', payload: deal });
   };
 
