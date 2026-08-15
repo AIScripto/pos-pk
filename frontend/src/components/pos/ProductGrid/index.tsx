@@ -13,6 +13,7 @@ import { useState } from 'react';
 import { Search } from 'lucide-react';
 import { useTranslation } from '@/i18n';
 import { getLocalizedCategoryName } from '@/i18n/catalog';
+import { toLocalizedDigits } from '@/i18n/digits';
 
 interface ProductGridProps {
   onAddProduct: (product: Product) => void;
@@ -147,7 +148,7 @@ export function ProductGrid({
 
           {!isEmpty && (
             <span className="text-[10px] text-muted-foreground/60 tabular-nums">
-              {visibleCount} {visibleCount === 1 ? 'item' : 'items'}
+              {toLocalizedDigits(visibleCount, language)} {visibleCount === 1 ? t.common.item : t.common.items}
             </span>
           )}
         </div>
@@ -159,8 +160,8 @@ export function ProductGrid({
               <div className="w-14 h-14 rounded-full bg-secondary flex items-center justify-center mb-3">
                 <Search className="w-6 h-6 text-muted-foreground" />
               </div>
-              <p className="text-sm font-semibold text-muted-foreground">No items found</p>
-              <p className="text-xs text-muted-foreground mt-1 opacity-60">Try a different search or category</p>
+              <p className="text-sm font-semibold text-muted-foreground">{t.common.noItemsFound}</p>
+              <p className="text-xs text-muted-foreground mt-1 opacity-60">{t.common.tryDifferentSearch}</p>
             </div>
           ) : viewMode === 'card' ? (
             /* 1. Rich Card View */

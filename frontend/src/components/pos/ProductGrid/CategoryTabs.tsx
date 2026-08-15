@@ -20,6 +20,7 @@ export interface CategoryItem {
 import { useProducts } from '@/context/ProductContext';
 import { useTranslation } from '@/i18n';
 import { getLocalizedCategoryName } from '@/i18n/catalog';
+import { toLocalizedDigits } from '@/i18n/digits';
 
 const STORAGE_KEY = 'aipos_category_order_v1';
 
@@ -194,7 +195,7 @@ export function CategoryTabs({ activeCategory, onCategoryChange, products, deals
                   ? 'bg-amber-200/80 dark:bg-amber-500/30 border-amber-300 dark:border-amber-700/50 text-amber-950 dark:text-amber-100 shadow-sm'
                   : 'bg-slate-200/90 dark:bg-slate-700/80 border-slate-300/80 dark:border-slate-600 text-slate-900 dark:text-slate-100 shadow-sm'
               )}>
-                {count}
+                {toLocalizedDigits(count, language)}
               </span>
             </button>
           </div>

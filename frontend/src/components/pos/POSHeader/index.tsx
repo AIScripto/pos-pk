@@ -7,6 +7,7 @@ import { useAppConfig } from '@/context/AppConfigContext';
 import { TillStatusBadge } from '@/components/till/TillStatusBadge';
 import { LanguageSelector } from '@/components/common/LanguageSelector';
 import { useTranslation } from '@/i18n';
+import { formatLocalizedTime, formatLocalizedDate, toLocalizedDigits } from '@/i18n/digits';
 import { useEffect, useState } from 'react';
 import { CurrentShift, tillConfigApi } from '@/lib/api/till-config.api';
 import { getRememberedTerminalLabel } from '@/lib/pos-terminal-selection';
@@ -21,7 +22,7 @@ interface POSHeaderProps {
 }
 
 export function POSHeader({ heldCount = 0, onOpenHeld, onOpenTill, onCloseTill }: POSHeaderProps) {
-  const { t } = useTranslation();
+  const { t, language } = useTranslation();
   const { theme, toggleTheme } = useTheme();
   const { lock, unlock } = useLock();
   const { user, logout } = useAuth();
@@ -53,22 +54,15 @@ export function POSHeader({ heldCount = 0, onOpenHeld, onOpenTill, onCloseTill }
       .catch(() => setCurrentShift(null));
   }, [activeBranchId]);
 
-  const formattedTime = currentTime.toLocaleTimeString(currencyConfig.locale, {
-    hour: '2-digit',
-    minute: '2-digit',
-    hour12: false,
-  });
+  const formattedTime = formatLocalizedTime(currentTime, language);
+  const formattedDate = formatLocalizedDate(currentTime, language);
 
-  const formattedDate = currentTime.toLocaleDateString(currencyConfig.locale, {
-    weekday: 'short',
-    month: 'short',
-    day: 'numeric',
-  });
-  const tillLabel = user?.terminalName || getRememberedTerminalLabel() || (session?.terminalId ? `#${session.terminalId}` : 'Counter 01');
-  const userLabel = user?.name || session?.openedBy || 'Not signed in';
+  const defaultCounter = `${t.common.counter} ${toLocalizedDigits('01', language)}`;
+  const tillLabel = user?.terminalName || getRememberedTerminalLabel() || (session?.terminalId ? `#${session.terminalId}` : defaultCounter);
+  const userLabel = user?.name || session?.openedBy || t.common.notSignedIn;
   const shiftLabel = currentShift?.shift
     ? `${currentShift.shift.name} ${currentShift.shift.startTime}-${currentShift.shift.endTime}`
-    : session?.shiftName || 'No active shift';
+    : session?.shiftName || t.common.noActiveShift;
 
   return (
     <header className="sticky top-0 z-30 border-b border-slate-200/80 dark:border-slate-800 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md px-4 py-2 min-h-14 flex items-center shadow-sm no-print">

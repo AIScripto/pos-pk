@@ -3,6 +3,7 @@ import { formatCurrency, getSavingsPercent } from '@/utils/pos';
 import { Plus, Sparkles, Layers2 } from 'lucide-react';
 import { useTranslation } from '@/i18n';
 import { getLocalizedItemName, getLocalizedCategoryName } from '@/i18n/catalog';
+import { toLocalizedDigits } from '@/i18n/digits';
 
 interface DealCardProps {
   deal: Deal;
@@ -10,13 +11,13 @@ interface DealCardProps {
 }
 
 export function DealCard({ deal, onAdd }: DealCardProps) {
-  const { language } = useTranslation();
+  const { t, language } = useTranslation();
   const localizedName = getLocalizedItemName(deal, language);
   const savingsPercent = getSavingsPercent(deal.originalPrice, deal.price);
 
   const categoryLabel = deal.category
     ? `${getLocalizedCategoryName(deal.category, language)}`
-    : 'Combo Deal';
+    : t.common.combo;
 
   return (
     <div
@@ -30,7 +31,7 @@ export function DealCard({ deal, onAdd }: DealCardProps) {
       {/* Savings badge */}
       <div className="absolute right-1.5 top-1.5 z-10 flex items-center gap-1 rounded bg-gradient-to-r from-amber-500 to-orange-500 px-1.5 py-0.5 text-[8px] font-black uppercase tracking-wide text-slate-950 shadow-xs">
         <Sparkles className="w-2.5 h-2.5" />
-        Save {savingsPercent}%
+        {t.common.savePercent} {toLocalizedDigits(savingsPercent, language)}%
       </div>
 
       {/* Image */}

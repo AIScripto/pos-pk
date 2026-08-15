@@ -12,7 +12,7 @@ interface ProductCardProps {
 }
 
 export function ProductCard({ product, onAdd }: ProductCardProps) {
-  const { language } = useTranslation();
+  const { t, language } = useTranslation();
   const localizedName = getLocalizedItemName(product, language);
   const { getEntry } = useInventory();
   const entry = getEntry(product.id);
@@ -25,7 +25,7 @@ export function ProductCard({ product, onAdd }: ProductCardProps) {
     <div
       onClick={() => !isOutOfStock && onAdd(product)}
       role="button"
-      aria-label={`Add ${product.name} to order${isOutOfStock ? ' — out of stock' : ''}`}
+      aria-label={`Add ${localizedName} to order${isOutOfStock ? ' — out of stock' : ''}`}
       aria-disabled={isOutOfStock}
       tabIndex={isOutOfStock ? -1 : 0}
       onKeyDown={(e) => e.key === 'Enter' && !isOutOfStock && onAdd(product)}
@@ -40,7 +40,7 @@ export function ProductCard({ product, onAdd }: ProductCardProps) {
       <div className="relative overflow-hidden shrink-0">
         <img
           src={product.image}
-          alt={product.name}
+          alt={localizedName}
           className="w-full h-20 object-cover transition-transform duration-500 group-hover:scale-105"
         />
         <div className="absolute inset-x-0 bottom-0 h-8 bg-gradient-to-t from-slate-950/70 to-transparent" />
@@ -55,7 +55,7 @@ export function ProductCard({ product, onAdd }: ProductCardProps) {
           <div className="absolute inset-0 flex items-center justify-center bg-slate-950/60 backdrop-blur-[1px]">
             <div className="flex items-center gap-1 rounded-md bg-rose-600/90 px-2 py-1 shadow-md">
               <AlertTriangle className="w-3 h-3 text-white" />
-              <span className="text-[9px] font-display font-bold uppercase tracking-wide text-white">Out of Stock</span>
+              <span className="text-[9px] font-display font-bold uppercase tracking-wide text-white">{t.common.outOfStock}</span>
             </div>
           </div>
         )}
@@ -92,11 +92,11 @@ export function ProductCard({ product, onAdd }: ProductCardProps) {
           {/* Badges + add button */}
           <div className="flex items-center gap-1 shrink-0">
             {isLowStock && !isOutOfStock && (
-              <span className="stock-badge-low text-[8px] px-1 py-0.2">Low</span>
+              <span className="stock-badge-low text-[8px] px-1 py-0.2">{t.common.low}</span>
             )}
             {hasDiscount && (
               <span className="rounded bg-emerald-500/15 border border-emerald-500/25 text-emerald-700 dark:text-emerald-400 px-1 py-0.5 text-[8px] font-extrabold leading-none">
-                SALE
+                {t.common.sale}
               </span>
             )}
             {!isOutOfStock && (

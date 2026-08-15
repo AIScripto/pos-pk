@@ -1,7 +1,8 @@
 import { useTill } from '@/context/TillContext';
-import { useAppConfig } from '@/context/AppConfigContext';
 import { LockOpen, Lock } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { useTranslation } from '@/i18n';
+import { formatLocalizedTime } from '@/i18n/digits';
 
 interface TillStatusBadgeProps {
   onOpenTill:  () => void;
@@ -10,21 +11,16 @@ interface TillStatusBadgeProps {
 }
 
 export function TillStatusBadge({ onOpenTill, onCloseTill, className }: TillStatusBadgeProps) {
+  const { t, language } = useTranslation();
   const { isOpen, session } = useTill();
-  const { currencyConfig } = useAppConfig();
 
-  const openedDate = session?.openedAt ? new Date(session.openedAt) : null;
-  const openedTime = openedDate && !Number.isNaN(openedDate.getTime())
-    ? openedDate.toLocaleTimeString(currencyConfig.locale, {
-      hour: '2-digit', minute: '2-digit', hour12: false,
-    })
-    : null;
+  const openedTime = session?.openedAt ? formatLocalizedTime(session.openedAt, language) : null;
 
   return (
     <button
       onClick={isOpen ? onCloseTill : onOpenTill}
-      title={isOpen ? 'Till is open — click to close' : 'Till is closed — click to open'}
-      aria-label={isOpen ? 'Close till' : 'Open till'}
+      title={isOpen ? `${t.common.tillStatus}: ${t.common.open}` : `${t.common.tillStatus}: ${t.common.tillClosed}`}
+      aria-label={isOpen ? `${t.common.close} ${t.common.till}` : `${t.common.open} ${t.common.till}`}
       className={cn(
         'flex h-11 items-center gap-2 rounded-xl border px-3 py-1 font-display transition-all focus-visible:outline-none focus-visible:ring-2 active:scale-[0.97] shrink-0 cursor-pointer shadow-2xs',
         isOpen
@@ -39,10 +35,10 @@ export function TillStatusBadge({ onOpenTill, onCloseTill, className }: TillStat
       }
       <div className="flex flex-col min-w-0 text-left justify-center">
         <span className="font-display text-[9px] font-black uppercase tracking-[0.14em] opacity-75 leading-none mb-0.5">
-          TILL STATUS
+          {t.common.tillStatus}
         </span>
         <span className="font-display text-xs font-extrabold leading-tight whitespace-nowrap">
-          {isOpen ? `Open${openedTime ? ` · ${openedTime}` : ''}` : 'Till Closed'}
+          {isOpen ? `${t.common.open}${openedTime ? ` · ${openedTime}` : ''}` : t.common.tillClosed}
         </span>
       </div>
     </button>
