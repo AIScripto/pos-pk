@@ -156,6 +156,61 @@ export const PRODUCT_TRANSLATIONS: Record<string, Record<LanguageCode, string>> 
     ar: 'مشروب غازي (عادي)',
     ur: 'کولڈ ڈرنک (ریگولر)',
   },
+  'Soft Drink (Reg)': {
+    en: 'Soft Drink (Reg)',
+    ar: 'مشروب غازي (عادي)',
+    ur: 'کولڈ ڈرنک (ریگولر)',
+  },
+  'Milkshake': {
+    en: 'Milkshake',
+    ar: 'ميلك شيك',
+    ur: 'ملک شیک',
+  },
+  'Fresh Juice': {
+    en: 'Fresh Juice',
+    ar: 'عصير طازج',
+    ur: 'تازہ جوس',
+  },
+  'Mineral Water': {
+    en: 'Mineral Water',
+    ar: 'مياه معدنية',
+    ur: 'منرل واٹر',
+  },
+  'Classic Beef Burger': {
+    en: 'Classic Beef Burger',
+    ar: 'برغر لحم كلاسيك',
+    ur: 'کلاسک بیف برگر',
+  },
+  'Chicken Wings (6pc)': {
+    en: 'Chicken Wings (6pc)',
+    ar: 'أجنحة دجاج (٦ قطع)',
+    ur: 'چکن ونگز (6 عدد)',
+  },
+  'Chicken Wings (12pc)': {
+    en: 'Chicken Wings (12pc)',
+    ar: 'أجنحة دجاج (١٢ قطعة)',
+    ur: 'چکن ونگز (12 عدد)',
+  },
+  'Loaded Fries': {
+    en: 'Loaded Fries',
+    ar: 'بطاطس مقلية بالجبنة',
+    ur: 'لوڈڈ فرائز',
+  },
+  'Sweet Potato Fries': {
+    en: 'Sweet Potato Fries',
+    ar: 'بطاطس حلوة مقلية',
+    ur: 'میٹھے آلو کے فرائز',
+  },
+  'Iced Tea': {
+    en: 'Iced Tea',
+    ar: 'شاي مثلج',
+    ur: 'آئسڈ ٹی',
+  },
+  'Lemonade': {
+    en: 'Lemonade',
+    ar: 'عصير ليموناضة',
+    ur: 'لیمونیڈ',
+  },
 };
 
 /**
@@ -167,17 +222,25 @@ export function getLocalizedItemName(
 ): string {
   if (!item || !item.name) return '';
   
-  // 1. Direct database multilingual override
+  // 1. Direct database multilingual override (Dynamic Add/Update/Delete support)
   if (lang === 'ar' && item.nameAr) return item.nameAr;
   if (lang === 'ur' && item.nameUr) return item.nameUr;
 
-  // 2. Dictionary lookup
-  const match = PRODUCT_TRANSLATIONS[item.name];
-  if (match && match[lang]) {
-    return match[lang];
+  // 2. Direct dictionary lookup
+  const cleanName = item.name.trim();
+  const directMatch = PRODUCT_TRANSLATIONS[cleanName];
+  if (directMatch && directMatch[lang]) {
+    return directMatch[lang];
   }
 
-  // 3. Fallback to base name
+  // 3. Case-insensitive dictionary lookup
+  const lowerName = cleanName.toLowerCase();
+  const foundKey = Object.keys(PRODUCT_TRANSLATIONS).find((k) => k.toLowerCase() === lowerName);
+  if (foundKey && PRODUCT_TRANSLATIONS[foundKey][lang]) {
+    return PRODUCT_TRANSLATIONS[foundKey][lang];
+  }
+
+  // 4. Fallback to base name (for newly added custom products)
   return item.name;
 }
 
