@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { PaymentAllocation } from '@/types/pos';
 import { formatCurrency } from '@/utils/pos';
 import { playPaymentChime } from '@/utils/audio';
+import { useTranslation } from '@/i18n';
 import { X, CreditCard, Banknote, Check, Loader2 } from 'lucide-react';
 import { loadStripe } from '@stripe/stripe-js';
 import { Elements, PaymentElement, useStripe, useElements } from '@stripe/react-stripe-js';
@@ -53,6 +54,7 @@ const METHODS = [
 ] as const;
 
 export function PaymentModal({ grandTotal, onConfirm, onCancel }: PaymentModalProps) {
+  const { t } = useTranslation();
   const [activeMethod, setActiveMethod] = useState<PaymentAllocation['method']>('cash');
 
   // Round to nearest rupee to avoid floating-point display issues
@@ -125,6 +127,11 @@ export function PaymentModal({ grandTotal, onConfirm, onCancel }: PaymentModalPr
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [isValid, activeMethod, stripeProcessing, onCancel]);
 
+  const methods = [
+    { key: 'cash' as const, label: t.pos.cash, Icon: Banknote, activeClass: 'border-emerald-500 bg-emerald-950/60 text-emerald-300' },
+    { key: 'card' as const, label: t.pos.card, Icon: CreditCard, activeClass: 'border-blue-500 bg-blue-950/60 text-blue-300' },
+  ];
+
   return (
     <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm select-none">
       <div className="bg-slate-900 border border-slate-700/80 rounded-2xl shadow-2xl w-full max-w-md flex flex-col overflow-hidden animate-in fade-in zoom-in-95 duration-150">
@@ -132,8 +139,8 @@ export function PaymentModal({ grandTotal, onConfirm, onCancel }: PaymentModalPr
         {/* ── Header ── */}
         <div className="flex items-center justify-between px-5 py-3.5 border-b border-slate-800 bg-slate-950/60">
           <div>
-            <p className="text-[10px] font-black uppercase tracking-[0.2em] text-emerald-400">Tender Checkout</p>
-            <h2 className="text-lg font-black text-white leading-tight">Collect Payment</h2>
+            <p className="text-[10px] font-black uppercase tracking-[0.2em] text-emerald-400">{t.pos.tenderCheckout}</p>
+            <h2 className="text-lg font-black text-white leading-tight">{t.pos.collectPayment}</h2>
           </div>
           <button
             onClick={onCancel}
@@ -147,7 +154,7 @@ export function PaymentModal({ grandTotal, onConfirm, onCancel }: PaymentModalPr
 
         {/* ── Amount Due Display ── */}
         <div className="bg-slate-950 py-5 text-center border-b border-slate-800/80">
-          <p className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 mb-1">Total Payable</p>
+          <p className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 mb-1">{t.pos.totalPayable}</p>
           <p className="text-4xl sm:text-5xl font-black text-emerald-400 tracking-tight font-mono tabular-nums">
             {formatCurrency(roundedTotal)}
           </p>
@@ -155,7 +162,7 @@ export function PaymentModal({ grandTotal, onConfirm, onCancel }: PaymentModalPr
 
         {/* ── Method tabs ── */}
         <div className="flex gap-2 p-3 border-b border-slate-800 bg-slate-900/80">
-          {METHODS.map(({ key, label, Icon, activeClass }) => {
+          {methods.map(({ key, label, Icon, activeClass }) => {
             const isActive = activeMethod === key;
             return (
               <button
@@ -180,13 +187,12 @@ export function PaymentModal({ grandTotal, onConfirm, onCancel }: PaymentModalPr
         <div className="p-4 sm:p-5 min-h-[170px] space-y-4">
 
           {/* Cash Payment Mode */}
-          {/* Cash Payment Mode */}
           {activeMethod === 'cash' && (
             <div className="space-y-3.5">
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
                   <label htmlFor="cash-input" className="text-xs font-bold text-slate-300 uppercase tracking-wide">
-                    Cash Tendered
+                    {t.pos.cashTendered}
                   </label>
                   <div className="flex items-center gap-1.5">
                     <button
@@ -194,14 +200,14 @@ export function PaymentModal({ grandTotal, onConfirm, onCancel }: PaymentModalPr
                       onClick={() => setCashTendered(String(roundedTotal))}
                       className="rounded-lg bg-emerald-500/15 border border-emerald-500/30 px-2.5 py-1 text-[11px] font-black uppercase tracking-wide text-emerald-300 hover:bg-emerald-500/25 transition-colors cursor-pointer"
                     >
-                      Exact Amount
+                      {t.pos.exactAmount}
                     </button>
                     <button
                       type="button"
                       onClick={() => setCashTendered('0')}
                       className="rounded-lg bg-slate-800 border border-slate-700 px-2 py-1 text-[11px] font-bold text-slate-400 hover:text-white transition-colors cursor-pointer"
                     >
-                      Clear
+                      {t.common.clear}
                     </button>
                   </div>
                 </div>
@@ -209,7 +215,7 @@ export function PaymentModal({ grandTotal, onConfirm, onCancel }: PaymentModalPr
                 {/* Direct PKR Banknote Preset Row */}
                 <div className="grid grid-cols-5 gap-1.5 pt-0.5">
                   {[
-                    { label: 'Exact', val: roundedTotal },
+                    { label: t.common.exact, val: roundedTotal },
                     { label: 'Rs 100', val: 100 },
                     { label: 'Rs 500', val: 500 },
                     { label: 'Rs 1k', val: 1000 },
@@ -272,14 +278,14 @@ export function PaymentModal({ grandTotal, onConfirm, onCancel }: PaymentModalPr
               {/* Change Return Banner */}
               {change > 0 && (
                 <div className="flex flex-col items-center justify-center rounded-xl border-2 border-emerald-500/80 bg-emerald-950/40 p-3.5 text-center shadow-lg shadow-emerald-950/50">
-                  <span className="text-xs font-black uppercase tracking-widest text-emerald-400">Change Due to Customer</span>
+                  <span className="text-xs font-black uppercase tracking-widest text-emerald-400">{t.pos.changeDue}</span>
                   <span className="font-mono text-3xl font-black text-emerald-300 tabular-nums">{formatCurrency(change)}</span>
                 </div>
               )}
 
               {cashTendered && !cashValid && (
                 <p className="text-center text-xs font-semibold text-rose-400 bg-rose-950/40 border border-rose-500/20 py-2 rounded-lg">
-                  Tendered amount is less than total payable
+                  {t.pos.underTendered}
                 </p>
               )}
             </div>
@@ -333,7 +339,7 @@ export function PaymentModal({ grandTotal, onConfirm, onCancel }: PaymentModalPr
             ) : (
               <>
                 <Check className="w-5 h-5" />
-                <span>Confirm & Print Receipt (↵)</span>
+                <span>{t.pos.confirmPrint}</span>
               </>
             )}
           </button>

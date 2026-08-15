@@ -4,6 +4,7 @@ import { useTill } from '@/context/TillContext';
 import { formatCurrency } from '@/utils/pos';
 import { calculateTax } from '@/utils/pos';
 import { TAX_CONFIG } from '@/config/tax';
+import { useTranslation } from '@/i18n';
 import { CartItemRow } from './CartItemRow';
 import { CustomerProfileCard } from './CustomerProfileCard';
 import { BillSummary } from './BillSummary';
@@ -54,6 +55,7 @@ const DELIVERY_PAYMENT_METHODS = [
 const CASHIER_DISCOUNT_LIMIT_PERCENT = 10;
 
 export function CartPanel({ onCheckout, onDirectCashCheckout, isConfirming, onHold }: CartPanelProps) {
+  const { t } = useTranslation();
   const {
     state,
     updateQuantity,
@@ -136,6 +138,12 @@ export function CartPanel({ onCheckout, onDirectCashCheckout, isConfirming, onHo
         : 'bg-slate-100 dark:bg-slate-800/80 border-slate-300 dark:border-slate-700/60 text-slate-800 dark:text-slate-200 hover:bg-slate-200 dark:hover:bg-slate-700/80 hover:border-slate-400 hover:text-slate-950 shadow-sm'
     );
 
+  const orderTypes = [
+    { key: 'dine-in'  as const, label: t.pos.dineIn,   Icon: Utensils },
+    { key: 'takeaway' as const, label: t.pos.takeaway, Icon: ShoppingBag },
+    { key: 'delivery' as const, label: t.pos.delivery, Icon: Truck },
+  ];
+
   return (
     <div className="flex h-full flex-col bg-white dark:bg-slate-900 overflow-hidden shadow-xl shadow-slate-900/5 border-l border-slate-200/80 dark:border-slate-800">
 
@@ -146,7 +154,7 @@ export function CartPanel({ onCheckout, onDirectCashCheckout, isConfirming, onHo
             <ShoppingBag className="w-4 h-4" />
           </div>
           <h2 className="font-display font-extrabold text-[17px] tracking-wide text-slate-900 dark:text-slate-100 leading-none">
-            Current Order
+            {t.common.currentOrder}
           </h2>
           {itemCount > 0 && (
             <span className="flex h-5 min-w-[20px] items-center justify-center rounded-full bg-blue-600 px-1.5 font-display font-extrabold text-[10px] text-white shadow-sm">
@@ -158,32 +166,32 @@ export function CartPanel({ onCheckout, onDirectCashCheckout, isConfirming, onHo
           <button
             onClick={() => setShowClearDialog(true)}
             aria-label="Clear all items from cart"
-            className="flex items-center gap-1 rounded-lg border border-rose-200 dark:border-rose-900/50 bg-rose-50 dark:bg-rose-950/30 px-2.5 py-1 font-display font-bold text-xs text-rose-600 dark:text-rose-400 hover:bg-rose-100 dark:hover:bg-rose-900/50 transition-all shadow-sm"
+            className="flex items-center gap-1 rounded-lg border border-rose-200 dark:border-rose-900/50 bg-rose-50 dark:bg-rose-950/30 px-2.5 py-1 font-display font-bold text-xs text-rose-600 dark:text-rose-400 hover:bg-rose-100 dark:hover:bg-rose-900/50 transition-all shadow-sm cursor-pointer"
           >
             <Trash2 className="w-3 h-3 inline" />
-            Clear
+            {t.common.clear}
           </button>
         )}
       </div>
 
       {/* ── Order type ── */}
       <div className="flex gap-1.5 border-b border-slate-200/80 dark:border-slate-800 bg-slate-100/60 dark:bg-slate-900/60 px-3 py-2 shrink-0">
-        {ORDER_TYPES.map((t) => {
-          const Icon = t.Icon;
+        {orderTypes.map((typeOption) => {
+          const Icon = typeOption.Icon;
           return (
             <button
-              key={t.key}
+              key={typeOption.key}
               onClick={() => {
-                setOrderType(t.key);
-                if (t.key !== 'delivery') setPaymentMethod('cash');
+                setOrderType(typeOption.key);
+                if (typeOption.key !== 'delivery') setPaymentMethod('cash');
               }}
               className={cn(
-                tabClass(orderType === t.key),
-                'flex items-center justify-center gap-1.5'
+                tabClass(orderType === typeOption.key),
+                'flex items-center justify-center gap-1.5 cursor-pointer'
               )}
             >
               <Icon className="w-3.5 h-3.5 shrink-0" />
-              <span>{t.label}</span>
+              <span>{typeOption.label}</span>
             </button>
           );
         })}

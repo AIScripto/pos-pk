@@ -12,6 +12,7 @@ import { useLock, LockProvider }  from '@/context/LockContext';
 import { LockScreen } from '@/components/pos/LockScreen';
 import { ShoppingBag, FileText, ChefHat, Package, Search, PauseCircle, Sparkles } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { useTranslation } from '@/i18n';
 
 import TillRestoringGate from '@/components/pos/TillRestoringGate';
 import TillClosedGate from '@/components/pos/TillClosedGate';
@@ -26,6 +27,7 @@ const ManagerReportPanel = lazy(() => import('@/components/reports/ManagerReport
 // ---------------------------------------------------------------------------
 
 function POSInner() {
+  const { t } = useTranslation();
   const { addProduct, addDeal, state, markInvoicePaid, holdOrder, clearCart, clearInvoiceHistory } = useCart();
   const { getActiveOrders, clearSessionOrders } = useOrders();
   const { isOpen: tillOpen, isRestoring: isTillRestoring, session: tillSession } = useTill();
@@ -122,10 +124,10 @@ function POSInner() {
             <div className="flex items-center justify-between gap-3 border-b border-slate-200/80 dark:border-slate-800 bg-white dark:bg-slate-900 px-4 py-2.5 no-print shrink-0">
               <div>
                 <p className="font-display font-black text-[9px] uppercase tracking-[0.22em] text-blue-600 dark:text-blue-400">
-                  Service Board
+                  {t.common.serviceBoard}
                 </p>
                 <h2 className="font-display font-black text-[18px] text-slate-900 dark:text-slate-100 leading-tight">
-                  Menu
+                  {t.common.menu}
                 </h2>
               </div>
 
@@ -134,7 +136,7 @@ function POSInner() {
                 {[
                   {
                     key: 'F1',
-                    label: 'Search',
+                    label: t.common.search,
                     icon: Search,
                     badge: null,
                     action: () => {
@@ -144,28 +146,28 @@ function POSInner() {
                   },
                   {
                     key: 'F2',
-                    label: 'Cart',
+                    label: t.common.currentOrder,
                     icon: ShoppingBag,
                     badge: cartItemCount > 0 ? cartItemCount : null,
                     action: () => setShowCart((prev) => !prev),
                   },
                   {
                     key: 'F3',
-                    label: 'Held',
+                    label: t.common.park,
                     icon: PauseCircle,
                     badge: state.heldOrders.length > 0 ? state.heldOrders.length : null,
                     action: () => setShowHeld(true),
                   },
                   {
                     key: 'F4',
-                    label: 'Orders',
+                    label: t.common.orders,
                     icon: ChefHat,
                     badge: activeOrderCount > 0 ? activeOrderCount : null,
                     action: () => setShowOrders((prev) => !prev),
                   },
                   {
                     key: 'F5',
-                    label: 'Deals',
+                    label: t.common.deals,
                     icon: Sparkles,
                     badge: null,
                     action: () => {
@@ -175,14 +177,14 @@ function POSInner() {
                   },
                   {
                     key: 'F6',
-                    label: 'Products',
+                    label: t.common.products,
                     icon: Package,
                     badge: null,
                     action: () => setShowProducts(true),
                   },
                   {
                     key: 'F7',
-                    label: 'Invoices',
+                    label: t.common.invoices,
                     icon: FileText,
                     badge: state.invoices.length > 0 ? state.invoices.length : null,
                     action: () => setShowInvoices(true),

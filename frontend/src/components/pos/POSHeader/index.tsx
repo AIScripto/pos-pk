@@ -6,6 +6,7 @@ import { useTill }  from '@/context/TillContext';
 import { useAppConfig } from '@/context/AppConfigContext';
 import { TillStatusBadge } from '@/components/till/TillStatusBadge';
 import { LanguageSelector } from '@/components/common/LanguageSelector';
+import { useTranslation } from '@/i18n';
 import { useEffect, useState } from 'react';
 import { CurrentShift, tillConfigApi } from '@/lib/api/till-config.api';
 import { getRememberedTerminalLabel } from '@/lib/pos-terminal-selection';
@@ -20,6 +21,7 @@ interface POSHeaderProps {
 }
 
 export function POSHeader({ heldCount = 0, onOpenHeld, onOpenTill, onCloseTill }: POSHeaderProps) {
+  const { t } = useTranslation();
   const { theme, toggleTheme } = useTheme();
   const { lock, unlock } = useLock();
   const { user, logout } = useAuth();
@@ -82,7 +84,7 @@ export function POSHeader({ heldCount = 0, onOpenHeld, onOpenTill, onCloseTill }
               {orgConfig?.businessName || 'Crisp&Crumbs'} <span className="text-blue-600 dark:text-blue-400 font-black">POS</span>
             </h1>
             <p className="font-display text-[9px] uppercase tracking-[0.22em] text-slate-500 dark:text-slate-400 leading-tight font-semibold">
-              Quick Service Restaurant
+              {t.common.subTitle}
             </p>
           </div>
         </div>
@@ -94,19 +96,19 @@ export function POSHeader({ heldCount = 0, onOpenHeld, onOpenTill, onCloseTill }
             <TillStatusBadge onOpenTill={onOpenTill} onCloseTill={onCloseTill} />
           )}
 
-          <HeaderInfoChip icon={<Monitor className="h-3.5 w-3.5" />} label="Till" value={tillLabel} />
-          <HeaderInfoChip icon={<UserRound className="h-3.5 w-3.5" />} label="User" value={userLabel} />
-          <HeaderInfoChip icon={<Clock3 className="h-3.5 w-3.5" />} label="Shift" value={shiftLabel} />
+          <HeaderInfoChip icon={<Monitor className="h-3.5 w-3.5" />} label={t.common.till} value={tillLabel} />
+          <HeaderInfoChip icon={<UserRound className="h-3.5 w-3.5" />} label={t.common.user} value={userLabel} />
+          <HeaderInfoChip icon={<Clock3 className="h-3.5 w-3.5" />} label={t.common.shift} value={shiftLabel} />
 
           {/* Function Keys Legend Chip */}
           <div className="hidden md:flex h-11 items-center gap-2 rounded-xl border border-blue-500/40 bg-blue-500/10 dark:bg-blue-950/40 px-3 py-1 no-print shadow-2xs shrink-0">
             <Keyboard className="w-4 h-4 text-blue-600 dark:text-blue-400 shrink-0" />
             <div className="flex flex-col min-w-0 justify-center">
               <span className="font-display text-[9px] font-black uppercase tracking-[0.14em] text-blue-600 dark:text-blue-400 leading-none mb-0.5">
-                SHORTCUTS
+                {t.common.shortcuts}
               </span>
               <span className="font-mono font-black text-xs text-slate-900 dark:text-slate-100 leading-tight whitespace-nowrap">
-                F1–F12 Active
+                {t.common.shortcutsActive}
               </span>
             </div>
           </div>
@@ -120,10 +122,10 @@ export function POSHeader({ heldCount = 0, onOpenHeld, onOpenTill, onCloseTill }
               <PauseCircle className="w-4 h-4 text-amber-600 dark:text-amber-400 shrink-0" />
               <div className="flex flex-col min-w-0 text-left justify-center">
                 <span className="font-display text-[9px] font-black uppercase tracking-[0.14em] text-amber-600 dark:text-amber-400 leading-none mb-0.5">
-                  PARKED QUEUE
+                  {t.common.parkedQueue}
                 </span>
                 <span className="font-display text-xs font-extrabold leading-tight whitespace-nowrap flex items-center gap-1">
-                  <span>F3 Held</span>
+                  <span>{`F3 ${t.common.park}`}</span>
                   {heldCount > 0 && (
                     <span className="bg-amber-500 text-slate-950 rounded-full px-1.5 py-0.2 font-display font-black text-[10px] leading-3 shadow-xs">
                       {heldCount}

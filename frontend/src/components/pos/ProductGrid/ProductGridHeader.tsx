@@ -1,5 +1,6 @@
 import { Search, X, LayoutGrid, Grid3x3, List } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { useTranslation } from '@/i18n';
 
 interface ProductGridHeaderProps {
   searchQuery: string;
@@ -14,13 +15,15 @@ export function ProductGridHeader({
   viewMode,
   onViewModeChange,
 }: ProductGridHeaderProps) {
+  const { t } = useTranslation();
+
   return (
     <div className="border-b border-border bg-card px-3 py-2.5 flex items-center justify-between gap-2.5 flex-wrap">
       <div className="relative flex-1 min-w-[200px]">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground pointer-events-none" />
         <input
           type="text"
-          placeholder="Search by name or SKU…"
+          placeholder={t.common.searchPlaceholder}
           value={searchQuery}
           onChange={(e) => onSearchChange(e.target.value)}
           className="w-full rounded-xl border border-border bg-secondary py-2 pl-9 pr-8 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary transition-all"
@@ -28,7 +31,7 @@ export function ProductGridHeader({
         {searchQuery && (
           <button
             onClick={() => onSearchChange('')}
-            className="absolute right-2.5 top-1/2 -translate-y-1/2 rounded-md p-0.5 text-muted-foreground hover:text-foreground transition-colors"
+            className="absolute right-2.5 top-1/2 -translate-y-1/2 rounded-md p-0.5 text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
             aria-label="Clear search"
           >
             <X className="w-3.5 h-3.5" />
@@ -38,9 +41,9 @@ export function ProductGridHeader({
 
       <div className="flex items-center gap-2 shrink-0">
         {[
-          { mode: 'card' as const, label: 'Card', icon: LayoutGrid, title: 'Card View (Rich Images)' },
-          { mode: 'button' as const, label: 'Button', icon: Grid3x3, title: 'Touch Button Matrix (Ultra-Fast)' },
-          { mode: 'list' as const, label: 'List', icon: List, title: 'Compact List View' },
+          { mode: 'card' as const, label: t.common.card, icon: LayoutGrid, title: 'Card View (Rich Images)' },
+          { mode: 'button' as const, label: t.common.button, icon: Grid3x3, title: 'Touch Button Matrix (Ultra-Fast)' },
+          { mode: 'list' as const, label: t.common.list, icon: List, title: 'Compact List View' },
         ].map((vm) => {
           const Icon = vm.icon;
           const isActive = viewMode === vm.mode;
