@@ -17,7 +17,7 @@ export function ReceiptPrintView({ invoice }: ReceiptPrintViewProps) {
     : '';
 
   const totalPaid = invoice.paymentAllocations?.reduce((acc, alloc) => acc + alloc.amount, 0) || 0;
-  const isPaid = totalPaid >= invoice.grandTotal;
+  const isPaid = totalPaid >= invoice.grandTotal || invoice.paymentStatus === 'paid';
 
   return (
     <div className="print-receipt bg-white text-black font-sans leading-tight" style={{ width: '80mm', margin: '0 auto', fontSize: '13px' }}>

@@ -31,6 +31,12 @@ frontend/.env*
 *.suo
 *.ntvs*
 *.njsproj
-*.sln
 *.sw?
 backend/.env.aipos
+
+# Local SQLite databases
+*.db
+*.db-journal
+*.sqlite
+*.sqlite3
+

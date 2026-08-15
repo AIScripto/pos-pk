@@ -44,6 +44,7 @@ interface POSModalsContainerProps {
   printRef: React.RefObject<HTMLDivElement>;
   invoices: Invoice[];
   handleCheckout: () => void;
+  handleDirectCashCheckout?: () => Promise<boolean>;
   handleConfirmInvoice: (inv?: Invoice | null) => Promise<boolean>;
   handlePaymentConfirmed: (allocations: import('@/types/pos').PaymentAllocation[]) => Promise<void>;
   handlePrint: (invoice: Invoice) => void;
@@ -83,6 +84,7 @@ export function POSModalsContainer({
   printRef,
   invoices,
   handleCheckout,
+  handleDirectCashCheckout,
   handleConfirmInvoice,
   handlePaymentConfirmed,
   handlePrint,
@@ -110,6 +112,8 @@ export function POSModalsContainer({
             <div className="flex-1 overflow-hidden">
               <CartPanel
                 onCheckout={handleCheckout}
+                onDirectCashCheckout={handleDirectCashCheckout ? () => { void handleDirectCashCheckout(); } : undefined}
+                isConfirming={isConfirmingInvoice}
                 onHold={(label) => {
                   onHoldToast(label);
                   setShowCart(false);

@@ -31,14 +31,14 @@ export default function LoginPage() {
   const [mode, setMode] = useState<Mode>('cashier');
 
   // Cashier Auth Form State
-  const [cashierEmail, setCashierEmail] = useState<string>(localDefault(LOCAL_DEV_CREDENTIALS.pos.email));
+  const [cashierUsername, setCashierUsername] = useState<string>(localDefault(LOCAL_DEV_CREDENTIALS.pos.username));
   const [cashierPassword, setCashierPassword] = useState(localDefault(LOCAL_DEV_CREDENTIALS.pos.password));
   const [terminals, setTerminals] = useState<TerminalOption[]>([]);
   const [terminalId, setTerminalId] = useState('');
   const [terminalsLoading, setTerminalsLoading] = useState(false);
 
   // Admin Auth Form State
-  const [email, setEmail] = useState<string>(localDefault(LOCAL_DEV_CREDENTIALS.admin.email));
+  const [adminUsername, setAdminUsername] = useState<string>(localDefault(LOCAL_DEV_CREDENTIALS.admin.username));
   const [password, setPassword] = useState(localDefault(LOCAL_DEV_CREDENTIALS.admin.password));
 
   // Async Execution States
@@ -69,12 +69,14 @@ export default function LoginPage() {
     setError('');
     setLoading(true);
     try {
-      const user = await login(cashierEmail, cashierPassword, undefined, terminalId || undefined);
-      const selectedTerm = terminals.find((t) => t.id === terminalId) ?? null;
-      rememberPosSelection(user.branchId, selectedTerm);
-      navigate(roleHomePage(user.role));
+      const user = await login(cashierUsername, cashierPassword, undefined, terminalId || undefined);
+      const selectedTerm =
+        terminals.find((t) => t.id === (terminalId || user?.terminalId)) ??
+        (user?.terminalId ? { id: user.terminalId, name: user.terminalName || 'Default Register' } : null);
+      rememberPosSelection(user?.branchId, selectedTerm);
+      navigate(roleHomePage(user?.role || 'cashier'));
     } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : 'Invalid email or password');
+      setError(err instanceof Error ? err.message : 'Invalid username or password');
     } finally {
       setLoading(false);
     }
@@ -85,10 +87,10 @@ export default function LoginPage() {
     setError('');
     setLoading(true);
     try {
-      const user = await login(email, password);
+      const user = await login(adminUsername, password);
       navigate(roleHomePage(user.role));
     } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : 'Invalid email or password');
+      setError(err instanceof Error ? err.message : 'Invalid username or password');
     } finally {
       setLoading(false);
     }
@@ -99,11 +101,11 @@ export default function LoginPage() {
     const cred = LOCAL_DEV_CREDENTIALS[role];
     if (role === 'pos') {
       setMode('cashier');
-      setCashierEmail(cred.email);
+      setCashierUsername(cred.username);
       setCashierPassword(cred.password);
     } else {
       setMode('admin');
-      setEmail(cred.email);
+      setAdminUsername(cred.username);
       setPassword(cred.password);
     }
   };
@@ -142,22 +144,21 @@ export default function LoginPage() {
             <div className="bg-slate-800/50 backdrop-blur-xl rounded-2xl border border-slate-700/50 shadow-2xl overflow-hidden h-fit flex flex-col">
               
               {/* Auth Mode Toggle Tabs */}
-              <div className="flex border-b border-slate-700/50 p-1 shrink-0">
+              <div className="flex border-b border-slate-700/60 p-1.5 bg-slate-900/60 shrink-0 gap-1.5">
                 <button
                   type="button"
                   onClick={() => {
                     setMode('cashier');
                     setError('');
                   }}
-                  className={`flex-1 py-2 sm:py-3 px-3 sm:px-4 font-bold text-xs sm:text-sm transition-all flex items-center justify-center gap-1.5 rounded-lg ${
+                  className={`flex-1 py-2.5 px-3 font-semibold text-xs sm:text-sm transition-all flex items-center justify-center gap-2 rounded-xl ${
                     mode === 'cashier'
-                      ? 'bg-orange-500/20 text-orange-300 border border-orange-500/30'
-                      : 'text-slate-400 hover:text-slate-300'
+                      ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 shadow-sm'
+                      : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/40'
                   }`}
                 >
-                  <LogIn className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-                  <span className="hidden sm:inline">Cashier</span>
-                  <span className="sm:hidden">POS</span>
+                  <LogIn className="w-4 h-4" />
+                  <span>Cashier (POS)</span>
                 </button>
                 <button
                   type="button"
@@ -165,14 +166,14 @@ export default function LoginPage() {
                     setMode('admin');
                     setError('');
                   }}
-                  className={`flex-1 py-2 sm:py-3 px-3 sm:px-4 font-bold text-xs sm:text-sm transition-all flex items-center justify-center gap-1.5 rounded-lg ${
+                  className={`flex-1 py-2.5 px-3 font-semibold text-xs sm:text-sm transition-all flex items-center justify-center gap-2 rounded-xl ${
                     mode === 'admin'
-                      ? 'bg-blue-500/20 text-blue-300 border border-blue-500/30'
-                      : 'text-slate-400 hover:text-slate-300'
+                      ? 'bg-blue-500/20 text-blue-300 border border-blue-500/40 shadow-sm'
+                      : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/40'
                   }`}
                 >
-                  <Store className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-                  <span className="hidden sm:inline">Admin</span>
+                  <Store className="w-4 h-4" />
+                  <span>Admin Portal</span>
                 </button>
               </div>
 
@@ -194,8 +195,8 @@ export default function LoginPage() {
                 {/* Active Form Renderer */}
                 {mode === 'cashier' ? (
                   <CashierLoginForm
-                    email={cashierEmail}
-                    setEmail={setCashierEmail}
+                    username={cashierUsername}
+                    setUsername={setCashierUsername}
                     password={cashierPassword}
                     setPassword={setCashierPassword}
                     terminals={terminals}
@@ -207,8 +208,8 @@ export default function LoginPage() {
                   />
                 ) : (
                   <AdminLoginForm
-                    email={email}
-                    setEmail={setEmail}
+                    username={adminUsername}
+                    setUsername={setAdminUsername}
                     password={password}
                     setPassword={setPassword}
                     loading={loading}

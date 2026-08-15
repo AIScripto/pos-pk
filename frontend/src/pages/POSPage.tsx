@@ -26,7 +26,7 @@ const ManagerReportPanel = lazy(() => import('@/components/reports/ManagerReport
 // ---------------------------------------------------------------------------
 
 function POSInner() {
-  const { addProduct, addDeal, state, markInvoicePaid, holdOrder, clearCart } = useCart();
+  const { addProduct, addDeal, state, markInvoicePaid, holdOrder, clearCart, clearInvoiceHistory } = useCart();
   const { getActiveOrders, clearSessionOrders } = useOrders();
   const { isOpen: tillOpen, isRestoring: isTillRestoring, session: tillSession } = useTill();
   const { isLocked } = useLock();
@@ -50,12 +50,12 @@ function POSInner() {
     onToggleOrders: () => setShowOrders((prev) => !prev),
     onToggleProducts: () => setShowProducts((prev) => !prev),
     onToggleInvoices: () => setShowInvoices((prev) => !prev),
+    onDirectCashCheckout: () => { void onDirectCashCheckoutClick(); },
   });
 
   // Auto-open the till dialog as soon as we know the till is closed.
   React.useEffect(() => {
     if (!isTillRestoring && !tillOpen) setShowOpenTill(true);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isTillRestoring, tillOpen]);
 
   // When a NEW till session is opened, clear stale orders and invoice history
@@ -65,7 +65,7 @@ function POSInner() {
     const currentId = tillSession.id;
     if (prevTillSessionId.current !== null && prevTillSessionId.current !== currentId) {
       clearSessionOrders();
-      useCart().clearInvoiceHistory();
+      clearInvoiceHistory();
     }
     prevTillSessionId.current = currentId;
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -78,15 +78,22 @@ function POSInner() {
     checkout.handleCheckout(() => setShowOpenTill(true));
   };
 
-  const onConfirmInvoiceClick = async (inv?: any) => {
-    return checkout.handleConfirmInvoice(
+  const onDirectCashCheckoutClick = async () => {
+    return checkout.handleDirectCashCheckout(
       () => setShowOpenTill(true),
-      () => setShowCart(false),
-      inv
+      () => setShowCart(false)
     );
   };
 
-  const onPaymentConfirmedClick = async (allocations: any) => {
+  const onConfirmInvoiceClick = async (inv?: import('@/types/pos').Invoice | null) => {
+    return checkout.handleConfirmInvoice(
+      () => setShowOpenTill(true),
+      () => setShowCart(false),
+      inv ?? undefined
+    );
+  };
+
+  const onPaymentConfirmedClick = async (allocations: import('@/types/pos').PaymentAllocation[]) => {
     return checkout.handlePaymentConfirmed(allocations, () => setShowCart(false));
   };
 
@@ -247,13 +254,6 @@ function POSInner() {
                   toast({ title: 'New order', description: 'Ready to add items to cart.' });
                 }
               }}
-              onSearch={() => {
-                const searchInput = document.querySelector<HTMLInputElement>('input[placeholder*="Search"]');
-                if (searchInput) {
-                  searchInput.focus();
-                  searchInput.select();
-                }
-              }}
               onDiscount={() => {
                 if (state.items.length === 0) {
                   toast({ title: 'Cart empty', description: 'Add items to cart first before applying discount.', variant: 'destructive' });
@@ -271,20 +271,13 @@ function POSInner() {
                   toast({ title: 'Order parked', description: `Saved as ${held.label}` });
                 }
               }}
-              onClearCart={() => {
-                if (state.items.length > 0) {
-                  clearCart();
-                  toast({ title: 'Cart cleared', description: 'All items removed.' });
-                }
-              }}
-              onMoreActions={() => {
-                setShowHeld(true);
-              }}
             />
 
             <div className="flex-1 overflow-hidden flex flex-col">
               <CartPanel
                 onCheckout={onCheckoutClick}
+                onDirectCashCheckout={onDirectCashCheckoutClick}
+                isConfirming={checkout.isConfirmingInvoice}
                 onHold={(label) => {
                   toast({ title: 'Order held', description: `"${label}" saved.` });
                   setShowHeld(true);
@@ -325,6 +318,7 @@ function POSInner() {
         printRef={checkout.printRef}
         invoices={state.invoices}
         handleCheckout={onCheckoutClick}
+        handleDirectCashCheckout={onDirectCashCheckoutClick}
         handleConfirmInvoice={onConfirmInvoiceClick}
         handlePaymentConfirmed={onPaymentConfirmedClick}
         handlePrint={checkout.handlePrint}

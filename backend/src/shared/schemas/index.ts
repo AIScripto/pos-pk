@@ -3,7 +3,7 @@ import { z } from 'zod';
 // ── Auth ──────────────────────────────────────────────────────────────────────
 
 export const LoginSchema = z.object({
-  email:      z.string().email('Invalid email address'),
+  email:      z.string().min(1, 'Username or email required'),
   password:   z.string().min(1, 'Password required').max(128),
   branchId:   z.string().optional(),
   terminalId: z.string().optional(),

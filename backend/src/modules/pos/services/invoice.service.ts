@@ -172,26 +172,6 @@ export class InvoiceService {
         include: { items: true },
       });
 
-      // ── Deduct inventory — group by productId to avoid duplicate rows ─────
-      // If the same product appears on multiple line items (e.g. deal + direct),
-      // collapse into a single decrement per product before hitting the DB.
-      const decrementByProductId = new Map<string, number>();
-      for (const item of itemsWithTotals) {
-        if (!isBigIntId(item.productId)) continue;
-        decrementByProductId.set(
-          item.productId!,
-          (decrementByProductId.get(item.productId!) ?? 0) + item.quantity,
-        );
-      }
-      await Promise.all(
-        Array.from(decrementByProductId.entries()).map(([productId, qty]) =>
-          t.inventory.updateMany({
-            where: { productId: toBigInt(productId), branchId: toBigInt(input.branchId) },
-            data:  { quantity: { decrement: qty } },
-          }),
-        ),
-      );
-
       // ── Update customer loyalty ─────────────────────────────────────────
       if (input.customerId && loyaltyCfg?.isEnabled && isBigIntId(input.customerId)) {
         const customer = await t.customer.findUnique({
@@ -242,7 +222,43 @@ export class InvoiceService {
       return invoice;
     };
 
-    const invoice = tx ? await execute(tx) : await prisma.$transaction(execute);
+    const invoice = tx ? await execute(tx) : await prisma.$transaction(execute, { maxWait: 10000, timeout: 25000 });
+
+    // ── Deduct inventory post-commit (non-blocking for checkout speed) ───────
+    try {
+      const decrementByProductId = new Map<string, number>();
+      for (const item of input.items) {
+        if (!isBigIntId(item.productId)) continue;
+        decrementByProductId.set(
+          item.productId!,
+          (decrementByProductId.get(item.productId!) ?? 0) + item.quantity,
+        );
+      }
+
+      for (const [productId, qty] of decrementByProductId.entries()) {
+        const pId = toBigInt(productId);
+        const bId = toBigInt(input.branchId);
+        const productExists = await prisma.product.findUnique({
+          where: { id: pId },
+          select: { id: true },
+        });
+        if (productExists) {
+          await prisma.inventory.upsert({
+            where:  { productId_branchId: { productId: pId, branchId: bId } },
+            update: { quantity: { decrement: qty } },
+            create: {
+              productId:    pId,
+              branchId:     bId,
+              quantity:     -qty,
+              minThreshold: 5,
+              createdBy:    input.cashierId,
+            },
+          });
+        }
+      }
+    } catch (invErr) {
+      console.warn('[Inventory] Non-blocking inventory update warning:', invErr);
+    }
 
     // ── Fire kitchen order (outside transaction — non-blocking) ─────────────
     try {

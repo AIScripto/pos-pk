@@ -12,14 +12,23 @@ export interface RememberedPosSelection {
 export const POS_SELECTED_BRANCH_KEY = 'pos-app-selected-branch';
 export const POS_SELECTED_TERMINAL_KEY = 'pos-app-selected-terminal';
 
-export function rememberPosSelection(branchId: string, terminal: RememberedTerminal): void {
+export function rememberPosSelection(branchId?: string | null, terminal?: RememberedTerminal | null): void {
   if (typeof window === 'undefined') return;
-  window.localStorage.setItem(POS_SELECTED_BRANCH_KEY, branchId);
-  window.localStorage.setItem(POS_SELECTED_TERMINAL_KEY, JSON.stringify({
-    id: terminal.id,
-    name: terminal.name,
-    code: terminal.code ?? null,
-  }));
+  if (branchId) {
+    window.localStorage.setItem(POS_SELECTED_BRANCH_KEY, branchId);
+  } else {
+    window.localStorage.removeItem(POS_SELECTED_BRANCH_KEY);
+  }
+
+  if (terminal?.id) {
+    window.localStorage.setItem(POS_SELECTED_TERMINAL_KEY, JSON.stringify({
+      id: terminal.id,
+      name: terminal.name,
+      code: terminal.code ?? null,
+    }));
+  } else {
+    window.localStorage.removeItem(POS_SELECTED_TERMINAL_KEY);
+  }
 }
 
 export function getRememberedPosSelection(): RememberedPosSelection {

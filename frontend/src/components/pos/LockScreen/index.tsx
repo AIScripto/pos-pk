@@ -18,9 +18,9 @@ export function LockScreen() {
   const [error,       setError]   = useState('');
   const [shaking,     setShaking] = useState(false);
   const [loading,     setLoading] = useState(false);
-  // Default to PIN if user has one set; fall back to password for admin users without a PIN
   const [usePassword, setUsePassword] = useState(() => !user?.branchId && !user?.branchName);
-  const [email,       setEmail]   = useState(() => user?.email ?? LOCAL_DEV_CREDENTIALS.admin.email);
+  // Default to PIN if user has one set; fall back to password for admin users without a PIN
+  const [username,    setUsername] = useState(() => user?.username ?? user?.email ?? LOCAL_DEV_CREDENTIALS.admin.username);
   const [password,    setPassword] = useState(() => localDefault(LOCAL_DEV_CREDENTIALS.admin.password));
   const [time,        setTime]    = useState(new Date());
 
@@ -38,6 +38,7 @@ export function LockScreen() {
   // ── PIN submit — validates against current session user, no new JWT ────────
 
   const submitPin = useCallback(async (fullPin: string) => {
+    if (!user) return;
     setLoading(true);
     setError('');
     try {
@@ -59,7 +60,7 @@ export function LockScreen() {
     } finally {
       setLoading(false);
     }
-  }, [unlock, shake]);
+  }, [user, unlock, shake]);
 
   // ── PIN key handler ───────────────────────────────────────────────────────
 
@@ -97,7 +98,7 @@ export function LockScreen() {
     setLoading(true);
     setError('');
     try {
-      await authApi.login(email, password);
+      await authApi.login(username, password);
       unlock();
     } catch {
       setError('Invalid credentials.');
@@ -105,7 +106,7 @@ export function LockScreen() {
     } finally {
       setLoading(false);
     }
-  }, [email, password, unlock]);
+  }, [username, password, unlock]);
 
   // ── Formatted time ────────────────────────────────────────────────────────
 
@@ -203,7 +204,7 @@ export function LockScreen() {
                   setUsePassword(true);
                   setPin('');
                   setError('');
-                  setEmail(user?.email ?? LOCAL_DEV_CREDENTIALS.admin.email);
+                  setUsername(user?.username ?? user?.email ?? LOCAL_DEV_CREDENTIALS.admin.username);
                   setPassword(localDefault(LOCAL_DEV_CREDENTIALS.admin.password));
                 }}
                 className="mt-4 w-full text-center text-xs text-muted-foreground hover:text-foreground transition-colors font-body"
@@ -217,14 +218,14 @@ export function LockScreen() {
               {SHOW_DEMO_CREDENTIALS && (
                 <div className="rounded-xl border border-primary/30 bg-primary/10 px-3 py-2 text-xs text-foreground">
                   <p className="font-semibold">MVP demo unlock</p>
-                  <p className="mt-1 font-mono">{email || LOCAL_DEV_CREDENTIALS.admin.email} / {LOCAL_DEV_CREDENTIALS.admin.password}</p>
+                  <p className="mt-1 font-mono">{username || LOCAL_DEV_CREDENTIALS.admin.username} / {LOCAL_DEV_CREDENTIALS.admin.password}</p>
                 </div>
               )}
               <input
-                type="email"
-                placeholder="Email"
-                value={email}
-                onChange={e => setEmail(e.target.value)}
+                type="text"
+                placeholder="Username"
+                value={username}
+                onChange={e => setUsername(e.target.value)}
                 autoFocus
                 required
                 className="w-full rounded-xl border border-border bg-secondary px-3 py-2.5 font-body text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary"
@@ -253,7 +254,7 @@ export function LockScreen() {
                 onClick={() => {
                   setUsePassword(false);
                   setError('');
-                  setEmail(user?.email ?? LOCAL_DEV_CREDENTIALS.admin.email);
+                  setUsername(user?.username ?? user?.email ?? LOCAL_DEV_CREDENTIALS.admin.username);
                   setPassword(localDefault(LOCAL_DEV_CREDENTIALS.admin.password));
                 }}
                 className="text-center text-xs text-muted-foreground hover:text-foreground transition-colors font-body"

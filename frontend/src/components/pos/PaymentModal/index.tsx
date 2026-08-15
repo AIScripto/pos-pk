@@ -107,102 +107,154 @@ export function PaymentModal({ grandTotal, onConfirm, onCancel }: PaymentModalPr
     setStripeProcessing(false);
   };
 
+  // Keyboard shortcut listener (Enter to confirm, Escape to cancel, 1 for Cash, 2 for Card)
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        e.preventDefault();
+        onCancel();
+      } else if (e.key === 'Enter' && isValid && activeMethod !== 'card' && !stripeProcessing) {
+        e.preventDefault();
+        confirm();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isValid, activeMethod, stripeProcessing, onCancel]);
+
   return (
-    <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
-      <div className="bg-card border border-border rounded-2xl shadow-2xl w-full max-w-sm flex flex-col overflow-hidden">
+    <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm select-none">
+      <div className="bg-slate-900 border border-slate-700/80 rounded-2xl shadow-2xl w-full max-w-md flex flex-col overflow-hidden animate-in fade-in zoom-in-95 duration-150">
 
         {/* ── Header ── */}
-        <div className="flex items-center justify-between px-5 py-4 border-b border-border">
+        <div className="flex items-center justify-between px-5 py-3.5 border-b border-slate-800 bg-slate-950/60">
           <div>
-            <p className="text-[10px] font-black uppercase tracking-[0.18em] text-muted-foreground">Collect Payment</p>
-            <h2 className="text-xl font-black text-card-foreground leading-tight">Payment</h2>
+            <p className="text-[10px] font-black uppercase tracking-[0.2em] text-emerald-400">Tender Checkout</p>
+            <h2 className="text-lg font-black text-white leading-tight">Collect Payment</h2>
           </div>
-          <button onClick={onCancel} className="rounded-lg p-2 text-muted-foreground hover:bg-secondary transition-colors">
+          <button
+            onClick={onCancel}
+            aria-label="Cancel checkout (Esc)"
+            title="Cancel (Esc)"
+            className="rounded-xl p-2 text-slate-400 hover:text-white hover:bg-slate-800 transition-colors cursor-pointer"
+          >
             <X className="w-5 h-5" />
           </button>
         </div>
 
-        {/* ── Amount ── */}
-        <div className="bg-slate-950 dark:bg-slate-900 py-5 text-center">
-          <p className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 mb-1">Amount Due</p>
-          <p className="text-5xl font-black text-white tracking-tight">{formatCurrency(roundedTotal)}</p>
+        {/* ── Amount Due Display ── */}
+        <div className="bg-slate-950 py-5 text-center border-b border-slate-800/80">
+          <p className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 mb-1">Total Payable</p>
+          <p className="text-4xl sm:text-5xl font-black text-emerald-400 tracking-tight font-mono tabular-nums">
+            {formatCurrency(roundedTotal)}
+          </p>
         </div>
 
         {/* ── Method tabs ── */}
-        <div className="flex gap-2 p-3 border-b border-border bg-muted/20">
+        <div className="flex gap-2 p-3 border-b border-slate-800 bg-slate-900/80">
           {METHODS.map(({ key, label, Icon, activeClass }) => {
             const isActive = activeMethod === key;
             return (
               <button
                 key={key}
+                type="button"
                 onClick={() => setActiveMethod(key)}
-                className={`flex-1 flex flex-col items-center gap-1 py-2.5 rounded-xl border-2 font-black text-[10px] uppercase tracking-wider transition-all shadow-sm ${
+                className={`flex-1 h-12 flex items-center justify-center gap-2 rounded-xl border font-bold text-xs sm:text-sm uppercase tracking-wider transition-all cursor-pointer ${
                   isActive
                     ? `${activeClass} shadow-md`
-                    : 'border-border bg-background text-muted-foreground hover:border-primary/40 hover:text-foreground'
+                    : 'border-slate-700 bg-slate-800/60 text-slate-400 hover:border-slate-600 hover:text-slate-200'
                 }`}
               >
-                <Icon className="w-5 h-5" />
-                {label}
-                {isActive && <Check className="w-3 h-3 opacity-80" />}
+                <Icon className="w-4 h-4" />
+                <span>{label}</span>
+                {isActive && <Check className="w-3.5 h-3.5 opacity-90 ml-0.5" />}
               </button>
             );
           })}
         </div>
 
         {/* ── Payment area ── */}
-        <div className="p-4 min-h-[160px]">
+        <div className="p-4 sm:p-5 min-h-[170px] space-y-4">
 
-          {/* Cash */}
+          {/* Cash Payment Mode */}
           {activeMethod === 'cash' && (
-            <div className="space-y-3">
-              <div className="space-y-1.5">
+            <div className="space-y-3.5">
+              <div className="space-y-2">
                 <div className="flex items-center justify-between">
-                  <label className="text-xs font-bold text-muted-foreground uppercase tracking-wide">Tendered Amount</label>
+                  <label htmlFor="cash-input" className="text-xs font-bold text-slate-300 uppercase tracking-wide">
+                    Cash Tendered
+                  </label>
                   <button
+                    type="button"
                     onClick={() => setCashTendered(String(roundedTotal))}
-                    className="rounded-md bg-primary/10 px-2.5 py-1 text-[10px] font-black uppercase tracking-wide text-primary hover:bg-primary/20 transition-colors"
+                    className="rounded-lg bg-emerald-500/15 border border-emerald-500/30 px-2.5 py-1 text-[11px] font-black uppercase tracking-wide text-emerald-300 hover:bg-emerald-500/25 transition-colors cursor-pointer"
                   >
-                    Exact
+                    Exact Amount
                   </button>
                 </div>
-                <div className="relative">
-                  <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-sm font-bold text-muted-foreground">{getCurrencyConfig().currencySymbol}</span>
+
+                {/* Quick PKR Banknote Tender Buttons (44px touch targets) */}
+                <div className="grid grid-cols-5 gap-1.5 pt-0.5">
+                  {[
+                    { label: 'Exact', val: roundedTotal },
+                    { label: '100', val: 100 },
+                    { label: '500', val: 500 },
+                    { label: '1k', val: 1000 },
+                    { label: '5k', val: 5000 },
+                  ].map((btn) => (
+                    <button
+                      key={btn.label}
+                      type="button"
+                      onClick={() => setCashTendered(String(btn.val))}
+                      className="h-11 rounded-xl border border-slate-700 bg-slate-800/90 hover:bg-emerald-950/40 hover:border-emerald-500/60 active:scale-95 text-xs font-bold text-slate-200 hover:text-emerald-300 transition-all flex items-center justify-center cursor-pointer font-mono"
+                    >
+                      {btn.label === 'Exact' ? 'Exact' : `Rs ${btn.label}`}
+                    </button>
+                  ))}
+                </div>
+
+                {/* Input Field */}
+                <div className="relative pt-1">
+                  <span className="absolute left-4 top-1/2 -translate-y-1/2 text-sm font-bold text-slate-400">
+                    {getCurrencyConfig().currencySymbol}
+                  </span>
                   <input
+                    id="cash-input"
                     type="number"
                     min="0"
                     step="1"
                     autoFocus
                     value={cashTendered}
                     onChange={(e) => setCashTendered(e.target.value)}
-                    className="w-full pl-10 pr-4 py-3.5 bg-secondary border-2 border-border rounded-xl focus:outline-none focus:border-primary text-right font-mono text-xl font-bold transition-colors"
+                    className="w-full h-12 pl-12 pr-4 bg-slate-950 border-2 border-slate-700 rounded-xl focus:outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 text-right font-mono text-xl font-bold text-white transition-all tabular-nums"
                     placeholder="0"
                   />
                 </div>
               </div>
 
+              {/* Change Return Banner */}
               {change > 0 && (
-                <div className="flex items-center justify-between rounded-xl border border-emerald-500/30 bg-emerald-500/10 px-4 py-3">
-                  <span className="text-sm font-bold text-emerald-600">Change Due</span>
-                  <span className="font-mono text-lg font-black text-emerald-600">{formatCurrency(change)}</span>
+                <div className="flex flex-col items-center justify-center rounded-xl border-2 border-emerald-500/80 bg-emerald-950/40 p-3.5 text-center shadow-lg shadow-emerald-950/50">
+                  <span className="text-xs font-black uppercase tracking-widest text-emerald-400">Change Due to Customer</span>
+                  <span className="font-mono text-3xl font-black text-emerald-300 tabular-nums">{formatCurrency(change)}</span>
                 </div>
               )}
 
               {cashTendered && !cashValid && (
-                <p className="text-center text-xs font-semibold text-destructive">
-                  Amount entered is less than the total due
+                <p className="text-center text-xs font-semibold text-rose-400 bg-rose-950/40 border border-rose-500/20 py-2 rounded-lg">
+                  Tendered amount is less than total payable
                 </p>
               )}
             </div>
           )}
 
-          {/* Card */}
+          {/* Card (Stripe / POS Terminal) */}
           {activeMethod === 'card' && (
             <div className="space-y-3">
               {!clientSecret ? (
-                <div className="flex flex-col items-center justify-center gap-2 py-8 text-muted-foreground">
-                  <Loader2 className="h-6 w-6 animate-spin text-primary" />
-                  <p className="text-xs font-semibold">Initialising secure connection…</p>
+                <div className="flex flex-col items-center justify-center gap-2 py-8 text-slate-400">
+                  <Loader2 className="h-6 w-6 animate-spin text-blue-400" />
+                  <p className="text-xs font-semibold">Initialising secure card terminal…</p>
                 </div>
               ) : (
                 <Elements stripe={stripePromise!} options={{ clientSecret }}>
@@ -215,7 +267,7 @@ export function PaymentModal({ grandTotal, onConfirm, onCancel }: PaymentModalPr
                 </Elements>
               )}
               {stripeError && (
-                <p className="rounded-lg border border-destructive/30 bg-destructive/10 px-3 py-2 text-xs font-semibold text-destructive">
+                <p className="rounded-xl border border-rose-500/30 bg-rose-950/40 px-3 py-2 text-xs font-semibold text-rose-300">
                   {stripeError}
                 </p>
               )}
@@ -224,25 +276,28 @@ export function PaymentModal({ grandTotal, onConfirm, onCancel }: PaymentModalPr
 
         </div>
 
-        {/* ── Confirm button ── */}
-        <div className="px-4 pb-4">
+        {/* ── Confirm / Submit Button (h-14 / 56px touch target) ── */}
+        <div className="p-4 sm:p-5 pt-0 bg-slate-900">
           <button
             onClick={activeMethod === 'card' ? undefined : confirm}
             type={activeMethod === 'card' ? 'submit' : 'button'}
             form={activeMethod === 'card' ? 'stripe-payment-form' : undefined}
             disabled={!isValid || stripeProcessing}
-            className={`w-full py-4 rounded-xl font-black text-base tracking-wide transition-all ${
+            className={`w-full h-14 rounded-xl font-black text-base uppercase tracking-wider transition-all flex items-center justify-center gap-2 cursor-pointer ${
               isValid && !stripeProcessing
-                ? 'bg-primary text-white hover:opacity-90 shadow-lg shadow-primary/30 active:scale-[0.98]'
-                : 'bg-muted text-muted-foreground cursor-not-allowed opacity-50'
+                ? 'bg-emerald-600 hover:bg-emerald-500 text-white shadow-lg shadow-emerald-950/60 active:scale-[0.99]'
+                : 'bg-slate-800 text-slate-500 cursor-not-allowed opacity-50'
             }`}
           >
             {stripeProcessing ? (
               <span className="flex items-center justify-center gap-2">
-                <Loader2 className="h-4 w-4 animate-spin" /> Processing…
+                <Loader2 className="h-5 w-5 animate-spin" /> Authorizing Payment…
               </span>
             ) : (
-              `Confirm Payment — ${formatCurrency(roundedTotal)}`
+              <>
+                <Check className="w-5 h-5" />
+                <span>Confirm & Print Receipt (↵)</span>
+              </>
             )}
           </button>
         </div>

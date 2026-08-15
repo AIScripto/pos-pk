@@ -410,9 +410,9 @@ async function main() {
 
   // ── Admin User ────────────────────────────────────────────────────────────
   // System admin with org-wide access. Test user for development only.
-  // CREDENTIAL: email: admin@aipos.pk, password: admin123, PIN: 1234
+  // CREDENTIAL: username: admin, password: admin1234, PIN: 1234
   // NOTE: Separate userRoleAssignment record required to grant role permissions.
-  const passwordHash = await bcrypt.hash('admin123', 12);
+  const passwordHash = await bcrypt.hash('admin1234', 12);
   const pinHash = await bcrypt.hash('1234', 10);
 
   const admin = await prisma.user.upsert({

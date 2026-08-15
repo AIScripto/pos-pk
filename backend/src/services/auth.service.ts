@@ -33,11 +33,14 @@ const DEFAULT_PERMISSIONS: Record<UserRole, string[]> = {
 
 export class AuthService {
 
-  static async loginWithPassword(email: string, password: string, branchId?: string, terminalId?: string) {
-    const normalizedEmail = email.trim().toLowerCase();
+  static async loginWithPassword(emailOrUsername: string, password: string, branchId?: string, terminalId?: string) {
+    const normalizedInput = emailOrUsername.trim().toLowerCase();
     const user = await prisma.user.findFirst({
-      where:   {
-        email: { equals: normalizedEmail, mode: 'insensitive' },
+      where: {
+        OR: [
+          { email: { equals: normalizedInput, mode: 'insensitive' } },
+          { username: { equals: normalizedInput, mode: 'insensitive' } },
+        ],
         isActive: true,
       },
       include: {

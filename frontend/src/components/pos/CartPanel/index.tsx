@@ -30,6 +30,8 @@ import {
 
 interface CartPanelProps {
   onCheckout: () => void;
+  onDirectCashCheckout?: () => void;
+  isConfirming?: boolean;
   onHold?: (label: string) => void;
 }
 
@@ -51,7 +53,7 @@ const DELIVERY_PAYMENT_METHODS = [
 
 const CASHIER_DISCOUNT_LIMIT_PERCENT = 10;
 
-export function CartPanel({ onCheckout, onHold }: CartPanelProps) {
+export function CartPanel({ onCheckout, onDirectCashCheckout, isConfirming, onHold }: CartPanelProps) {
   const {
     state,
     updateQuantity,
@@ -232,10 +234,7 @@ export function CartPanel({ onCheckout, onHold }: CartPanelProps) {
         </div>
       )}
 
-      {/* ── Customer ── */}
-      <CustomerProfileCard />
-
-      {/* ── Cart Items ── */}
+      {/* ── Cart Items (Maximized View Area) ── */}
       <div className="flex-1 overflow-y-auto pos-scrollbar bg-white dark:bg-slate-900">
         {state.items.length === 0 ? (
           <div className="flex flex-col items-center justify-center h-full py-12 px-4 text-center">
@@ -302,8 +301,10 @@ export function CartPanel({ onCheckout, onHold }: CartPanelProps) {
 
           {/* Action Buttons Component */}
           <CartActionButtons
-            onHold={() => { const held = holdOrder(); if (held) onHold?.(held.label); }}
             onCheckout={onCheckout}
+            onDirectCashCheckout={onDirectCashCheckout}
+            isConfirming={isConfirming}
+            onHold={() => { const held = holdOrder(); if (held) onHold?.(held.label); }}
           />
         </div>
       )}

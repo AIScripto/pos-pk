@@ -13,7 +13,7 @@ export default function AdminLoginPage() {
   const { login } = useAuth();
   const navigate = useNavigate();
 
-  const [email, setEmail] = useState<string>(localDefault(LOCAL_DEV_CREDENTIALS.admin.email));
+  const [username, setUsername] = useState<string>(localDefault(LOCAL_DEV_CREDENTIALS.admin.username));
   const [password, setPassword] = useState(localDefault(LOCAL_DEV_CREDENTIALS.admin.password));
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
@@ -23,10 +23,11 @@ export default function AdminLoginPage() {
     setError('');
     setLoading(true);
     try {
-      const user = await login(email, password);
+      const user = await login(username, password);
       navigate(roleHomePage(user.role));
-    } catch (err: any) {
-      setError(err.message ?? 'Invalid email or password');
+    } catch (err: unknown) {
+      const errorObj = err as { message?: string };
+      setError(errorObj.message ?? 'Invalid username or password');
     } finally {
       setLoading(false);
     }
@@ -34,7 +35,7 @@ export default function AdminLoginPage() {
   const handleSelectTestAccount = (role: 'admin' | 'manager' | 'pos') => {
     setError('');
     const cred = LOCAL_DEV_CREDENTIALS[role];
-    setEmail(cred.email);
+    setUsername(cred.username);
     setPassword(cred.password);
   };
 
@@ -95,7 +96,7 @@ export default function AdminLoginPage() {
                         <span className="font-bold text-teal-400">Admin Account</span>
                         <span className="px-1.5 py-0.5 rounded bg-teal-500/15 text-teal-400 font-mono text-[9px]">PIN: 1234</span>
                       </div>
-                      <p className="text-slate-400 font-mono text-[10px] truncate">{LOCAL_DEV_CREDENTIALS.admin.email} · {LOCAL_DEV_CREDENTIALS.admin.password}</p>
+                      <p className="text-slate-400 font-mono text-[10px] truncate">{LOCAL_DEV_CREDENTIALS.admin.username} · {LOCAL_DEV_CREDENTIALS.admin.password}</p>
                     </button>
 
                     <button
@@ -107,7 +108,7 @@ export default function AdminLoginPage() {
                         <span className="font-bold text-purple-400">Manager Account</span>
                         <span className="px-1.5 py-0.5 rounded bg-purple-500/15 text-purple-400 font-mono text-[9px]">PIN: 1234</span>
                       </div>
-                      <p className="text-slate-400 font-mono text-[10px] truncate">{LOCAL_DEV_CREDENTIALS.manager.email} · {LOCAL_DEV_CREDENTIALS.manager.password}</p>
+                      <p className="text-slate-400 font-mono text-[10px] truncate">{LOCAL_DEV_CREDENTIALS.manager.username} · {LOCAL_DEV_CREDENTIALS.manager.password}</p>
                     </button>
                   </div>
                 </div>
@@ -115,18 +116,18 @@ export default function AdminLoginPage() {
 
               {/* Login Form */}
               <form onSubmit={handleLogin} className="space-y-3 sm:space-y-4">
-                {/* Email */}
+                {/* Username */}
                 <div>
-                  <Label htmlFor="email" className="block text-xs sm:text-sm font-bold text-slate-200 mb-1.5">
-                    Email Address
+                  <Label htmlFor="username" className="block text-xs sm:text-sm font-bold text-slate-200 mb-1.5">
+                    Username
                   </Label>
                   <Input
-                    id="email"
-                    type="email"
-                    placeholder="admin@example.com"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    autoComplete="off"
+                    id="username"
+                    type="text"
+                    placeholder="e.g. admin, superadmin, tariq"
+                    value={username}
+                    onChange={(e) => setUsername(e.target.value)}
+                    autoComplete="username"
                     className="w-full px-3 sm:px-4 py-2 sm:py-3 rounded-lg bg-slate-700/50 border border-slate-600 text-white text-xs sm:text-sm placeholder-slate-400 focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20 focus:outline-none transition-all"
                     required
                     autoFocus

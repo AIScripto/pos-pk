@@ -39,11 +39,11 @@ export const DemoCredentialsPanel: React.FC<DemoCredentialsPanelProps> = ({
               <div className="flex items-center justify-between w-full mb-1">
                 <span className="font-bold text-blue-400">Admin Account</span>
                 <span className="px-1.5 py-0.5 rounded bg-blue-500/15 text-blue-400 font-mono text-[9px]">
-                  PIN: 1234
+                  Role: Admin
                 </span>
               </div>
               <p className="text-slate-400 font-mono text-[10px] truncate">
-                {LOCAL_DEV_CREDENTIALS.admin.email} · {LOCAL_DEV_CREDENTIALS.admin.password}
+                Username: <strong className="text-white">{LOCAL_DEV_CREDENTIALS.admin.username}</strong> (or superadmin) · {LOCAL_DEV_CREDENTIALS.admin.password}
               </p>
             </button>
 
@@ -55,11 +55,11 @@ export const DemoCredentialsPanel: React.FC<DemoCredentialsPanelProps> = ({
               <div className="flex items-center justify-between w-full mb-1">
                 <span className="font-bold text-purple-400">Manager Account</span>
                 <span className="px-1.5 py-0.5 rounded bg-purple-500/15 text-purple-400 font-mono text-[9px]">
-                  PIN: 1234
+                  Role: Manager
                 </span>
               </div>
               <p className="text-slate-400 font-mono text-[10px] truncate">
-                {LOCAL_DEV_CREDENTIALS.manager.email} · {LOCAL_DEV_CREDENTIALS.manager.password}
+                Username: <strong className="text-white">{LOCAL_DEV_CREDENTIALS.manager.username}</strong> · {LOCAL_DEV_CREDENTIALS.manager.password}
               </p>
             </button>
           </>
@@ -72,11 +72,11 @@ export const DemoCredentialsPanel: React.FC<DemoCredentialsPanelProps> = ({
             <div className="flex items-center justify-between w-full mb-1">
               <span className="font-bold text-orange-400">Cashier Account</span>
               <span className="px-1.5 py-0.5 rounded bg-orange-500/15 text-orange-400 font-mono text-[9px]">
-                PIN: 8591
+                Role: Cashier
               </span>
             </div>
             <p className="text-slate-400 font-mono text-[10px] truncate">
-              {LOCAL_DEV_CREDENTIALS.pos.email} · {LOCAL_DEV_CREDENTIALS.pos.password}
+              Username: <strong className="text-white">{LOCAL_DEV_CREDENTIALS.pos.username}</strong> (or cashier2) · {LOCAL_DEV_CREDENTIALS.pos.password}
             </p>
           </button>
         )}

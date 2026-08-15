@@ -1,31 +1,38 @@
 import React from 'react';
-import { PauseCircle, Receipt } from 'lucide-react';
+import { PauseCircle, Receipt, CreditCard, Zap, Loader2 } from 'lucide-react';
 
 interface CartActionButtonsProps {
   onHold: () => void;
   onCheckout: () => void;
+  onDirectCashCheckout?: () => void;
+  isConfirming?: boolean;
 }
 
-export function CartActionButtons({ onHold, onCheckout }: CartActionButtonsProps) {
+export function CartActionButtons({
+  onCheckout,
+  onDirectCashCheckout,
+  isConfirming = false,
+}: CartActionButtonsProps) {
   return (
-    <div className="flex gap-3 px-4 pb-3">
+    <div className="px-3 pb-3 pt-1">
+      {/* ── Primary 1-Tap Direct Invoice & Print Button ── */}
       <button
-        onClick={onHold}
-        title="Park current cart to serve next customer"
-        aria-label="Park order"
-        className="pos-btn-secondary h-14 flex items-center justify-center gap-1.5 px-4 sm:px-5 rounded-xl shrink-0 cursor-pointer shadow-sm hover:shadow transition-all active:scale-[0.98]"
+        onClick={onDirectCashCheckout || onCheckout}
+        disabled={isConfirming}
+        aria-label="Direct Cash Invoice & Print"
+        className="w-full h-14 flex items-center justify-between px-4 rounded-xl font-display font-black text-[16px] uppercase tracking-wider text-white transition-all bg-emerald-600 hover:bg-emerald-500 active:scale-[0.99] shadow-lg shadow-emerald-950/40 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
       >
-        <PauseCircle className="w-5 h-5 text-amber-500" />
-        <span className="hidden xl:inline font-display font-extrabold text-sm uppercase tracking-wide">Park Order</span>
-      </button>
-      <button
-        onClick={onCheckout}
-        aria-label="Proceed to checkout"
-        className="flex-1 pos-btn-success h-14 flex items-center justify-center gap-2 font-display font-black text-[17px] uppercase tracking-widest rounded-xl shadow-md hover:shadow-lg active:scale-[0.98] transition-all cursor-pointer"
-      >
-        <Receipt className="w-5 h-5" />
-        <span>Checkout</span>
-        <span className="ml-1 font-mono text-[10px] font-black bg-white/25 text-white px-1.5 py-0.5 rounded-md leading-none border border-white/30 shadow-2xs">
+        <div className="flex items-center gap-2.5">
+          {isConfirming ? (
+            <Loader2 className="w-5 h-5 animate-spin text-emerald-200" />
+          ) : (
+            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-emerald-700/80 text-white shadow-xs">
+              <Zap className="w-4 h-4 text-emerald-200 fill-emerald-200" />
+            </div>
+          )}
+          <span>{isConfirming ? 'Invoicing & Printing…' : '⚡ Cash & Print'}</span>
+        </div>
+        <span className="font-mono text-xs font-black bg-emerald-950/60 text-emerald-200 px-2.5 py-1 rounded-md border border-emerald-400/30">
           Enter ↵
         </span>
       </button>

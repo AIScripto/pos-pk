@@ -1,12 +1,12 @@
 import React from 'react';
-import { Loader2, LogIn } from 'lucide-react';
+import { Loader2, LogIn, User, Lock, ShieldCheck } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 
 interface AdminLoginFormProps {
-  email: string;
-  setEmail: (val: string) => void;
+  username: string;
+  setUsername: (val: string) => void;
   password: string;
   setPassword: (val: string) => void;
   loading: boolean;
@@ -17,69 +17,86 @@ interface AdminLoginFormProps {
  * AdminLoginForm Component
  * 
  * Modular form component handling Admin back-office authentication.
- * Includes Email and Password inputs, styled focus rings, and submit button.
+ * Uses name-based username (e.g. admin, superadmin, tariq) and Password inputs.
  * 
  * @component
  */
 export const AdminLoginForm: React.FC<AdminLoginFormProps> = ({
-  email,
-  setEmail,
+  username,
+  setUsername,
   password,
   setPassword,
   loading,
   onSubmit,
 }) => {
   return (
-    <form onSubmit={onSubmit} className="space-y-3 sm:space-y-4">
-      {/* Admin Email Input */}
-      <div>
-        <Label htmlFor="admin-email" className="block text-xs sm:text-sm font-bold text-slate-200 mb-1.5">
-          Email
+    <form onSubmit={onSubmit} className="space-y-4">
+      {/* Admin Mode Badge */}
+      <div className="flex items-center justify-between pb-1">
+        <span className="text-xs font-semibold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
+          <ShieldCheck className="w-3.5 h-3.5 text-blue-400" />
+          <span>Management Portal</span>
+        </span>
+        <span className="text-[11px] font-medium text-blue-400/90 bg-blue-950/60 border border-blue-500/20 px-2 py-0.5 rounded">
+          Back Office
+        </span>
+      </div>
+
+      {/* Admin Username Input */}
+      <div className="space-y-1.5">
+        <Label htmlFor="admin-username" className="text-xs font-semibold uppercase tracking-wider text-slate-300 flex items-center gap-1.5">
+          <User className="w-3.5 h-3.5 text-slate-400" />
+          <span>Admin Username</span>
         </Label>
-        <Input
-          id="admin-email"
-          type="email"
-          placeholder="admin@example.com"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          autoComplete="off"
-          className="w-full px-3 sm:px-4 py-2 sm:py-3 rounded-lg bg-slate-700/50 border border-slate-600 text-white text-xs sm:text-sm placeholder-slate-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 focus:outline-none transition-all"
-          required
-          autoFocus
-        />
+        <div className="relative">
+          <Input
+            id="admin-username"
+            type="text"
+            placeholder="e.g. admin, superadmin, tariq"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+            autoComplete="username"
+            className="w-full h-12 px-3.5 rounded-xl bg-slate-900/80 border border-slate-700/80 text-white text-sm placeholder-slate-500 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/30 focus:outline-none transition-all font-medium"
+            required
+            autoFocus
+          />
+        </div>
       </div>
 
       {/* Admin Password Input */}
-      <div>
-        <Label htmlFor="admin-password" className="block text-xs sm:text-sm font-bold text-slate-200 mb-1.5">
-          Password
+      <div className="space-y-1.5">
+        <Label htmlFor="admin-password" className="text-xs font-semibold uppercase tracking-wider text-slate-300 flex items-center gap-1.5">
+          <Lock className="w-3.5 h-3.5 text-slate-400" />
+          <span>Admin Password</span>
         </Label>
-        <Input
-          id="admin-password"
-          type="password"
-          placeholder="••••••••"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          className="w-full px-3 sm:px-4 py-2 sm:py-3 rounded-lg bg-slate-700/50 border border-slate-600 text-white text-xs sm:text-sm placeholder-slate-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 focus:outline-none transition-all"
-          required
-        />
+        <div className="relative">
+          <Input
+            id="admin-password"
+            type="password"
+            placeholder="••••••••"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            className="w-full h-12 px-3.5 rounded-xl bg-slate-900/80 border border-slate-700/80 text-white text-sm placeholder-slate-500 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/30 focus:outline-none transition-all"
+            required
+          />
+        </div>
       </div>
 
       {/* Submit Action Button */}
       <Button
         type="submit"
         disabled={loading}
-        className="w-full py-2 sm:py-3 mt-4 sm:mt-6 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-bold text-sm sm:text-base rounded-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-lg hover:shadow-xl"
+        className="w-full h-12 mt-6 bg-blue-600 hover:bg-blue-500 active:scale-[0.99] text-white font-bold text-sm sm:text-base rounded-xl transition-all shadow-lg shadow-blue-900/30 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
       >
         {loading ? (
           <>
-            <Loader2 className="w-3.5 h-3.5 sm:w-4 sm:h-4 mr-1.5 animate-spin inline" />
-            <span className="text-xs sm:text-base">Signing in...</span>
+            <Loader2 className="w-4 h-4 animate-spin inline" />
+            <span>Authenticating Admin...</span>
           </>
         ) : (
           <>
-            <LogIn className="w-3.5 h-3.5 sm:w-4 sm:h-4 mr-1.5 inline" />
-            <span className="text-xs sm:text-base">Enter Back Office</span>
+            <LogIn className="w-4 h-4 inline" />
+            <span>Enter Back Office</span>
           </>
         )}
       </Button>

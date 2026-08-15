@@ -72,15 +72,16 @@ export class InvoiceController {
 
       const invoice = await InvoiceService.create({
         ...req.body,
-        cashierId:  req.auth!.userId,
-        orgId:      req.auth!.orgId,
+        cashierId:  req.auth?.userId ?? 'system',
+        orgId:      req.auth?.orgId ?? req.body.orgId ?? '1',
         cityId,
         branchId,
         terminalId,
       });
       R.created(res, invoice);
     } catch (err: any) {
-      R.badRequest(res, err.message);
+      console.error('[InvoiceController.create] Error creating invoice:', err);
+      R.badRequest(res, err.message || 'Failed to create invoice');
     }
   }
 

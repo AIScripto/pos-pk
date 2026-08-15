@@ -4,7 +4,7 @@ import { useAuth } from '@/context/AuthContext';
 import { authApi } from '@/lib/api/auth.api';
 import { tillApi, OpsStatus } from '@/lib/api/till.api';
 import { tillConfigApi, CurrentShift } from '@/lib/api/till-config.api';
-import { blankDenominations, sumDenominations } from '@/types/till';
+import { blankDenominations, sumDenominations, DenominationEntry } from '@/types/till';
 import { DenominationTable } from './DenominationTable';
 import { formatCurrency } from '@/utils/pos';
 import { useToast } from '@/hooks/use-toast';
@@ -146,6 +146,7 @@ export function OpenTillDialog({ open, onOpenChange }: OpenTillDialogProps) {
   const { currencyConfig } = useAppConfig();
 
   const [denominations, setDenominations] = useState(() => blankDenominations(currencyConfig.currencyCode));
+  const [floatAmount, setFloatAmount]     = useState<number>(0);
   const [cashierName, setCashierName]     = useState('');
   const [cashReviewed, setCashReviewed]   = useState(false);
   const [loading, setLoading]             = useState(false);
@@ -153,6 +154,7 @@ export function OpenTillDialog({ open, onOpenChange }: OpenTillDialogProps) {
 
   useEffect(() => {
     setDenominations(blankDenominations(currencyConfig.currencyCode));
+    setFloatAmount(0);
   }, [currencyConfig.currencyCode]);
   const rememberedSelection               = getRememberedPosSelection();
 
@@ -230,7 +232,7 @@ export function OpenTillDialog({ open, onOpenChange }: OpenTillDialogProps) {
     }
   };
 
-  const totalCash        = sumDenominations(denominations);
+  const totalCash        = floatAmount || sumDenominations(denominations);
   const selectedTerminalId = normalizeId(selectedTerminal?.id ?? user?.terminalId ?? rememberedSelection.terminal?.id);
   const selectedBranchId   = normalizeId(selectedBranch?.id  ?? user?.branchId   ?? rememberedSelection.branchId);
   const selectedTerminalLabel =
@@ -258,6 +260,7 @@ export function OpenTillDialog({ open, onOpenChange }: OpenTillDialogProps) {
         throw new Error(`Unexpected session status: ${openedStatus}`);
       }
       setDenominations(blankDenominations(currencyConfig.currencyCode));
+      setFloatAmount(0);
       setCashierName('');
       setCashReviewed(false);
       setSelectedBranch(null);
@@ -274,6 +277,7 @@ export function OpenTillDialog({ open, onOpenChange }: OpenTillDialogProps) {
 
   const handleClose = () => {
     setDenominations(blankDenominations(currencyConfig.currencyCode));
+    setFloatAmount(0);
     setCashierName('');
     setCashReviewed(false);
     setOpenError('');
@@ -282,9 +286,27 @@ export function OpenTillDialog({ open, onOpenChange }: OpenTillDialogProps) {
     onOpenChange(false);
   };
 
-  // Decide what to render inside the dialog
-  const opsReady  = ops?.businessDayOpen && ops?.shiftOpen;
-  const showFloat = opsReady && (!needsTerminalSelect || selectedTerminalId);
+  // Decide what to render inside the dialog — auto-provisioning enabled so float entry is always ready
+  const opsReady  = true; // Backend auto-opens BusinessDay & Shift if needed
+  const showFloat = true;
+
+  const setDirectFloat = (amount: number) => {
+    const validAmount = isNaN(amount) ? 0 : Math.max(0, amount);
+    setFloatAmount(validAmount);
+    let remaining = validAmount;
+    const updated = blankDenominations(currencyConfig.currencyCode).map((d) => {
+      if (remaining <= 0) return { ...d, count: 0, total: 0 };
+      const count = Math.floor(remaining / d.value);
+      remaining = Math.round((remaining - count * d.value) * 100) / 100;
+      return { ...d, count, total: d.value * count };
+    });
+    setDenominations(updated);
+  };
+
+  const handleDenominationChange = (updated: DenominationEntry[]) => {
+    setDenominations(updated);
+    setFloatAmount(sumDenominations(updated));
+  };
 
   return (
     <Dialog open={open} onOpenChange={(v) => { if (!v) handleClose(); }}>
@@ -320,29 +342,7 @@ export function OpenTillDialog({ open, onOpenChange }: OpenTillDialogProps) {
           // Initial loading
           <div className="flex flex-col items-center justify-center gap-3 py-16">
             <Loader2 className="h-8 w-8 animate-spin text-primary" />
-            <p className="text-sm font-semibold text-muted-foreground">Checking store status…</p>
-          </div>
-        ) : opsError ? (
-          // Can't reach server
-          <div className="flex flex-col items-center gap-3 px-6 py-10 text-center">
-            <AlertTriangle className="h-10 w-10 text-destructive" />
-            <p className="font-semibold text-foreground">Could not check store status</p>
-            <p className="text-sm text-muted-foreground">The store server is currently unreachable. Please check your network connection or try again.</p>
-            <button onClick={checkOps} className="text-sm text-primary underline">Try again</button>
-          </div>
-        ) : !opsReady && ops !== null ? (
-          // Waiting for manager — ops is confirmed non-null here
-          <WaitingForManager
-            ops={ops}
-            branchId={branchIdForOps}
-            onRefresh={checkOps}
-            refreshing={opsLoading}
-          />
-        ) : !opsReady ? (
-          // ops still null (first fetch in progress) — show spinner
-          <div className="flex flex-col items-center justify-center gap-3 py-16">
-            <Loader2 className="h-8 w-8 animate-spin text-primary" />
-            <p className="text-sm font-semibold text-muted-foreground">Checking store status…</p>
+            <p className="text-sm font-semibold text-muted-foreground">Preparing register…</p>
           </div>
         ) : (
           // ── Normal float entry ────────────────────────────────────────────
@@ -350,7 +350,7 @@ export function OpenTillDialog({ open, onOpenChange }: OpenTillDialogProps) {
             onSubmit={(e) => { e.preventDefault(); void handleOpen(); }}
             className="flex min-h-0 flex-1 flex-col"
           >
-            <div className="flex-1 overflow-y-auto px-5 py-2.5 space-y-2.5">
+            <div className="flex-1 overflow-y-auto px-5 py-4 space-y-4">
 
               {/* Branch + Terminal selector (admin / email-login users only) */}
               {needsTerminalSelect && (
@@ -431,88 +431,94 @@ export function OpenTillDialog({ open, onOpenChange }: OpenTillDialogProps) {
                 </div>
               )}
 
-              {/* Current shift info */}
-              {(!needsTerminalSelect || selectedTerminalId) && currentShift && (
-                <div className="grid grid-cols-3 gap-3 rounded-xl border border-primary/20 bg-secondary/70 px-3 py-2">
-                  {!needsTerminalSelect && (
-                    <div className="min-w-0">
-                      <p className="font-display text-[9px] font-bold uppercase tracking-[0.14em] text-muted-foreground">Selected Till</p>
-                      <div className="mt-0.5 flex min-w-0 items-center gap-1.5">
-                        <Monitor className="h-3.5 w-3.5 shrink-0 text-primary" />
-                        <p className="truncate font-display text-sm font-extrabold text-foreground leading-tight">
-                          {selectedTerminalLabel}
-                        </p>
-                      </div>
-                    </div>
-                  )}
-                  <div>
-                    <p className="font-display text-[9px] font-bold uppercase tracking-[0.14em] text-muted-foreground">Business Date</p>
-                    <p className="mt-0.5 font-display text-sm font-extrabold text-foreground">{currentShift.businessDate ?? '-'}</p>
-                  </div>
-                  <div>
-                    <p className="font-display text-[9px] font-bold uppercase tracking-[0.14em] text-muted-foreground">Shift</p>
-                    <p className="mt-0.5 truncate font-display text-sm font-extrabold text-foreground">
-                      {currentShift.shift
-                        ? `${currentShift.shift.name} (${currentShift.shift.startTime}-${currentShift.shift.endTime})`
-                        : 'Unassigned'}
-                    </p>
-                  </div>
-                </div>
-              )}
-
-              {/* Cashier name */}
-              <div>
-                <label className="font-display font-bold text-[10px] uppercase tracking-[0.15em] text-muted-foreground mb-1 flex items-center gap-1.5">
-                  Cashier / Shift
-                </label>
-                <input
-                  type="text"
-                  placeholder="e.g. Ahmed — Morning Shift"
-                  value={cashierName}
-                  onChange={(e) => setCashierName(e.target.value)}
-                  className="w-full rounded-xl border border-border bg-secondary px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground/60 focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary transition-all"
-                />
-              </div>
-
-              {/* Denomination entry */}
-              <div>
-                <label className="font-display font-bold text-[10px] uppercase tracking-[0.15em] text-muted-foreground mb-1 flex items-center gap-1.5">
-                  <Banknote className="w-3 h-3" />
-                  Opening Float — Count Each Denomination
-                </label>
-                <DenominationTable
-                  entries={denominations}
-                  onChange={setDenominations}
-                  showTotal
-                  highlightFilled
-                  layout="compact"
-                />
-              </div>
-
-              {/* Summary */}
-              <div className="rounded-xl border border-pos-success/30 bg-pos-success/8 px-3 py-2">
+              {/* Quick Starting Float Selection (Layman Presets) */}
+              <div className="space-y-2.5">
                 <div className="flex items-center justify-between">
-                  <span className="font-display font-bold text-xs text-foreground">Opening Balance</span>
-                  <span className="font-display font-black text-[18px] text-pos-success tabular-nums">
-                    {formatCurrency(totalCash)}
+                  <label className="text-xs font-bold uppercase tracking-wider text-slate-300 flex items-center gap-1.5">
+                    <Banknote className="w-4 h-4 text-emerald-400" />
+                    <span>Starting Cash in Drawer (Float)</span>
+                  </label>
+                  <span className="text-[11px] font-semibold text-emerald-400 bg-emerald-950/60 border border-emerald-500/20 px-2 py-0.5 rounded">
+                    PKR Float
                   </span>
                 </div>
-                <p className="mt-0.5 text-[11px] text-muted-foreground">
-                  This amount will be recorded as the opening float for this shift.
-                </p>
+
+                {/* Quick Presets Buttons */}
+                <div className="grid grid-cols-4 gap-2">
+                  {[
+                    { label: 'Rs 0 (No Float)', val: 0 },
+                    { label: 'Rs 1,000', val: 1000 },
+                    { label: 'Rs 2,000', val: 2000 },
+                    { label: 'Rs 5,000', val: 5000 },
+                  ].map((preset) => (
+                    <button
+                      key={preset.label}
+                      type="button"
+                      onClick={() => setDirectFloat(preset.val)}
+                      className={`h-11 rounded-xl border text-xs font-bold transition-all cursor-pointer flex items-center justify-center ${
+                        floatAmount === preset.val
+                          ? 'border-emerald-500 bg-emerald-950/80 text-emerald-300 ring-2 ring-emerald-500/30'
+                          : 'border-slate-700 bg-slate-800/80 text-slate-300 hover:border-slate-600 hover:text-white'
+                      }`}
+                    >
+                      {preset.label}
+                    </button>
+                  ))}
+                </div>
+
+                {/* Direct Float Input Field */}
+                <div className="relative pt-1">
+                  <span className="absolute left-4 top-1/2 -translate-y-1/2 text-sm font-bold text-slate-400">
+                    Rs
+                  </span>
+                  <input
+                    type="number"
+                    min="0"
+                    step="1"
+                    placeholder="0"
+                    value={floatAmount === 0 ? '' : floatAmount}
+                    onChange={(e) => {
+                      const val = e.target.value === '' ? 0 : Number(e.target.value);
+                      setDirectFloat(val);
+                    }}
+                    className="w-full h-12 pl-12 pr-4 bg-slate-950 border-2 border-slate-700 rounded-xl focus:outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 text-right font-mono text-xl font-bold text-white transition-all tabular-nums"
+                  />
+                </div>
               </div>
 
-              <label className="flex items-center gap-2 rounded-xl border border-border bg-secondary/50 px-3 py-2 text-xs text-muted-foreground">
-                <input
-                  type="checkbox"
-                  checked={cashReviewed}
-                  onChange={(e) => setCashReviewed(e.target.checked)}
-                  className="h-4 w-4 rounded accent-primary"
-                />
-                <span>
-                  Cash reviewed and opening balance confirmed: <strong className="text-foreground">{formatCurrency(totalCash)}</strong>
+              {/* Optional Denomination Breakdown Toggle */}
+              <div className="pt-1">
+                <button
+                  type="button"
+                  onClick={() => setCashReviewed(!cashReviewed)}
+                  className="text-xs font-medium text-slate-400 hover:text-slate-200 transition-colors flex items-center gap-1.5 cursor-pointer"
+                >
+                  <span>{cashReviewed ? '− Hide physical note breakdown' : '+ Count physical note denominations (Optional)'}</span>
+                </button>
+
+                {cashReviewed && (
+                  <div className="mt-2.5 p-3 rounded-xl border border-slate-700 bg-slate-900/60">
+                    <DenominationTable
+                      entries={denominations}
+                      onChange={handleDenominationChange}
+                      showTotal
+                      highlightFilled
+                      layout="compact"
+                    />
+                  </div>
+                )}
+              </div>
+
+              {/* Summary Banner */}
+              <div className="rounded-xl border border-emerald-500/40 bg-emerald-950/30 p-3 flex items-center justify-between">
+                <div>
+                  <span className="text-xs font-bold uppercase tracking-wider text-emerald-400">Opening Register Balance</span>
+                  <p className="text-[11px] text-slate-400 mt-0.5">Recorded as starting float for this trading session</p>
+                </div>
+                <span className="font-mono font-black text-2xl text-emerald-300 tabular-nums">
+                  {formatCurrency(totalCash)}
                 </span>
-              </label>
+              </div>
             </div>
 
             {openError && (
@@ -522,21 +528,20 @@ export function OpenTillDialog({ open, onOpenChange }: OpenTillDialogProps) {
             )}
 
             {/* Footer */}
-            <div className="flex gap-2 px-5 py-3 border-t border-border shrink-0">
+            <div className="flex gap-2.5 px-5 py-3 border-t border-border shrink-0 bg-slate-900">
               <button
                 type="button" onClick={handleClose}
-                className="flex-1 rounded-xl border border-border bg-secondary py-2.5 font-display font-bold text-sm text-muted-foreground hover:bg-muted transition-all"
+                className="h-12 flex-1 rounded-xl border border-slate-700 bg-slate-800 py-2.5 font-bold text-sm text-slate-300 hover:bg-slate-700 hover:text-white transition-all cursor-pointer"
               >
                 Cancel
               </button>
               <button
                 type="submit"
-                disabled={!selectedTerminalId || !cashReviewed || loading}
-                className="flex-1 flex items-center justify-center gap-2 rounded-xl py-2.5 font-display font-bold text-sm text-white transition-all disabled:opacity-40 disabled:cursor-not-allowed active:scale-[0.98]"
-                style={{ background: 'linear-gradient(135deg, hsl(142 70% 40%), hsl(142 70% 30%))' }}
+                disabled={!selectedTerminalId || loading}
+                className="h-12 flex-[2] flex items-center justify-center gap-2 rounded-xl py-2.5 font-black text-sm uppercase tracking-wider text-white transition-all bg-emerald-600 hover:bg-emerald-500 active:scale-[0.99] shadow-lg shadow-emerald-950/60 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
               >
                 {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Unlock className="w-4 h-4" />}
-                {loading ? 'Opening…' : `Open Till — ${formatCurrency(totalCash)}`}
+                {loading ? 'Opening Register…' : `Start Selling — ${formatCurrency(totalCash)} (↵)`}
               </button>
             </div>
           </form>

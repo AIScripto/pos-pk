@@ -73,21 +73,75 @@ export class TillService {
       return existing;
     }
 
-    const businessDay = await client.businessDay.findFirst({
+    const branch = await client.branch.findUnique({
+      where: { id: toBigInt(input.branchId) },
+      select: { id: true, orgId: true, cityId: true },
+    });
+    if (!branch) throw new Error('BRANCH_NOT_FOUND');
+
+    const orgId = branch.orgId;
+    const cityId = branch.cityId;
+
+    let businessDay = await client.businessDay.findFirst({
       where: { branchId: toBigInt(input.branchId), status: 'open' },
     });
-    if (!businessDay) throw new Error('BUSINESS_DAY_NOT_OPEN');
+    if (!businessDay) {
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      businessDay = await client.businessDay.create({
+        data: {
+          orgId,
+          cityId,
+          branchId:     toBigInt(input.branchId),
+          businessDate: today,
+          status:       'open',
+          openedBy:     input.openedBy || 'system',
+          openedByName: input.openedByName || 'Cashier',
+        },
+      });
+    }
 
-    const shiftSession = await client.shiftSession.findFirst({
+    let shiftSession = await client.shiftSession.findFirst({
       where: { branchId: toBigInt(input.branchId), businessDayId: businessDay.id, status: 'open' },
       include: { shiftTemplate: true },
     });
-    if (!shiftSession) throw new Error('SHIFT_NOT_OPEN');
+    if (!shiftSession) {
+      let shiftTemplate = await client.shiftTemplate.findFirst({
+        where: { branchId: toBigInt(input.branchId), isActive: true },
+      });
+      if (!shiftTemplate) {
+        shiftTemplate = await client.shiftTemplate.create({
+          data: {
+            branchId:  toBigInt(input.branchId),
+            name:      'Full Day Shift',
+            startTime: '00:00',
+            endTime:   '23:59',
+            isActive:  true,
+            createdBy: input.openedBy || 'system',
+          },
+        });
+      }
+
+      shiftSession = await client.shiftSession.create({
+        data: {
+          businessDayId:   businessDay.id,
+          branchId:        toBigInt(input.branchId),
+          shiftTemplateId: shiftTemplate.id,
+          name:            shiftTemplate.name,
+          startTime:       shiftTemplate.startTime,
+          endTime:         shiftTemplate.endTime,
+          status:          'open',
+          openedBy:        input.openedBy || 'system',
+          openedByName:    input.openedByName || 'Cashier',
+        },
+        include: { shiftTemplate: true },
+      });
+    }
 
     const session = await client.tillSession.create({
       data: {
-        orgId:            toBigInt(input.orgId),
-        cityId:           toBigInt(input.cityId),
+        orgId,
+        cityId,
         branchId:         toBigInt(input.branchId),
         terminalId:       toBigInt(input.terminalId),
         businessDayId:    businessDay.id,
@@ -95,12 +149,12 @@ export class TillService {
         shiftTemplateId:  shiftSession.shiftTemplateId,
         shiftName:        shiftSession.name,
         businessDate:     businessDay.businessDate,
-        openedBy:         input.openedBy,
-        openedByName:     input.openedByName,
-        openingCashPaisa: input.openingCashAmount,
+        openedBy:         input.openedBy || 'system',
+        openedByName:     input.openedByName || 'Cashier',
+        openingCashPaisa: Math.round(Number(input.openingCashAmount) || 0),
         openingDenom:     input.openingDenomJson,
         notes:            input.notes,
-        createdBy:        input.openedBy,
+        createdBy:        input.openedBy || 'system',
       },
     });
 
@@ -132,27 +186,27 @@ export class TillService {
     if (!session)              throw new Error('SESSION_NOT_FOUND');
     if (session.status !== 'open') throw new Error('TILL_NOT_OPEN');
 
-    // Ensure no active kitchen orders for non-voided invoices of this session
+    // Auto-settle any open kitchen orders for this till session upon closing
     const invoices = await client.invoice.findMany({
       where: {
         tillSessionId: toBigInt(input.sessionId),
         isActive: true,
-        paymentStatus: { not: 'voided' },
       },
       select: { id: true },
     });
     const invoiceIds = invoices.map((i) => i.id);
 
-    const activeOrdersCount = await client.kitchenOrder.count({
-      where: {
-        invoiceId: { in: invoiceIds },
-        status: { not: 'served' },
-        isActive: true,
-      },
-    });
-
-    if (activeOrdersCount > 0) {
-      throw new Error('ACTIVE_ORDERS_IN_QUEUE');
+    if (invoiceIds.length > 0) {
+      await client.kitchenOrder.updateMany({
+        where: {
+          invoiceId: { in: invoiceIds },
+          status: { not: 'served' },
+        },
+        data: {
+          status:   'served',
+          servedAt: new Date(),
+        },
+      });
     }
 
     // Calculate expected cash = opening + all cash sales in this session

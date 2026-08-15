@@ -6,6 +6,7 @@ interface POSKeyboardShortcutHandlers {
   onToggleOrders: () => void;
   onToggleProducts: () => void;
   onToggleInvoices: () => void;
+  onDirectCashCheckout?: () => void;
 }
 
 /**
@@ -19,6 +20,7 @@ interface POSKeyboardShortcutHandlers {
  * - F5: Click Deals Category Button
  * - F6: Toggle Product Management Panel
  * - F7: Toggle Invoice History Drawer
+ * - F9: Quick Direct Cash & Print
  * - F12: Trigger Manager Operations Button
  * 
  * @hook
@@ -29,9 +31,12 @@ export function usePOSKeyboardShortcuts({
   onToggleOrders,
   onToggleProducts,
   onToggleInvoices,
+  onDirectCashCheckout,
 }: POSKeyboardShortcutHandlers) {
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
+      const isInput = document.activeElement instanceof HTMLInputElement || document.activeElement instanceof HTMLTextAreaElement;
+
       if (e.key === 'F1') {
         e.preventDefault();
         const searchInput = document.querySelector<HTMLInputElement>('input[placeholder*="Search"]');
@@ -58,6 +63,9 @@ export function usePOSKeyboardShortcuts({
       } else if (e.key === 'F7') {
         e.preventDefault();
         onToggleInvoices();
+      } else if (e.key === 'F9' || (e.key === 'Enter' && (e.ctrlKey || e.metaKey))) {
+        e.preventDefault();
+        onDirectCashCheckout?.();
       } else if (e.key === 'F12') {
         e.preventDefault();
         const managerBtn = document.querySelector<HTMLButtonElement>('button[data-manager-btn="true"]');
@@ -67,5 +75,5 @@ export function usePOSKeyboardShortcuts({
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [onToggleCart, onToggleHeld, onToggleOrders, onToggleProducts, onToggleInvoices]);
+  }, [onToggleCart, onToggleHeld, onToggleOrders, onToggleProducts, onToggleInvoices, onDirectCashCheckout]);
 }

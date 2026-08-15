@@ -8,7 +8,9 @@
     "build": "vite build",
     "preview": "vite preview",
     "typecheck": "tsc --noEmit -p tsconfig.app.json",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "lint:design": "impeccable detect src/",
+    "design:audit": "impeccable audit --strict"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.10.0",

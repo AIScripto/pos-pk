@@ -1,0 +1,15 @@
+{
+  "framework": "react",
+  "bundler": "vite",
+  "styling": "tailwind",
+  "designSystem": {
+    "tokens": "frontend/src/styles/tokens.css",
+    "components": "frontend/src/components"
+  },
+  "rules": {
+    "wcagContrast": "AA",
+    "minTouchTarget": 48,
+    "tabularNumbers": true,
+    "maxCardNestingDepth": 1
+  }
+}

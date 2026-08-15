@@ -117,21 +117,33 @@ export function CloseTillDialog({ open, onOpenChange, invoices }: CloseTillDialo
     setServerSummary(null);  // clear so next open re-fetches fresh data
   };
 
+  const setDirectClosingCash = (amount: number) => {
+    const validAmount = isNaN(amount) ? 0 : Math.max(0, amount);
+    let remaining = validAmount;
+    const updated = blankDenominations(currencyConfig.currencyCode).map((d) => {
+      if (remaining <= 0) return { ...d, count: 0, total: 0 };
+      const count = Math.floor(remaining / d.value);
+      remaining = Math.round((remaining - count * d.value) * 100) / 100;
+      return { ...d, count, total: d.value * count };
+    });
+    setDenominations(updated);
+  };
+
   if (!session) return null;
 
   // ── STEP 1: Count Cash ──────────────────────────────────────────────────────
   const CountStep = (
     <>
-      <div className="flex-1 overflow-y-auto pos-scrollbar px-6 py-4 space-y-5">
+      <div className="flex-1 overflow-y-auto pos-scrollbar px-6 py-4 space-y-4">
         {/* Session info banner */}
-        <div className="rounded-xl border border-border bg-secondary/50 px-4 py-3">
+        <div className="rounded-xl border border-slate-700 bg-slate-800/60 px-4 py-3">
           <div className="flex items-center justify-between mb-1">
-            <span className="font-display font-bold text-xs text-muted-foreground uppercase tracking-wide">Session</span>
-            <span className="font-display font-semibold text-xs text-muted-foreground">{sessionDuration}</span>
+            <span className="font-bold text-xs text-slate-400 uppercase tracking-wide">Active Session</span>
+            <span className="font-semibold text-xs text-slate-300">{sessionDuration}</span>
           </div>
           <div className="flex items-center justify-between">
-            <span className="font-body text-sm text-foreground">{session.openedBy}</span>
-            <span className="font-mono text-xs text-muted-foreground">
+            <span className="text-sm font-bold text-white">{session.openedBy}</span>
+            <span className="font-mono text-xs text-slate-400">
               {sessionStart?.toLocaleTimeString(currencyConfig.locale, { hour: '2-digit', minute: '2-digit', hour12: false })} — Now
             </span>
           </div>
@@ -139,63 +151,122 @@ export function CloseTillDialog({ open, onOpenChange, invoices }: CloseTillDialo
 
         {/* Live Sales & Expected Cash Summary */}
         {summaryLoading ? (
-          <div className="flex items-center justify-center gap-2 py-4 rounded-xl border border-border bg-secondary/20">
-            <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
-            <span className="text-xs text-muted-foreground font-semibold">Loading till session data...</span>
+          <div className="flex items-center justify-center gap-2 py-4 rounded-xl border border-slate-700 bg-slate-800/40">
+            <Loader2 className="h-4 w-4 animate-spin text-slate-400" />
+            <span className="text-xs text-slate-400 font-semibold">Loading till session data...</span>
           </div>
         ) : serverSummary ? (
-          <div className="rounded-xl border border-amber-500/25 bg-amber-500/5 px-4 py-3.5 space-y-2">
-            <div className="flex items-center justify-between border-b border-border/50 pb-2 mb-2">
-              <span className="font-display font-extrabold text-[11px] uppercase tracking-wider text-amber-500">
+          <div className="rounded-xl border border-amber-500/30 bg-amber-950/20 px-4 py-3.5 space-y-2.5">
+            <div className="flex items-center justify-between border-b border-slate-700/60 pb-2">
+              <span className="font-black text-xs uppercase tracking-wider text-amber-400">
                 Expected Cash in Drawer
               </span>
-              <span className="font-mono font-black text-sm text-amber-400">
+              <span className="font-mono font-black text-lg text-amber-300 tabular-nums">
                 {formatCurrency(expectedCash)}
               </span>
             </div>
             
-            <div className="grid grid-cols-3 gap-4 text-center">
+            <div className="grid grid-cols-3 gap-3 text-center">
               <div>
-                <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Total Sales</p>
-                <p className="font-mono text-xs font-semibold text-foreground mt-0.5">{formatCurrency(netSales + totalTax)}</p>
+                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Total Sales</p>
+                <p className="font-mono text-xs font-semibold text-white mt-0.5 tabular-nums">{formatCurrency(netSales + totalTax)}</p>
               </div>
-              <div className="border-x border-border/50">
-                <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Cash Sales</p>
-                <p className="font-mono text-xs font-semibold text-foreground mt-0.5">{formatCurrency(cashSales)}</p>
+              <div className="border-x border-slate-700/60">
+                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Cash Sales</p>
+                <p className="font-mono text-xs font-semibold text-emerald-400 mt-0.5 tabular-nums">{formatCurrency(cashSales)}</p>
               </div>
               <div>
-                <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Card Sales</p>
-                <p className="font-mono text-xs font-semibold text-foreground mt-0.5">{formatCurrency(cardSales)}</p>
+                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Card Sales</p>
+                <p className="font-mono text-xs font-semibold text-blue-400 mt-0.5 tabular-nums">{formatCurrency(cardSales)}</p>
               </div>
             </div>
           </div>
         ) : null}
-        {/* Denomination count */}
+
+        {/* Counted Cash Entry with Quick Match */}
+        <div className="space-y-2">
+          <div className="flex items-center justify-between">
+            <label className="text-xs font-bold text-slate-300 uppercase tracking-wide flex items-center gap-1.5">
+              <Banknote className="w-3.5 h-3.5 text-emerald-400" />
+              <span>Physical Cash Counted in Drawer</span>
+            </label>
+            {expectedCash > 0 && (
+              <button
+                type="button"
+                onClick={() => setDirectClosingCash(expectedCash)}
+                className="rounded-lg bg-emerald-500/20 border border-emerald-500/40 px-2.5 py-1 text-[11px] font-black uppercase tracking-wide text-emerald-300 hover:bg-emerald-500/30 transition-colors cursor-pointer"
+              >
+                Match Expected ({formatCurrency(expectedCash)})
+              </button>
+            )}
+          </div>
+
+          <div className="relative">
+            <span className="absolute left-4 top-1/2 -translate-y-1/2 text-sm font-bold text-slate-400">Rs</span>
+            <input
+              type="number"
+              min="0"
+              step="1"
+              autoFocus
+              placeholder="Enter counted physical cash..."
+              value={closingTotal || ''}
+              onChange={(e) => setDirectClosingCash(Number(e.target.value) || 0)}
+              className="w-full h-12 pl-12 pr-4 bg-slate-950 border-2 border-slate-700 rounded-xl focus:outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 text-right font-mono text-xl font-bold text-white transition-all tabular-nums"
+            />
+          </div>
+
+          {/* Real-time Variance Badge */}
+          {closingTotal > 0 && (
+            <div className={`p-2.5 rounded-xl border flex items-center justify-between ${
+              isBalanced
+                ? 'border-emerald-500/40 bg-emerald-950/30 text-emerald-300'
+                : isShort
+                  ? 'border-rose-500/40 bg-rose-950/30 text-rose-300'
+                  : 'border-amber-500/40 bg-amber-950/30 text-amber-300'
+            }`}>
+              <span className="text-xs font-bold uppercase tracking-wider">
+                {isBalanced ? '✓ Perfect Balance' : isShort ? '⚠ Cash Shortage' : '⚠ Cash Overage'}
+              </span>
+              <span className="font-mono font-bold text-sm tabular-nums">
+                {isBalanced ? 'Rs 0' : `${variance > 0 ? '+' : ''}${formatCurrency(variance)}`}
+              </span>
+            </div>
+          )}
+        </div>
+
+        {/* Optional Denomination Detail Toggle */}
         <div>
-          <label className="font-display font-bold text-[10px] uppercase tracking-[0.15em] text-muted-foreground mb-1.5 flex items-center gap-1.5">
-            <Banknote className="w-3 h-3" />
-            Count Closing Cash — Enter Each Denomination
-          </label>
-          <DenominationTable
-            entries={denominations}
-            onChange={setDenominations}
-            showTotal
-            highlightFilled
-          />
+          <button
+            type="button"
+            onClick={() => setShowDenomDetail(!showDenomDetail)}
+            className="text-xs font-medium text-slate-400 hover:text-slate-200 transition-colors"
+          >
+            {showDenomDetail ? '− Hide physical note breakdown' : '+ Count physical note denominations (Optional)'}
+          </button>
+          {showDenomDetail && (
+            <div className="mt-2.5 p-3 rounded-xl border border-slate-700 bg-slate-900/60">
+              <DenominationTable
+                entries={denominations}
+                onChange={setDenominations}
+                showTotal
+                highlightFilled
+              />
+            </div>
+          )}
         </div>
 
         {/* Notes */}
         <div>
-          <label className="font-display font-bold text-[10px] uppercase tracking-[0.15em] text-muted-foreground mb-1.5 flex items-center gap-1.5">
-            <StickyNote className="w-3 h-3" />
-            Shift Notes (optional)
+          <label className="text-xs font-semibold text-slate-400 mb-1.5 flex items-center gap-1.5">
+            <StickyNote className="w-3.5 h-3.5" />
+            <span>Shift / Handover Notes (optional)</span>
           </label>
           <textarea
             rows={2}
             value={notes}
             onChange={(e) => setNotes(e.target.value)}
             placeholder="Any incidents, discrepancies or handover notes…"
-            className="pos-notes-input"
+            className="w-full px-3 py-2 bg-slate-950 border border-slate-700 rounded-xl text-xs text-white placeholder-slate-500 focus:outline-none focus:border-emerald-500"
           />
         </div>
       </div>

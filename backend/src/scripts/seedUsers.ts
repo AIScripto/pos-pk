@@ -92,8 +92,8 @@ async function seedInitialUsers() {
   });
   console.log(`  ✓ User 1 (Super Admin): superadmin / @!786Allahis1!#`);
 
-  // 4. User 2: Store Admin (Password: #admin@!)
-  const clientAdminPasswordHash = await bcrypt.hash('#admin@!', 12);
+  // 4. User 2: Store Admin (Password: admin1234)
+  const clientAdminPasswordHash = await bcrypt.hash('admin1234', 12);
   const clientAdminPinHash = await bcrypt.hash('1234', 10);
 
   const clientAdmin = await prisma.user.upsert({
@@ -126,9 +126,72 @@ async function seedInitialUsers() {
       createdBy: 'provisioning',
     },
   });
-  console.log(`  ✓ User 2 (Store Admin): admin / #admin@!`);
+  console.log(`  ✓ User 2 (Store Admin): admin / admin1234`);
 
-  // 5. Auto-create default terminal (Till-01) for all active branches
+  // 5. Cashier & Manager Roles
+  const cashierRole = await prisma.role.upsert({
+    where: { orgId_tag: { orgId: org.id, tag: 'pos' } },
+    update: {},
+    create: {
+      orgId: org.id,
+      tag: 'pos',
+      name: 'Cashier',
+      description: 'POS Cashier Access',
+      createdBy: 'provisioning',
+    },
+  });
+
+  const managerRole = await prisma.role.upsert({
+    where: { orgId_tag: { orgId: org.id, tag: 'manager' } },
+    update: {},
+    create: {
+      orgId: org.id,
+      tag: 'manager',
+      name: 'Manager',
+      description: 'Store Manager Access',
+      createdBy: 'provisioning',
+    },
+  });
+
+  // 6. User 3: Manager (Tariq)
+  const managerPasswordHash = await bcrypt.hash('manager123', 12);
+  const managerPinHash = await bcrypt.hash('1234', 10);
+  const managerUser = await prisma.user.upsert({
+    where: { orgId_username: { orgId: org.id, username: 'tariq' } },
+    update: { passwordHash: managerPasswordHash, pinHash: managerPinHash, isActive: true },
+    create: {
+      orgId: org.id,
+      roleId: managerRole.id,
+      username: 'tariq',
+      email: 'tariq@crispcrumbs.com',
+      name: 'Tariq Manager',
+      passwordHash: managerPasswordHash,
+      pinHash: managerPinHash,
+      createdBy: 'provisioning',
+    },
+  });
+  console.log(`  ✓ Manager User: tariq / manager123`);
+
+  // 7. User 4: Cashier 1
+  const cashierPasswordHash = await bcrypt.hash('cashier123', 12);
+  const cashierPinHash = await bcrypt.hash('8591', 10);
+  const cashier1 = await prisma.user.upsert({
+    where: { orgId_username: { orgId: org.id, username: 'cashier1' } },
+    update: { passwordHash: cashierPasswordHash, pinHash: cashierPinHash, isActive: true },
+    create: {
+      orgId: org.id,
+      roleId: cashierRole.id,
+      username: 'cashier1',
+      email: 'cashier1@crispcrumbs.com',
+      name: 'Cashier Counter 1',
+      passwordHash: cashierPasswordHash,
+      pinHash: cashierPinHash,
+      createdBy: 'provisioning',
+    },
+  });
+  console.log(`  ✓ Cashier 1: cashier1 / cashier123`);
+
+  // 8. Auto-create default terminal (Till-01) for all active branches
   const activeBranches = await prisma.branch.findMany({ where: { orgId: org.id, isActive: true } });
   for (const b of activeBranches) {
     const existingTerminal = await prisma.terminal.findFirst({ where: { branchId: b.id, name: 'Counter 01' } });

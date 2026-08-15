@@ -132,7 +132,7 @@ export function blankDenominations(currencyCode?: string): DenominationEntry[] {
 
 // Helper — sum a denomination sheet
 export function sumDenominations(entries: DenominationEntry[]): number {
-  return entries.reduce((acc, e) => acc + e.total, 0);
+  return entries.reduce((acc, e) => acc + (e.value * (e.count || 0)), 0);
 }
 
 // ---------------------------------------------------------------------------

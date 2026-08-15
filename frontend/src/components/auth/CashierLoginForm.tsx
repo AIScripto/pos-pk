@@ -1,5 +1,5 @@
 import React from 'react';
-import { Loader2, LogIn } from 'lucide-react';
+import { Loader2, LogIn, Store, User, Lock } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -11,8 +11,8 @@ export interface TerminalOption {
 }
 
 interface CashierLoginFormProps {
-  email: string;
-  setEmail: (val: string) => void;
+  username: string;
+  setUsername: (val: string) => void;
   password: string;
   setPassword: (val: string) => void;
   terminals: TerminalOption[];
@@ -26,15 +26,14 @@ interface CashierLoginFormProps {
 /**
  * CashierLoginForm Component
  * 
- * Modular form component handling POS Cashier authentication.
- * Includes Till/Register selection, Email & Password input fields,
- * and submit action button with loading spinner.
+ * Ergonomic POS Cashier authentication form optimized for touch displays and quick entry.
+ * Features tactile 48px+ touch targets, clear field icons, and accessible focus states.
  * 
  * @component
  */
 export const CashierLoginForm: React.FC<CashierLoginFormProps> = ({
-  email,
-  setEmail,
+  username,
+  setUsername,
   password,
   setPassword,
   terminals,
@@ -45,79 +44,100 @@ export const CashierLoginForm: React.FC<CashierLoginFormProps> = ({
   onSubmit,
 }) => {
   return (
-    <form onSubmit={onSubmit} className="space-y-3 sm:space-y-4">
-      {/* Till / Register Selection Dropdown */}
-      <div>
-        <Label htmlFor="till-select" className="block text-xs sm:text-sm font-bold text-slate-200 mb-1.5">
-          Till / Register
-        </Label>
-        <select
-          id="till-select"
-          value={terminalId}
-          onChange={(e) => setTerminalId(e.target.value)}
-          disabled={terminalsLoading}
-          className="w-full px-3 sm:px-4 py-2 sm:py-3 rounded-lg bg-slate-700/50 border border-slate-600 text-white text-xs sm:text-sm focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20 focus:outline-none transition-all disabled:opacity-50"
-        >
-          <option value="">
-            {terminalsLoading ? 'Loading tills...' : 'Default Register (Counter 01)'}
-          </option>
-          {terminals.map((t) => (
-            <option key={t.id} value={t.id}>
-              {t.code ? `${t.code} - ${t.name}` : t.name}
-            </option>
-          ))}
-        </select>
+    <form onSubmit={onSubmit} className="space-y-4">
+      {/* Till / Register Selection */}
+      <div className="space-y-1.5">
+        <div className="flex items-center justify-between">
+          <Label htmlFor="till-select" className="text-xs font-semibold uppercase tracking-wider text-slate-300 flex items-center gap-1.5">
+            <Store className="w-3.5 h-3.5 text-emerald-400" />
+            <span>Assigned Terminal / Register</span>
+          </Label>
+          <span className="text-[11px] font-medium text-emerald-400/90 bg-emerald-950/60 border border-emerald-500/20 px-2 py-0.5 rounded">
+            POS Mode
+          </span>
+        </div>
+        <div className="relative">
+          <select
+            id="till-select"
+            value={terminalId}
+            onChange={(e) => setTerminalId(e.target.value)}
+            disabled={terminalsLoading}
+            className="w-full h-12 px-3.5 rounded-xl bg-slate-900/80 border border-slate-700/80 text-white text-sm font-medium focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/30 focus:outline-none transition-all disabled:opacity-50 appearance-none cursor-pointer"
+          >
+            {terminals.length === 0 && (
+              <option value="">
+                {terminalsLoading ? 'Scanning network tills...' : 'Default Register (Auto-assigned)'}
+              </option>
+            )}
+            {terminals.map((t) => (
+              <option key={t.id} value={t.id}>
+                {t.code ? `${t.code} — ${t.name}` : t.name}
+              </option>
+            ))}
+          </select>
+          <div className="absolute right-3.5 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400">
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+            </svg>
+          </div>
+        </div>
       </div>
 
-      {/* Cashier Email Input */}
-      <div>
-        <Label htmlFor="cashier-email" className="block text-xs sm:text-sm font-bold text-slate-200 mb-1.5">
-          Email
+      {/* Cashier Username Input */}
+      <div className="space-y-1.5">
+        <Label htmlFor="cashier-username" className="text-xs font-semibold uppercase tracking-wider text-slate-300 flex items-center gap-1.5">
+          <User className="w-3.5 h-3.5 text-slate-400" />
+          <span>Cashier Username</span>
         </Label>
-        <Input
-          id="cashier-email"
-          type="email"
-          placeholder="cashier@example.com"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          autoComplete="off"
-          className="w-full px-3 sm:px-4 py-2 sm:py-3 rounded-lg bg-slate-700/50 border border-slate-600 text-white text-xs sm:text-sm placeholder-slate-400 focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20 focus:outline-none transition-all"
-          required
-          autoFocus
-        />
+        <div className="relative">
+          <Input
+            id="cashier-username"
+            type="text"
+            placeholder="e.g. cashier1, cashier2, tariq"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+            autoComplete="username"
+            className="w-full h-12 px-3.5 rounded-xl bg-slate-900/80 border border-slate-700/80 text-white text-sm placeholder-slate-500 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/30 focus:outline-none transition-all font-medium"
+            required
+            autoFocus
+          />
+        </div>
       </div>
 
       {/* Cashier Password Input */}
-      <div>
-        <Label htmlFor="cashier-password" className="block text-xs sm:text-sm font-bold text-slate-200 mb-1.5">
-          Password
+      <div className="space-y-1.5">
+        <Label htmlFor="cashier-password" className="text-xs font-semibold uppercase tracking-wider text-slate-300 flex items-center gap-1.5">
+          <Lock className="w-3.5 h-3.5 text-slate-400" />
+          <span>Security Passcode / Password</span>
         </Label>
-        <Input
-          id="cashier-password"
-          type="password"
-          placeholder="••••••••"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          className="w-full px-3 sm:px-4 py-2 sm:py-3 rounded-lg bg-slate-700/50 border border-slate-600 text-white text-xs sm:text-sm placeholder-slate-400 focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20 focus:outline-none transition-all"
-          required
-        />
+        <div className="relative">
+          <Input
+            id="cashier-password"
+            type="password"
+            placeholder="••••••••"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            className="w-full h-12 px-3.5 rounded-xl bg-slate-900/80 border border-slate-700/80 text-white text-sm placeholder-slate-500 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/30 focus:outline-none transition-all"
+            required
+          />
+        </div>
       </div>
 
       {/* Submit Action Button */}
       <Button
         type="submit"
         disabled={loading}
-        className="w-full py-2 sm:py-3 mt-4 sm:mt-6 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white font-bold text-sm sm:text-base rounded-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-lg hover:shadow-xl"
+        className="w-full h-12 mt-6 bg-emerald-600 hover:bg-emerald-500 active:scale-[0.99] text-white font-bold text-sm sm:text-base rounded-xl transition-all shadow-lg shadow-emerald-900/30 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
       >
         {loading ? (
           <>
-            <Loader2 className="w-3.5 h-3.5 sm:w-4 sm:h-4 mr-1.5 animate-spin inline" />
-            <span className="text-xs sm:text-base">Signing in...</span>
+            <Loader2 className="w-4 h-4 animate-spin inline" />
+            <span>Verifying Terminal...</span>
           </>
         ) : (
           <>
-            <LogIn className="w-3.5 h-3.5 sm:w-4 sm:h-4 mr-1.5 inline" />
-            <span className="text-xs sm:text-base">Enter POS</span>
+            <LogIn className="w-4 h-4 inline" />
+            <span>Launch POS Register</span>
           </>
         )}
       </Button>

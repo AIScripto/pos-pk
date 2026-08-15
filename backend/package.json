@@ -6,12 +6,18 @@
   "scripts": {
     "dev": "nodemon",
     "build": "prisma generate && tsc",
+    "build:sqlite": "prisma generate --schema=prisma/schema.sqlite.prisma && tsc",
     "start": "node dist/index.js",
     "typecheck": "tsc --noEmit",
     "db:migrate": "npx prisma migrate dev",
     "db:seed": "npx prisma db seed",
     "db:studio": "npx prisma studio",
-    "db:reset": "npx prisma migrate reset --force && npx prisma db seed"
+    "db:reset": "npx prisma migrate reset --force && npx prisma db seed",
+    "db:sqlite:push": "DATABASE_URL=\"file:./dev.db\" npx prisma db push --schema=prisma/schema.sqlite.prisma",
+    "db:sqlite:seed": "DATABASE_URL=\"file:./dev.db\" npx ts-node prisma/seed.ts",
+    "db:sqlite:generate": "npx prisma generate --schema=prisma/schema.sqlite.prisma",
+    "db:sqlite:studio": "DATABASE_URL=\"file:./dev.db\" npx prisma studio --schema=prisma/schema.sqlite.prisma",
+    "db:sqlite:reset": "DATABASE_URL=\"file:./dev.db\" npx prisma db push --force-reset --schema=prisma/schema.sqlite.prisma && DATABASE_URL=\"file:./dev.db\" npx ts-node prisma/seed.ts"
   },
   "prisma": {
     "seed": "ts-node prisma/seed.ts"
