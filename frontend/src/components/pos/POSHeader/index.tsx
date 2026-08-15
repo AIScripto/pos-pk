@@ -5,6 +5,7 @@ import { useAuth }  from '@/context/AuthContext';
 import { useTill }  from '@/context/TillContext';
 import { useAppConfig } from '@/context/AppConfigContext';
 import { TillStatusBadge } from '@/components/till/TillStatusBadge';
+import { LanguageSelector } from '@/components/common/LanguageSelector';
 import { useEffect, useState } from 'react';
 import { CurrentShift, tillConfigApi } from '@/lib/api/till-config.api';
 import { getRememberedTerminalLabel } from '@/lib/pos-terminal-selection';
@@ -144,6 +145,8 @@ export function POSHeader({ heldCount = 0, onOpenHeld, onOpenTill, onCloseTill }
               {formattedDate}
             </p>
           </div>
+
+          <LanguageSelector />
 
           <button
             onClick={lock}

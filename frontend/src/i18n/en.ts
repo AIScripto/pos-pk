@@ -67,4 +67,9 @@ export const en = {
   },
 } as const;
 
-export type TranslationKey = typeof en;
+export type TranslationKey = {
+  [K in keyof typeof en]: {
+    [P in keyof (typeof en)[K]]: string;
+  };
+};
+
