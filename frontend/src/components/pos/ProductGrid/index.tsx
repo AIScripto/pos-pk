@@ -11,6 +11,8 @@ import { ProductGridHeader } from './ProductGridHeader';
 import { DealCategoryFilter } from './DealCategoryFilter';
 import { useState } from 'react';
 import { Search } from 'lucide-react';
+import { useTranslation } from '@/i18n';
+import { getLocalizedCategoryName } from '@/i18n/catalog';
 
 interface ProductGridProps {
   onAddProduct: (product: Product) => void;
@@ -22,8 +24,6 @@ interface ProductGridProps {
   onToggleInvoices?: () => void;
 }
 
-
-
 export function ProductGrid({
   onAddProduct,
   onAddDeal,
@@ -33,6 +33,7 @@ export function ProductGrid({
   onToggleProducts,
   onToggleInvoices,
 }: ProductGridProps) {
+  const { t, language } = useTranslation();
   const { products, deals } = useProducts();
   const [activeCategory, setActiveCategory] = useState<Category | 'all'>('all');
   const [dealSubCategory, setDealSubCategory] = useState<Category | 'all'>('all');
@@ -103,9 +104,9 @@ export function ProductGrid({
   const isEmpty = filteredProducts.length === 0 && filteredDeals.length === 0;
 
   const categoryLabel =
-    activeCategory === 'all' ? 'All items'
-    : activeCategory === 'deals' ? 'Deals & Combos'
-    : activeCategory.charAt(0).toUpperCase() + activeCategory.slice(1);
+    activeCategory === 'all' ? t.common.allItems
+    : activeCategory === 'deals' ? t.common.deals
+    : getLocalizedCategoryName(activeCategory, language);
 
   const visibleCount = (showDeals ? filteredDeals.length : 0) + (showProducts ? filteredProducts.length : 0);
 

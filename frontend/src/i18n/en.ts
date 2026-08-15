@@ -73,6 +73,8 @@ export const en = {
     openTill: 'Open Till',
     closeTill: 'Close Shift',
     quickScan: 'Scan Barcode',
+    noItems: 'No items yet',
+    tapToAdd: 'Tap any product to add it to the cart',
     dineIn: 'Dine-In',
     takeaway: 'Takeaway',
     delivery: 'Delivery',

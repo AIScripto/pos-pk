@@ -249,8 +249,8 @@ export function CartPanel({ onCheckout, onDirectCashCheckout, isConfirming, onHo
             <div className="mb-3 flex h-16 w-16 items-center justify-center rounded-2xl bg-blue-50 dark:bg-blue-950/40 border border-blue-100 dark:border-blue-900/50 shadow-inner">
               <ShoppingBag className="w-7 h-7 text-blue-600 dark:text-blue-400" />
             </div>
-            <p className="font-body font-bold text-base text-slate-800 dark:text-slate-200">No items yet</p>
-            <p className="mt-1 text-xs font-medium text-slate-500 dark:text-slate-400">Tap any product to add it to the cart</p>
+            <p className="font-body font-bold text-base text-slate-800 dark:text-slate-200">{t.pos.noItems}</p>
+            <p className="mt-1 text-xs font-medium text-slate-500 dark:text-slate-400">{t.pos.tapToAdd}</p>
           </div>
         ) : (
           <div>

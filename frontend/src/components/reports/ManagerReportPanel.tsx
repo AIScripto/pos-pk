@@ -16,6 +16,7 @@ import { buildManagerReport } from '@/utils/reports';
 import { Invoice } from '@/types/pos';
 import { ManagerReportFilters as ReportFilters } from '@/types/reports';
 import { localDefault } from '@/config/localCredentials';
+import { useTranslation } from '@/i18n';
 
 interface ManagerReportPanelProps {
   invoices: Invoice[];
@@ -33,6 +34,7 @@ const defaultFilters: ReportFilters = {
 };
 
 export function ManagerReportPanel({ invoices }: ManagerReportPanelProps) {
+  const { t } = useTranslation();
   const { toast } = useToast();
   const [open, setOpen] = useState(false);
   const [password, setPassword] = useState(localDefault(MANAGER_REPORT_PASSWORD));
@@ -83,7 +85,7 @@ export function ManagerReportPanel({ invoices }: ManagerReportPanelProps) {
 
         {/* Bottom row: Manager label */}
         <span className="font-display font-extrabold text-[11px] sm:text-xs text-purple-900 dark:text-purple-200 tracking-tight leading-tight mt-0.5">
-          Manager
+          {t.common.manager}
         </span>
       </button>
 

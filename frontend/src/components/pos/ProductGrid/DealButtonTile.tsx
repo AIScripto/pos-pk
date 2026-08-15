@@ -1,5 +1,7 @@
 import { Deal } from '@/types/pos';
 import { formatCurrency, getSavingsPercent } from '@/utils/pos';
+import { useTranslation } from '@/i18n';
+import { getLocalizedItemName } from '@/i18n/catalog';
 
 interface DealButtonTileProps {
   deal: Deal;
@@ -7,6 +9,8 @@ interface DealButtonTileProps {
 }
 
 export function DealButtonTile({ deal, onAdd }: DealButtonTileProps) {
+  const { language } = useTranslation();
+  const localizedName = getLocalizedItemName(deal, language);
   const savingsPercent = getSavingsPercent(deal.originalPrice, deal.price);
 
   return (
@@ -24,7 +28,7 @@ export function DealButtonTile({ deal, onAdd }: DealButtonTileProps) {
       </div>
 
       <h4 className="font-body font-black text-xs text-slate-900 dark:text-slate-100 line-clamp-1 leading-tight group-hover:text-amber-500 transition-colors">
-        {deal.name}
+        {localizedName}
       </h4>
 
       <div className="flex items-baseline justify-between gap-1 w-full pt-0.5">

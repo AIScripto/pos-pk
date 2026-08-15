@@ -1,13 +1,14 @@
 import { Category, Deal } from '@/types/pos';
 import { cn } from '@/lib/utils';
+import { useProducts } from '@/context/ProductContext';
+import { useTranslation } from '@/i18n';
+import { getLocalizedCategoryName } from '@/i18n/catalog';
 
 interface DealCategoryFilterProps {
   dealSubCategory: Category | 'all';
   onSubCategoryChange: (category: Category | 'all') => void;
   deals: Deal[];
 }
-
-import { useProducts } from '@/context/ProductContext';
 
 const getIconForCategory = (name: string) => {
   const lower = name.toLowerCase();
@@ -27,6 +28,7 @@ export function DealCategoryFilter({
   onSubCategoryChange,
   deals,
 }: DealCategoryFilterProps) {
+  const { language } = useTranslation();
   const { categories: dynamicCategories } = useProducts();
   
   // Filter categories to only those that have deals
@@ -35,10 +37,10 @@ export function DealCategoryFilter({
     .sort((a, b) => a.sortOrder - b.sortOrder);
 
   const filters = [
-    { key: 'all', label: 'All Deals', icon: '⚡' },
+    { key: 'all', label: language === 'ar' ? 'جميع العروض' : language === 'ur' ? 'تمام ڈیلز' : 'All Deals', icon: '⚡' },
     ...dealCategories.map(c => ({
       key: c.name,
-      label: `${c.name} Deals`,
+      label: `${getLocalizedCategoryName(c.name, language)}`,
       icon: getIconForCategory(c.name)
     }))
   ];

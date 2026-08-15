@@ -1,6 +1,8 @@
 import { Deal } from '@/types/pos';
 import { formatCurrency, getSavingsPercent } from '@/utils/pos';
 import { Plus, Sparkles, Layers2 } from 'lucide-react';
+import { useTranslation } from '@/i18n';
+import { getLocalizedItemName, getLocalizedCategoryName } from '@/i18n/catalog';
 
 interface DealCardProps {
   deal: Deal;
@@ -8,17 +10,19 @@ interface DealCardProps {
 }
 
 export function DealCard({ deal, onAdd }: DealCardProps) {
+  const { language } = useTranslation();
+  const localizedName = getLocalizedItemName(deal, language);
   const savingsPercent = getSavingsPercent(deal.originalPrice, deal.price);
 
   const categoryLabel = deal.category
-    ? `${deal.category.charAt(0).toUpperCase() + deal.category.slice(1)} Deal`
+    ? `${getLocalizedCategoryName(deal.category, language)}`
     : 'Combo Deal';
 
   return (
     <div
       onClick={() => onAdd(deal)}
       role="button"
-      aria-label={`Add ${deal.name} deal to order — save ${savingsPercent}%`}
+      aria-label={`Add ${localizedName} deal to order — save ${savingsPercent}%`}
       tabIndex={0}
       onKeyDown={(e) => e.key === 'Enter' && onAdd(deal)}
       className="group relative flex flex-col overflow-hidden rounded-xl border border-amber-500/30 bg-white dark:bg-slate-900 cursor-pointer transition-all duration-200 hover:border-amber-500/60 hover:-translate-y-0.5 hover:shadow-md hover:shadow-amber-500/15 active:scale-[0.98] touch-manipulation animate-fade-in focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400"
@@ -33,7 +37,7 @@ export function DealCard({ deal, onAdd }: DealCardProps) {
       <div className="relative overflow-hidden shrink-0">
         <img
           src={deal.image}
-          alt={deal.name}
+          alt={localizedName}
           className="w-full h-20 object-cover transition-transform duration-500 group-hover:scale-105"
         />
         <div className="absolute inset-x-0 bottom-0 h-8 bg-gradient-to-t from-slate-950/70 to-transparent" />
@@ -54,7 +58,7 @@ export function DealCard({ deal, onAdd }: DealCardProps) {
       {/* Info */}
       <div className="flex flex-1 flex-col p-2 gap-1 justify-between">
         <h3 className="font-body font-bold text-xs text-slate-900 dark:text-slate-100 leading-tight line-clamp-1 group-hover:text-amber-500 transition-colors">
-          {deal.name}
+          {localizedName}
         </h3>
 
         <div className="flex items-end justify-between gap-1 pt-0.5">

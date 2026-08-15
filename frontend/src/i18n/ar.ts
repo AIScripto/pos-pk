@@ -74,6 +74,8 @@ export const ar: TranslationKey = {
     openTill: 'فتح الصندوق',
     closeTill: 'إغلاق الوردية',
     quickScan: 'مسح الباركود',
+    noItems: 'لا توجد أصناف بعد',
+    tapToAdd: 'اضغط على أي صنف لإضافته إلى السلة',
     dineIn: 'محلي',
     takeaway: 'سفري',
     delivery: 'توصيل',

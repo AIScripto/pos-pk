@@ -1,6 +1,8 @@
 import { Deal } from '@/types/pos';
 import { formatCurrency, getSavingsPercent } from '@/utils/pos';
 import { Plus } from 'lucide-react';
+import { useTranslation } from '@/i18n';
+import { getLocalizedItemName } from '@/i18n/catalog';
 
 interface DealListItemProps {
   deal: Deal;
@@ -8,6 +10,8 @@ interface DealListItemProps {
 }
 
 export function DealListItem({ deal, onAdd }: DealListItemProps) {
+  const { language } = useTranslation();
+  const localizedName = getLocalizedItemName(deal, language);
   const savingsPercent = getSavingsPercent(deal.originalPrice, deal.price);
 
   return (
@@ -16,11 +20,11 @@ export function DealListItem({ deal, onAdd }: DealListItemProps) {
       className="group flex items-center justify-between px-2.5 py-1.5 rounded-xl border border-amber-500/30 bg-amber-500/5 dark:bg-amber-950/20 hover:border-amber-500 hover:bg-amber-500/10 transition-all duration-150 cursor-pointer touch-manipulation shadow-xs active:scale-[0.99]"
     >
       <div className="flex items-center gap-2.5 min-w-0">
-        <img src={deal.image} alt={deal.name} className="w-8 h-8 rounded-lg object-cover shrink-0 border border-amber-400/40" />
+        <img src={deal.image} alt={localizedName} className="w-8 h-8 rounded-lg object-cover shrink-0 border border-amber-400/40" />
         <div className="min-w-0">
           <div className="flex items-center gap-1.5">
             <h4 className="font-body font-extrabold text-xs text-slate-900 dark:text-slate-100 truncate group-hover:text-amber-500">
-              {deal.name}
+              {localizedName}
             </h4>
             <span className="font-mono font-black text-[8px] text-amber-900 dark:text-amber-300 bg-amber-200/80 dark:bg-amber-500/30 px-1 py-0.2 rounded border border-amber-300 dark:border-amber-700/50">
               Combo

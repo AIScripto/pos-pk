@@ -2,6 +2,8 @@ import { Product } from '@/types/pos';
 import { useInventory, getStockStatus } from '@/context/InventoryContext';
 import { formatCurrency } from '@/utils/pos';
 import { cn } from '@/lib/utils';
+import { useTranslation } from '@/i18n';
+import { getLocalizedItemName } from '@/i18n/catalog';
 
 interface ProductButtonTileProps {
   product: Product;
@@ -9,6 +11,8 @@ interface ProductButtonTileProps {
 }
 
 export function ProductButtonTile({ product, onAdd }: ProductButtonTileProps) {
+  const { language } = useTranslation();
+  const localizedName = getLocalizedItemName(product, language);
   const { getEntry } = useInventory();
   const entry = getEntry(product.id);
   const stockStatus = entry ? getStockStatus(entry) : 'in_stock';
@@ -38,7 +42,7 @@ export function ProductButtonTile({ product, onAdd }: ProductButtonTileProps) {
       </div>
 
       <h4 className="font-body font-black text-xs text-slate-900 dark:text-slate-100 line-clamp-1 leading-tight group-hover:text-blue-600 dark:group-hover:text-blue-400">
-        {product.name}
+        {localizedName}
       </h4>
 
       <div className="flex items-baseline justify-between gap-1 w-full pt-0.5">

@@ -3,6 +3,8 @@ import { useInventory, getStockStatus } from '@/context/InventoryContext';
 import { formatCurrency } from '@/utils/pos';
 import { cn } from '@/lib/utils';
 import { Plus } from 'lucide-react';
+import { useTranslation } from '@/i18n';
+import { getLocalizedItemName, getLocalizedCategoryName } from '@/i18n/catalog';
 
 interface ProductListItemProps {
   product: Product;
@@ -10,6 +12,9 @@ interface ProductListItemProps {
 }
 
 export function ProductListItem({ product, onAdd }: ProductListItemProps) {
+  const { language } = useTranslation();
+  const localizedName = getLocalizedItemName(product, language);
+  const localizedCategory = getLocalizedCategoryName(product.category, language);
   const { getEntry } = useInventory();
   const entry = getEntry(product.id);
   const stockStatus = entry ? getStockStatus(entry) : 'in_stock';
@@ -27,18 +32,18 @@ export function ProductListItem({ product, onAdd }: ProductListItemProps) {
       )}
     >
       <div className="flex items-center gap-2.5 min-w-0">
-        <img src={product.image} alt={product.name} className="w-8 h-8 rounded-lg object-cover shrink-0 border border-slate-200 dark:border-slate-700" />
+        <img src={product.image} alt={localizedName} className="w-8 h-8 rounded-lg object-cover shrink-0 border border-slate-200 dark:border-slate-700" />
         <div className="min-w-0">
           <div className="flex items-center gap-1.5">
             <h4 className="font-body font-extrabold text-xs text-slate-900 dark:text-slate-100 truncate group-hover:text-blue-600 dark:group-hover:text-blue-400">
-              {product.name}
+              {localizedName}
             </h4>
             <span className="font-mono font-bold text-[8px] text-slate-600 dark:text-slate-400 bg-slate-100 dark:bg-slate-800 px-1 py-0.2 rounded border border-slate-200 dark:border-slate-700">
               {product.code}
             </span>
           </div>
           <span className="text-[9px] text-slate-500 dark:text-slate-400 uppercase tracking-wide">
-            {product.category}
+            {localizedCategory}
           </span>
         </div>
       </div>

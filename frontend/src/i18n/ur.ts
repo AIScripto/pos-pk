@@ -74,6 +74,8 @@ export const ur: TranslationKey = {
     openTill: 'کیش دراز کھولیں',
     closeTill: 'شفٹ بند کریں',
     quickScan: 'بارکوڈ اسکین',
+    noItems: 'ابھی کوئی آئٹم نہیں ہے',
+    tapToAdd: 'کارٹ میں شامل کرنے کے لیے کسی بھی پراڈکٹ پر کلک کریں',
     dineIn: 'ڈائن اِن',
     takeaway: 'ٹیک اوے',
     delivery: 'ڈلیوری',

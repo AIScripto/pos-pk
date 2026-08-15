@@ -3,6 +3,8 @@ import { formatCurrency } from '@/utils/pos';
 import { Plus, AlertTriangle } from 'lucide-react';
 import { useInventory, getStockStatus } from '@/context/InventoryContext';
 import { cn } from '@/lib/utils';
+import { useTranslation } from '@/i18n';
+import { getLocalizedItemName } from '@/i18n/catalog';
 
 interface ProductCardProps {
   product: Product;
@@ -10,6 +12,8 @@ interface ProductCardProps {
 }
 
 export function ProductCard({ product, onAdd }: ProductCardProps) {
+  const { language } = useTranslation();
+  const localizedName = getLocalizedItemName(product, language);
   const { getEntry } = useInventory();
   const entry = getEntry(product.id);
   const stockStatus = entry ? getStockStatus(entry) : 'in_stock';
@@ -69,7 +73,7 @@ export function ProductCard({ product, onAdd }: ProductCardProps) {
       {/* Info */}
       <div className="flex flex-1 flex-col p-2 gap-1 justify-between">
         <h3 className="font-body font-bold text-xs text-slate-900 dark:text-slate-100 leading-tight line-clamp-1 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
-          {product.name}
+          {localizedName}
         </h3>
 
         <div className="flex items-end justify-between gap-1 pt-0.5">

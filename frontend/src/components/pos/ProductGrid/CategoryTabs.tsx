@@ -19,6 +19,7 @@ export interface CategoryItem {
 
 import { useProducts } from '@/context/ProductContext';
 import { useTranslation } from '@/i18n';
+import { getLocalizedCategoryName } from '@/i18n/catalog';
 
 const STORAGE_KEY = 'aipos_category_order_v1';
 
@@ -36,7 +37,7 @@ const getIconForCategory = (name: string) => {
 };
 
 export function CategoryTabs({ activeCategory, onCategoryChange, products, deals }: CategorySidebarProps) {
-  const { t } = useTranslation();
+  const { t, language } = useTranslation();
   const { categories: dynamicCategories } = useProducts();
   const [categories, setCategories] = useState<CategoryItem[]>([]);
 
@@ -183,7 +184,7 @@ export function CategoryTabs({ activeCategory, onCategoryChange, products, deals
 
               <span className="text-2xl leading-none transition-transform duration-200 group-hover:scale-110">{cat.icon}</span>
               <span className="font-display font-extrabold text-[10px] uppercase tracking-wider leading-none text-center">
-                {cat.key === 'all' ? t.common.allItems : cat.key === 'deals' ? t.common.deals : cat.label}
+                {cat.key === 'all' ? t.common.allItems : cat.key === 'deals' ? t.common.deals : getLocalizedCategoryName(cat.label, language)}
               </span>
               <span className={cn(
                 'text-[10px] tabular-nums font-black px-2 py-0.5 rounded-full leading-none border transition-all',

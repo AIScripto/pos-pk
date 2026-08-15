@@ -3,6 +3,8 @@ import { formatCurrency, calculateLineTotal } from '@/utils/pos';
 import { Minus, Plus, Trash2, Percent, DollarSign, ChevronDown, ChevronUp, Sparkles } from 'lucide-react';
 import { useState } from 'react';
 import { cn } from '@/lib/utils';
+import { useTranslation } from '@/i18n';
+import { getLocalizedItemName } from '@/i18n/catalog';
 
 interface CartItemRowProps {
   item: CartItem;
@@ -19,9 +21,10 @@ export function CartItemRow({
   onUpdateLumpDiscount,
   onRemove,
 }: CartItemRowProps) {
+  const { language } = useTranslation();
   const [showDiscounts, setShowDiscounts] = useState(false);
 
-  const name = item.product?.name || item.deal?.name || '';
+  const name = getLocalizedItemName(item.product || item.deal, language);
   const code = item.product?.code || item.deal?.code || '';
   const unitPrice = item.product?.price || item.deal?.price || 0;
   const isDeal = !!item.deal;
