@@ -2,6 +2,7 @@ import type { ReactNode } from 'react';
 import { Monitor, CheckCircle2, ReceiptText, WalletCards } from 'lucide-react';
 import { formatCurrency } from '@/utils/pos';
 import { cn } from '@/lib/utils';
+import { useTranslation } from '@/i18n';
 
 export function KpiCard({ title, value, icon, accent, large }: {
   title: string; value: string; icon: ReactNode;
@@ -41,12 +42,15 @@ export function ManagerKpiGrid({
   totalOrders,
   currentSale,
 }: ManagerKpiGridProps) {
+  const { t } = useTranslation();
+
   return (
     <div className="grid grid-cols-2 gap-3 xl:grid-cols-4">
-      <KpiCard title="Open Tills"     value={isLoading ? '—' : String(openTills)}   icon={<Monitor className="h-5 w-5" />}    accent={openTills > 0 ? 'emerald' : 'neutral'} />
-      <KpiCard title="Pending Closes" value={isLoading ? '—' : String(pendingTills)} icon={<CheckCircle2 className="h-5 w-5" />} accent={pendingTills > 0 ? 'amber' : 'neutral'} />
-      <KpiCard title="Total Orders"   value={isLoading ? '—' : String(totalOrders)} icon={<ReceiptText className="h-5 w-5" />} accent="neutral" />
-      <KpiCard title="Current Sale"   value={isLoading ? '—' : formatCurrency(currentSale)} icon={<WalletCards className="h-5 w-5" />} accent="emerald" large />
+      <KpiCard title={t.till.openShift}     value={isLoading ? '—' : String(openTills)}   icon={<Monitor className="h-5 w-5" />}    accent={openTills > 0 ? 'emerald' : 'neutral'} />
+      <KpiCard title={t.till.pendingVerification} value={isLoading ? '—' : String(pendingTills)} icon={<CheckCircle2 className="h-5 w-5" />} accent={pendingTills > 0 ? 'amber' : 'neutral'} />
+      <KpiCard title={t.managerReport.totalOrders}   value={isLoading ? '—' : String(totalOrders)} icon={<ReceiptText className="h-5 w-5" />} accent="neutral" />
+      <KpiCard title={t.managerReport.netSales}   value={isLoading ? '—' : formatCurrency(currentSale)} icon={<WalletCards className="h-5 w-5" />} accent="emerald" large />
     </div>
   );
 }
+

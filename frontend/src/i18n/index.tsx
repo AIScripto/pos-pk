@@ -85,6 +85,10 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
   );
 }
 
+export * from './dynamicLocalization';
+export * from './catalog';
+
+
 /**
  * Hook to access current translations and language state
  */
@@ -101,3 +105,4 @@ export function useTranslation() {
   }
   return context;
 }
+

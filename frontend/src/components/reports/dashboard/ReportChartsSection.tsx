@@ -13,6 +13,7 @@ import { ChartContainer, ChartLegend, ChartLegendContent, ChartTooltip, ChartToo
 import { ManagerReportSnapshot } from '@/types/reports';
 import { formatCurrency } from '@/utils/pos';
 import { TAX_CONFIG } from '@/config/tax';
+import { useTranslation, getLocalizedCategoryName } from '@/i18n';
 import {
   chartConfig,
   getPlainCategoryLabel,
@@ -25,6 +26,7 @@ interface ReportChartsSectionProps {
 }
 
 export function ReportChartsSection({ report }: ReportChartsSectionProps) {
+  const { t, language } = useTranslation();
   const { categories, trend, meta } = report;
 
   return (
@@ -32,8 +34,8 @@ export function ReportChartsSection({ report }: ReportChartsSectionProps) {
       <div className="rounded-lg border border-border/70 bg-card/85 p-4 shadow-[0_18px_44px_-28px_rgba(15,23,42,0.55)]">
         <div className="flex items-center justify-between gap-3">
           <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.24em] text-primary/75">Trend Output</p>
-            <h3 className="mt-2 text-xl font-bold text-foreground">Revenue, discount & tax movement</h3>
+            <p className="text-xs font-semibold uppercase tracking-[0.24em] text-primary/75">{t.managerReport.trendOutput}</p>
+            <h3 className="mt-2 text-xl font-bold text-foreground">{t.managerReport.revenueDiscountTax}</h3>
             <p className="mt-1 text-xs text-muted-foreground">{meta.datasetLabel} filtered by {meta.categoryLabel.toLowerCase()} for {meta.dateRangeLabel}.</p>
           </div>
           <div className="rounded-md bg-primary/10 p-3 text-primary">
@@ -84,9 +86,9 @@ export function ReportChartsSection({ report }: ReportChartsSectionProps) {
       <div className="rounded-lg border border-border/70 bg-card/85 p-4 shadow-[0_18px_44px_-28px_rgba(15,23,42,0.55)]">
         <div>
           <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.24em] text-primary/75">Mix Output</p>
-            <h3 className="mt-2 text-xl font-bold text-foreground">Category share</h3>
-            <p className="mt-1 text-xs text-muted-foreground">Persistent revenue and share breakdown for the active filter set.</p>
+            <p className="text-xs font-semibold uppercase tracking-[0.24em] text-primary/75">{t.managerReport.mixOutput}</p>
+            <h3 className="mt-2 text-xl font-bold text-foreground">{t.managerReport.categoryShareTitle}</h3>
+            <p className="mt-1 text-xs text-muted-foreground">{t.managerReport.categoryShareDesc}</p>
           </div>
         </div>
         <div className="mt-4 rounded-lg border border-border/60 bg-background/60 p-4">
@@ -138,7 +140,7 @@ export function ReportChartsSection({ report }: ReportChartsSectionProps) {
                         className="block text-[11px] font-semibold uppercase leading-4 tracking-[0.08em]"
                         style={{ color: pieColors[index % pieColors.length] }}
                       >
-                        {getPlainCategoryLabel(category.label)}
+                        {getLocalizedCategoryName(category.category, language) || getPlainCategoryLabel(category.label)}
                       </span>
                       <span className="mt-1 block text-xs font-semibold leading-4 text-foreground">
                         {category.share.toFixed(1)}%
@@ -150,7 +152,7 @@ export function ReportChartsSection({ report }: ReportChartsSectionProps) {
             </div>
           ) : (
             <div className="mt-3 rounded-md border border-dashed border-border/70 bg-background/60 px-4 py-6 text-center text-xs text-muted-foreground">
-              No category data available for the current filters.
+              {t.common.noData}
             </div>
           )}
         </div>
@@ -158,3 +160,4 @@ export function ReportChartsSection({ report }: ReportChartsSectionProps) {
     </div>
   );
 }
+

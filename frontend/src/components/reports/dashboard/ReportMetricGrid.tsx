@@ -13,12 +13,14 @@ import { ManagerReportSnapshot } from '@/types/reports';
 import { formatCurrency } from '@/utils/pos';
 import { TAX_CONFIG } from '@/config/tax';
 import { ReportMetricCard } from '../ReportMetricCard';
+import { useTranslation } from '@/i18n';
 
 interface ReportMetricGridProps {
   report: ManagerReportSnapshot;
 }
 
 export function ReportMetricGrid({ report }: ReportMetricGridProps) {
+  const { t } = useTranslation();
   const { metrics, payments, meta } = report;
 
   return (
@@ -26,19 +28,19 @@ export function ReportMetricGrid({ report }: ReportMetricGridProps) {
       {/* ── Metric Cards ── */}
       <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
         <ReportMetricCard
-          title="Revenue (Pre-Tax)"
+          title={t.managerReport.revenuePreTax}
           value={formatCurrency(metrics.revenue)}
           hint={`${meta.windowLabel} across ${metrics.orders} tracked orders`}
           icon={TrendingUp}
         />
         <ReportMetricCard
-          title="Average Order"
+          title={t.managerReport.averageOrder}
           value={formatCurrency(metrics.avgOrderValue)}
           hint={`${metrics.itemsSold} items sold with ${metrics.avgItemsPerOrder.toFixed(1)} items per ticket`}
           icon={ReceiptText}
         />
         <ReportMetricCard
-          title="Discount Load"
+          title={t.managerReport.discountLoad}
           value={`${metrics.discountRate.toFixed(1)}%`}
           hint={`${formatCurrency(metrics.discounts)} discounted from ${formatCurrency(metrics.grossSales)} gross sales`}
           accent="neutral"
@@ -46,7 +48,7 @@ export function ReportMetricGrid({ report }: ReportMetricGridProps) {
         />
         {TAX_CONFIG.enabled ? (
           <ReportMetricCard
-            title={`${TAX_CONFIG.label} Collected (${metrics.taxRate}%)`}
+            title={`${TAX_CONFIG.label} ${t.managerReport.taxCollected} (${metrics.taxRate}%)`}
             value={formatCurrency(metrics.totalTax)}
             hint={`Total ${TAX_CONFIG.label.toLowerCase()} collected. Grand total incl. tax: ${formatCurrency(TAX_CONFIG.mode === 'inclusive' ? metrics.revenue : metrics.revenue + metrics.totalTax)}`}
             accent="tax"
@@ -54,7 +56,7 @@ export function ReportMetricGrid({ report }: ReportMetricGridProps) {
           />
         ) : (
           <ReportMetricCard
-            title="Best Sales Window"
+            title={t.managerReport.salesTrend}
             value={meta.bestHourLabel}
             hint={`${meta.topCategoryLabel} leads, with ${meta.bestItemLabel} topping the item list`}
             accent="neutral"
@@ -66,26 +68,26 @@ export function ReportMetricGrid({ report }: ReportMetricGridProps) {
       {/* ── Product / Deal / Tender Summary ── */}
       <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
         <ReportMetricCard
-          title="Product Revenue"
+          title={t.managerReport.productRevenue}
           value={formatCurrency(metrics.productRevenue)}
-          hint={`${metrics.productQuantity} product item${metrics.productQuantity !== 1 ? 's' : ''} sold in ${meta.dateRangeLabel}`}
+          hint={`${metrics.productQuantity} items sold in ${meta.dateRangeLabel}`}
           icon={PackageCheck}
         />
         <ReportMetricCard
-          title="Deal Revenue"
+          title={t.managerReport.dealRevenue}
           value={formatCurrency(metrics.dealRevenue)}
-          hint={`${metrics.dealQuantity} deal item${metrics.dealQuantity !== 1 ? 's' : ''} sold; ${metrics.revenue > 0 ? ((metrics.dealRevenue / metrics.revenue) * 100).toFixed(1) : '0.0'}% of sales`}
+          hint={`${metrics.dealQuantity} items sold; ${metrics.revenue > 0 ? ((metrics.dealRevenue / metrics.revenue) * 100).toFixed(1) : '0.0'}% of sales`}
           icon={Layers3}
         />
         <ReportMetricCard
-          title="Cash Collected"
+          title={t.managerReport.cashCollected}
           value={formatCurrency(metrics.cashTotal)}
           hint={`${payments.find((payment) => payment.group === 'cash')?.share.toFixed(1) ?? '0.0'}% of tendered value`}
           accent="neutral"
           icon={Banknote}
         />
         <ReportMetricCard
-          title="Credit / Card"
+          title={t.managerReport.creditCard}
           value={formatCurrency(metrics.cardTotal)}
           hint={`${payments.find((payment) => payment.group === 'credit')?.share.toFixed(1) ?? '0.0'}% of tendered value`}
           accent="tax"
@@ -95,3 +97,4 @@ export function ReportMetricGrid({ report }: ReportMetricGridProps) {
     </div>
   );
 }
+

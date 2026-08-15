@@ -8,8 +8,10 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Loader2, Settings, LogIn, CheckCircle2, AlertCircle } from 'lucide-react';
 import { SHOW_DEMO_CREDENTIALS, LOCAL_DEV_CREDENTIALS, localDefault } from '@/config/localCredentials';
 import { roleHomePage } from '@/utils/roleRedirect';
+import { useTranslation } from '@/i18n';
 
 export default function AdminLoginPage() {
+  const { t } = useTranslation();
   const { login } = useAuth();
   const navigate = useNavigate();
 
@@ -59,9 +61,8 @@ export default function AdminLoginPage() {
               </div>
             </div>
           </div>
-          <h1 className="text-3xl sm:text-4xl font-black text-white mb-1.5 sm:mb-2">Admin Panel</h1>
-          <p className="text-lg sm:text-xl text-teal-300 font-bold tracking-wide mb-2 sm:mb-3">Configuration & Management</p>
-          <p className="text-slate-400 text-sm sm:text-base">Manage your POS system</p>
+          <h1 className="text-3xl sm:text-4xl font-black text-white mb-1.5 sm:mb-2">{t.admin.backOffice}</h1>
+          <p className="text-lg sm:text-xl text-teal-300 font-bold tracking-wide mb-2 sm:mb-3">{t.config.configTitle}</p>
         </div>
 
         {/* Main Card - Responsive */}
@@ -83,17 +84,17 @@ export default function AdminLoginPage() {
                 <div className="mb-4 rounded-xl border border-slate-700 bg-slate-900/40 p-4">
                   <div className="flex items-center gap-2 mb-3">
                     <CheckCircle2 className="w-4 h-4 text-teal-400" />
-                    <p className="text-xs font-bold text-slate-300 uppercase tracking-wider">Test Accounts (Click to Auto-fill)</p>
+                    <p className="text-xs font-bold text-slate-300 uppercase tracking-wider">Demo Accounts</p>
                   </div>
                   
                   <div className="grid grid-cols-1 gap-2">
                     <button
                       type="button"
                       onClick={() => handleSelectTestAccount('admin')}
-                      className="flex flex-col text-left p-2.5 rounded-lg border border-slate-700/50 bg-slate-800/40 hover:bg-slate-700/50 hover:border-slate-600 transition-all text-xs"
+                      className="flex flex-col text-left p-2.5 rounded-lg border border-slate-700/50 bg-slate-800/40 hover:bg-slate-700/50 hover:border-slate-600 transition-all text-xs cursor-pointer"
                     >
                       <div className="flex items-center justify-between w-full mb-1">
-                        <span className="font-bold text-teal-400">Admin Account</span>
+                        <span className="font-bold text-teal-400">{t.roles.admin}</span>
                         <span className="px-1.5 py-0.5 rounded bg-teal-500/15 text-teal-400 font-mono text-[9px]">PIN: 1234</span>
                       </div>
                       <p className="text-slate-400 font-mono text-[10px] truncate">{LOCAL_DEV_CREDENTIALS.admin.username} · {LOCAL_DEV_CREDENTIALS.admin.password}</p>
@@ -102,10 +103,10 @@ export default function AdminLoginPage() {
                     <button
                       type="button"
                       onClick={() => handleSelectTestAccount('manager')}
-                      className="flex flex-col text-left p-2.5 rounded-lg border border-slate-700/50 bg-slate-800/40 hover:bg-slate-700/50 hover:border-slate-600 transition-all text-xs"
+                      className="flex flex-col text-left p-2.5 rounded-lg border border-slate-700/50 bg-slate-800/40 hover:bg-slate-700/50 hover:border-slate-600 transition-all text-xs cursor-pointer"
                     >
                       <div className="flex items-center justify-between w-full mb-1">
-                        <span className="font-bold text-purple-400">Manager Account</span>
+                        <span className="font-bold text-purple-400">{t.roles.manager}</span>
                         <span className="px-1.5 py-0.5 rounded bg-purple-500/15 text-purple-400 font-mono text-[9px]">PIN: 1234</span>
                       </div>
                       <p className="text-slate-400 font-mono text-[10px] truncate">{LOCAL_DEV_CREDENTIALS.manager.username} · {LOCAL_DEV_CREDENTIALS.manager.password}</p>
@@ -119,12 +120,12 @@ export default function AdminLoginPage() {
                 {/* Username */}
                 <div>
                   <Label htmlFor="username" className="block text-xs sm:text-sm font-bold text-slate-200 mb-1.5">
-                    Username
+                    {t.auth.username}
                   </Label>
                   <Input
                     id="username"
                     type="text"
-                    placeholder="e.g. admin, superadmin, tariq"
+                    placeholder={t.auth.username}
                     value={username}
                     onChange={(e) => setUsername(e.target.value)}
                     autoComplete="username"
@@ -137,7 +138,7 @@ export default function AdminLoginPage() {
                 {/* Password */}
                 <div>
                   <Label htmlFor="password" className="block text-xs sm:text-sm font-bold text-slate-200 mb-1.5">
-                    Password
+                    {t.auth.password}
                   </Label>
                   <Input
                     id="password"
@@ -154,17 +155,17 @@ export default function AdminLoginPage() {
                 <Button
                   type="submit"
                   disabled={loading}
-                  className="w-full py-2 sm:py-3 mt-4 sm:mt-6 bg-gradient-to-r from-teal-500 to-teal-600 hover:from-teal-600 hover:to-teal-700 text-white font-bold text-sm sm:text-base rounded-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-lg hover:shadow-xl"
+                  className="w-full py-2 sm:py-3 mt-4 sm:mt-6 bg-gradient-to-r from-teal-500 to-teal-600 hover:from-teal-600 hover:to-teal-700 text-white font-bold text-sm sm:text-base rounded-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-lg hover:shadow-xl cursor-pointer"
                 >
                   {loading ? (
                     <>
                       <Loader2 className="w-3.5 h-3.5 sm:w-4 sm:h-4 mr-1.5 animate-spin inline" />
-                      <span className="text-xs sm:text-base">Signing in...</span>
+                      <span className="text-xs sm:text-base">{t.common.loading}</span>
                     </>
                   ) : (
                     <>
                       <LogIn className="w-3.5 h-3.5 sm:w-4 sm:h-4 mr-1.5 inline" />
-                      <span className="text-xs sm:text-base">Sign In</span>
+                      <span className="text-xs sm:text-base">{t.auth.loginButton}</span>
                     </>
                   )}
                 </Button>
@@ -187,13 +188,9 @@ export default function AdminLoginPage() {
               </p>
             </div>
           </div>
-
-          {/* Support Text */}
-          <div className="mt-4 sm:mt-6 text-center text-slate-400 text-xs sm:text-sm hidden sm:block">
-            <p>For support, contact your administrator</p>
-          </div>
         </div>
       </div>
     </div>
   );
 }
+

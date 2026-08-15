@@ -21,6 +21,7 @@ import {
 import { useAuth } from '@/context/AuthContext';
 import { KitchenProvider, useKitchen } from '@/context/KitchenContext';
 import { branchApi } from '@/lib/api/branch.api';
+import { useTranslation } from '@/i18n';
 import type { Branch } from '@/lib/api/branch.api';
 
 const KDS_BRANCH_KEY = 'pos-app-kds-branch';
@@ -56,6 +57,7 @@ interface BranchSelectorProps {
 }
 
 function BranchSelector({ allowedBranchIds, onSelect }: BranchSelectorProps) {
+  const { t } = useTranslation();
   const [branches, setBranches] = useState<Branch[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -77,14 +79,14 @@ function BranchSelector({ allowedBranchIds, onSelect }: BranchSelectorProps) {
     <div className="flex h-screen flex-col items-center justify-center bg-slate-950 text-white gap-6 px-4">
       <div className="text-center space-y-2 max-w-md">
         <MonitorPlay className="h-14 w-14 mx-auto text-primary animate-pulse" />
-        <h2 className="text-2xl font-black tracking-tight">Customer Order Display</h2>
+        <h2 className="text-2xl font-black tracking-tight">{t.customerDisplay.welcome}</h2>
         <p className="text-slate-400 text-sm">
-          Please select a branch to launch the lobby monitor screen.
+          {t.auth.selectBranch}
         </p>
       </div>
 
       {loading ? (
-        <div className="text-slate-400 text-sm animate-pulse">Loading branches...</div>
+        <div className="text-slate-400 text-sm animate-pulse">{t.common.loading}</div>
       ) : error ? (
         <div className="text-red-400 text-sm">{error}</div>
       ) : (
@@ -93,7 +95,7 @@ function BranchSelector({ allowedBranchIds, onSelect }: BranchSelectorProps) {
             <button
               key={b.id}
               onClick={() => onSelect(b.id, b.name)}
-              className="flex items-center justify-between p-4 rounded-xl border border-slate-800 bg-slate-900/60 hover:bg-slate-800 hover:border-slate-700 transition duration-200 text-left font-semibold text-lg"
+              className="flex items-center justify-between p-4 rounded-xl border border-slate-800 bg-slate-900/60 hover:bg-slate-800 hover:border-slate-700 transition duration-200 text-left font-semibold text-lg cursor-pointer"
             >
               <span>{b.name}</span>
               <span className="text-xs text-slate-500 font-mono">ID: {b.id}</span>
@@ -107,6 +109,7 @@ function BranchSelector({ allowedBranchIds, onSelect }: BranchSelectorProps) {
 
 // ── Customer Board Board ───────────────────────────────────────────────────────
 function CustomerBoard({ branchName, onChangeBranch }: { branchName: string; onChangeBranch: () => void }) {
+  const { t } = useTranslation();
   const { orders } = useKitchen();
   const [voiceEnabled, setVoiceEnabled] = useState(true);
   const prevReadyOrders = useRef<Set<string>>(new Set());
@@ -145,7 +148,7 @@ function CustomerBoard({ branchName, onChangeBranch }: { branchName: string; onC
           </div>
           <div>
             <h1 className="text-2xl font-black tracking-tight text-white flex items-center gap-2">
-              Order Status Board
+              {t.common.serviceBoard}
             </h1>
             <p className="text-xs font-bold text-slate-500 uppercase tracking-widest">{branchName}</p>
           </div>
@@ -154,21 +157,21 @@ function CustomerBoard({ branchName, onChangeBranch }: { branchName: string; onC
         <div className="flex items-center gap-6">
           <button
             onClick={() => setVoiceEnabled(!voiceEnabled)}
-            className={`flex items-center gap-2 rounded-full px-4 py-2 text-xs font-bold transition duration-250 ${
+            className={`flex items-center gap-2 rounded-full px-4 py-2 text-xs font-bold transition duration-250 cursor-pointer ${
               voiceEnabled 
                 ? 'bg-primary/20 text-primary border border-primary/30 shadow-[0_0_15px_rgba(249,115,22,0.15)]' 
                 : 'bg-slate-900 text-slate-500 border border-slate-800'
             }`}
           >
             {voiceEnabled ? <Volume2 className="h-4 w-4 animate-pulse" /> : <VolumeX className="h-4 w-4" />}
-            {voiceEnabled ? 'Voice Alerts Active' : 'Voice Alerts Muted'}
+            {voiceEnabled ? t.kds.soundAlert : t.common.inactive}
           </button>
 
           <button
             onClick={onChangeBranch}
-            className="rounded-lg border border-slate-850 px-3 py-1.5 text-xs font-medium text-slate-400 hover:bg-slate-900 hover:text-white transition duration-200"
+            className="rounded-lg border border-slate-850 px-3 py-1.5 text-xs font-medium text-slate-400 hover:bg-slate-900 hover:text-white transition duration-200 cursor-pointer"
           >
-            Change Branch
+            {t.auth.selectBranch}
           </button>
 
           <LiveClock />
@@ -184,10 +187,10 @@ function CustomerBoard({ branchName, onChangeBranch }: { branchName: string; onC
               <div className="p-2 bg-amber-500/10 rounded-xl border border-amber-500/20">
                 <Flame className="h-6 w-6 text-amber-500 animate-pulse" />
               </div>
-              <h2 className="text-3xl font-black tracking-wider text-amber-500">Preparing</h2>
+              <h2 className="text-3xl font-black tracking-wider text-amber-500">{t.kds.prepping}</h2>
             </span>
             <span className="text-lg font-bold text-slate-400 bg-slate-900/60 px-3 py-1 rounded-lg border border-slate-800">
-              {preparingOrders.length} Orders
+              {preparingOrders.length} {t.common.orders}
             </span>
           </div>
 
@@ -197,7 +200,7 @@ function CustomerBoard({ branchName, onChangeBranch }: { branchName: string; onC
                 <div className="p-4 bg-slate-900/40 border border-slate-850 rounded-full animate-pulse">
                   <CookingPot className="h-16 w-16 opacity-35" />
                 </div>
-                <p className="text-lg font-medium text-slate-500">All orders prepared!</p>
+                <p className="text-lg font-medium text-slate-500">{t.customerDisplay.weAppreciate}</p>
               </div>
             ) : (
               <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
@@ -229,10 +232,10 @@ function CustomerBoard({ branchName, onChangeBranch }: { branchName: string; onC
               <div className="p-2 bg-emerald-500/10 rounded-xl border border-emerald-500/20">
                 <BellRing className="h-6 w-6 text-emerald-400 animate-bounce" />
               </div>
-              <h2 className="text-3xl font-black tracking-wider text-emerald-400">Ready</h2>
+              <h2 className="text-3xl font-black tracking-wider text-emerald-400">{t.kds.ready}</h2>
             </span>
             <span className="text-lg font-bold text-slate-400 bg-slate-900/60 px-3 py-1 rounded-lg border border-slate-800">
-              {readyOrders.length} Orders
+              {readyOrders.length} {t.common.orders}
             </span>
           </div>
 
@@ -242,7 +245,7 @@ function CustomerBoard({ branchName, onChangeBranch }: { branchName: string; onC
                 <div className="p-4 bg-slate-900/40 border border-slate-850 rounded-full">
                   <UtensilsCrossed className="h-16 w-16 opacity-35" />
                 </div>
-                <p className="text-lg font-medium text-slate-500">Waiting for orders...</p>
+                <p className="text-lg font-medium text-slate-500">{t.common.loading}</p>
               </div>
             ) : (
               <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
@@ -266,11 +269,12 @@ function CustomerBoard({ branchName, onChangeBranch }: { branchName: string; onC
 
       {/* Footer Branding */}
       <footer className="border-t border-slate-900 bg-slate-950/80 px-8 py-3 text-center text-xs text-slate-500 shrink-0">
-        Please match your order receipt number with the display board. Thank you for choosing us!
+        {t.customerDisplay.thankYouMessage}
       </footer>
     </div>
   );
 }
+
 
 // ── Screen Wrapper ────────────────────────────────────────────────────────────
 export default function CustomerDisplayPage() {

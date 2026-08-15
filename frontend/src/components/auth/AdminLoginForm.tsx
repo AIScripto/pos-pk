@@ -3,6 +3,7 @@ import { Loader2, LogIn, User, Lock, ShieldCheck } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { useTranslation } from '@/i18n';
 
 interface AdminLoginFormProps {
   username: string;
@@ -13,14 +14,6 @@ interface AdminLoginFormProps {
   onSubmit: (e: React.FormEvent) => void;
 }
 
-/**
- * AdminLoginForm Component
- * 
- * Modular form component handling Admin back-office authentication.
- * Uses name-based username (e.g. admin, superadmin, tariq) and Password inputs.
- * 
- * @component
- */
 export const AdminLoginForm: React.FC<AdminLoginFormProps> = ({
   username,
   setUsername,
@@ -29,16 +22,18 @@ export const AdminLoginForm: React.FC<AdminLoginFormProps> = ({
   loading,
   onSubmit,
 }) => {
+  const { t } = useTranslation();
+
   return (
     <form onSubmit={onSubmit} className="space-y-4">
       {/* Admin Mode Badge */}
       <div className="flex items-center justify-between pb-1">
         <span className="text-xs font-semibold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
           <ShieldCheck className="w-3.5 h-3.5 text-blue-400" />
-          <span>Management Portal</span>
+          <span>{t.admin.backOffice}</span>
         </span>
         <span className="text-[11px] font-medium text-blue-400/90 bg-blue-950/60 border border-blue-500/20 px-2 py-0.5 rounded">
-          Back Office
+          {t.admin.backOffice}
         </span>
       </div>
 
@@ -46,13 +41,13 @@ export const AdminLoginForm: React.FC<AdminLoginFormProps> = ({
       <div className="space-y-1.5">
         <Label htmlFor="admin-username" className="text-xs font-semibold uppercase tracking-wider text-slate-300 flex items-center gap-1.5">
           <User className="w-3.5 h-3.5 text-slate-400" />
-          <span>Admin Username</span>
+          <span>{t.auth.username}</span>
         </Label>
         <div className="relative">
           <Input
             id="admin-username"
             type="text"
-            placeholder="e.g. admin, superadmin, tariq"
+            placeholder={t.auth.username}
             value={username}
             onChange={(e) => setUsername(e.target.value)}
             autoComplete="username"
@@ -67,7 +62,7 @@ export const AdminLoginForm: React.FC<AdminLoginFormProps> = ({
       <div className="space-y-1.5">
         <Label htmlFor="admin-password" className="text-xs font-semibold uppercase tracking-wider text-slate-300 flex items-center gap-1.5">
           <Lock className="w-3.5 h-3.5 text-slate-400" />
-          <span>Admin Password</span>
+          <span>{t.auth.password}</span>
         </Label>
         <div className="relative">
           <Input
@@ -86,17 +81,17 @@ export const AdminLoginForm: React.FC<AdminLoginFormProps> = ({
       <Button
         type="submit"
         disabled={loading}
-        className="w-full h-12 mt-6 bg-blue-600 hover:bg-blue-500 active:scale-[0.99] text-white font-bold text-sm sm:text-base rounded-xl transition-all shadow-lg shadow-blue-900/30 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+        className="w-full h-12 mt-6 bg-blue-600 hover:bg-blue-500 active:scale-[0.99] text-white font-bold text-sm sm:text-base rounded-xl transition-all shadow-lg shadow-blue-900/30 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 cursor-pointer"
       >
         {loading ? (
           <>
             <Loader2 className="w-4 h-4 animate-spin inline" />
-            <span>Authenticating Admin...</span>
+            <span>{t.common.loading}</span>
           </>
         ) : (
           <>
             <LogIn className="w-4 h-4 inline" />
-            <span>Enter Back Office</span>
+            <span>{t.auth.loginButton}</span>
           </>
         )}
       </Button>
@@ -105,3 +100,4 @@ export const AdminLoginForm: React.FC<AdminLoginFormProps> = ({
 };
 
 export default AdminLoginForm;
+

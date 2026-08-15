@@ -4,17 +4,9 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import type { ManagerReportSnapshot } from '@/types/reports';
 import { formatCurrency, formatDate } from '@/utils/pos';
 import { TAX_CONFIG } from '@/config/tax';
+import { useTranslation, getLocalizedCategoryName } from '@/i18n';
 
 export type ManagerReportTableTab = 'summary' | 'details' | 'hourly' | 'tills' | 'orders';
-
-const categoryLabels: Record<string, string> = {
-  burgers: 'Burgers',
-  wraps: 'Wraps',
-  chicken: 'Chicken',
-  fries: 'Fries',
-  drinks: 'Drinks',
-  deals: 'Deals',
-};
 
 function SectionTitle({ icon: Icon, title, meta }: { icon: LucideIcon; title: string; meta?: string }) {
   return (
@@ -27,6 +19,7 @@ function SectionTitle({ icon: Icon, title, meta }: { icon: LucideIcon; title: st
     </div>
   );
 }
+
 
 function ReportTable({
   headers,
@@ -95,6 +88,7 @@ export function ManagerReportTablePanel({
   onTabChange?: (tab: ManagerReportTableTab) => void;
   tillMap?: Record<string, string>;
 }) {
+  const { t, language } = useTranslation();
   const {
     metrics,
     categories,
@@ -109,19 +103,19 @@ export function ManagerReportTablePanel({
   } = report;
 
   const summaryRows = [
-    ['Total Amount (Gross Sales)', formatCurrency(metrics.grossSales)],
-    ['Discount (Discounts Given)', formatCurrency(metrics.discounts)],
-    ['Net Amount (Pre-tax Sales)', formatCurrency(metrics.revenue)],
-    [`${TAX_CONFIG.label} Tax Collected`, formatCurrency(metrics.totalTax)],
-    ['Grand Total (Sales + Tax)', formatCurrency(metrics.revenue + metrics.totalTax)],
-    ['Bills Count (Total Orders)', metrics.orders],
-    ['Qty (Total Items Sold)', metrics.itemsSold],
-    ['Average Bill Amount', formatCurrency(metrics.avgOrderValue)],
-    ['Average Items per Bill', metrics.avgItemsPerOrder.toFixed(2)],
-    ['Cash Amount', formatCurrency(metrics.cashTotal)],
-    ['Card Amount', formatCurrency(metrics.cardTotal)],
-    ['Wallet Amount', formatCurrency(metrics.walletTotal)],
-    ['Pending Delivery Amount', formatCurrency(metrics.pendingTotal)],
+    [t.managerReport.grossRevenue, formatCurrency(metrics.grossSales)],
+    [t.managerReport.discountsGiven, formatCurrency(metrics.discounts)],
+    [t.managerReport.revenuePreTax, formatCurrency(metrics.revenue)],
+    [`${TAX_CONFIG.label} ${t.managerReport.taxCollected}`, formatCurrency(metrics.totalTax)],
+    [t.receipt.grandTotal, formatCurrency(metrics.revenue + metrics.totalTax)],
+    [t.managerReport.totalOrders, metrics.orders],
+    [t.receipt.qty, metrics.itemsSold],
+    [t.managerReport.averageOrder, formatCurrency(metrics.avgOrderValue)],
+    [t.managerReport.averageOrder, metrics.avgItemsPerOrder.toFixed(2)],
+    [t.managerReport.cashCollected, formatCurrency(metrics.cashTotal)],
+    [t.managerReport.creditCard, formatCurrency(metrics.cardTotal)],
+    [t.pos.digital, formatCurrency(metrics.walletTotal)],
+    [t.pos.pending, formatCurrency(metrics.pendingTotal)],
   ];
 
   const totalPaymentAmt = payments.reduce((sum, p) => sum + p.amount, 0);
@@ -139,26 +133,26 @@ export function ManagerReportTablePanel({
       <Tabs value={activeTab} onValueChange={(value) => onTabChange?.(value as ManagerReportTableTab)} className="w-full">
         <div className="mb-3 flex flex-wrap items-center justify-between gap-3">
           <div>
-            <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-primary/75">Tabular report</p>
+            <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-primary/75">{t.managerReport.reportsTitle}</p>
             <p className="mt-1 text-xs text-muted-foreground">
               {meta.dateRangeLabel} · {meta.datasetLabel} · {meta.categoryLabel}
             </p>
           </div>
           <TabsList className="h-9 rounded-md">
-            <TabsTrigger value="summary" className="h-8 gap-1.5 text-xs">
-              <FileText className="h-3.5 w-3.5" /> Summary
+            <TabsTrigger value="summary" className="h-8 gap-1.5 text-xs cursor-pointer">
+              <FileText className="h-3.5 w-3.5" /> {t.managerReport.managerOverview}
             </TabsTrigger>
-            <TabsTrigger value="details" className="h-8 gap-1.5 text-xs">
-              <ListChecks className="h-3.5 w-3.5" /> Detailed
+            <TabsTrigger value="details" className="h-8 gap-1.5 text-xs cursor-pointer">
+              <ListChecks className="h-3.5 w-3.5" /> {t.managerReport.reportsTitle}
             </TabsTrigger>
-            <TabsTrigger value="hourly" className="h-8 gap-1.5 text-xs">
-              <Clock className="h-3.5 w-3.5" /> Hourly Sales
+            <TabsTrigger value="hourly" className="h-8 gap-1.5 text-xs cursor-pointer">
+              <Clock className="h-3.5 w-3.5" /> {t.managerReport.salesTrend}
             </TabsTrigger>
-            <TabsTrigger value="tills" className="h-8 gap-1.5 text-xs">
-              <Calculator className="h-3.5 w-3.5" /> Till Wise
+            <TabsTrigger value="tills" className="h-8 gap-1.5 text-xs cursor-pointer">
+              <Calculator className="h-3.5 w-3.5" /> {t.admin.tillSetup}
             </TabsTrigger>
-            <TabsTrigger value="orders" className="h-8 gap-1.5 text-xs">
-              <ReceiptText className="h-3.5 w-3.5" /> Orders
+            <TabsTrigger value="orders" className="h-8 gap-1.5 text-xs cursor-pointer">
+              <ReceiptText className="h-3.5 w-3.5" /> {t.managerReport.tabOrders}
             </TabsTrigger>
           </TabsList>
         </div>
@@ -166,13 +160,13 @@ export function ManagerReportTablePanel({
         <TabsContent value="summary" className="mt-0 space-y-4">
           <div className="grid gap-4 xl:grid-cols-2">
             <div>
-              <SectionTitle icon={FileText} title="Executive summary" meta={`${metrics.orders} orders`} />
-              <ReportTable headers={['Metric', 'Value']} rows={summaryRows} />
+              <SectionTitle icon={FileText} title={t.managerReport.managerOverview} meta={`${metrics.orders} ${t.managerReport.tabOrders}`} />
+              <ReportTable headers={[t.managerReport.mixOutput, t.receipt.amount]} rows={summaryRows} />
             </div>
             <div>
-              <SectionTitle icon={FileText} title="Payment summary" meta={`${payments.length} tender groups`} />
+              <SectionTitle icon={FileText} title={t.managerReport.paymentBreakdown} meta={`${payments.length} ${t.receipt.paymentMode}`} />
               <ReportTable
-                headers={['Payment Mode', 'Amount', 'Bills Count', 'Share %']}
+                headers={[t.receipt.paymentMode, t.receipt.amount, t.managerReport.totalOrders, t.managerReport.mixOutput]}
                 rows={payments.map((payment) => [
                   payment.label,
                   formatCurrency(payment.amount),
@@ -180,7 +174,7 @@ export function ManagerReportTablePanel({
                   `${payment.share.toFixed(1)}%`,
                 ])}
                 footer={[
-                  'Total',
+                  t.receipt.grandTotal,
                   formatCurrency(totalPaymentAmt),
                   metrics.orders,
                   '100%',
@@ -189,15 +183,16 @@ export function ManagerReportTablePanel({
             </div>
           </div>
           <div>
-            <SectionTitle icon={FileText} title="Category breakdown" />
+            <SectionTitle icon={FileText} title={t.managerReport.categoryShare} />
             <ReportTable
-              headers={['Category', 'Amount', 'Disc', 'Net Amount', 'Qty', 'Bills Count', 'Share %']}
+              headers={[t.admin.categories, t.managerReport.grossRevenue, t.receipt.discount, t.managerReport.netRevenue, t.receipt.qty, t.managerReport.totalOrders, t.managerReport.mixOutput]}
               rows={categories.map((category) => [
-                category.label,
+                getLocalizedCategoryName(category.category, language) || category.label,
                 formatCurrency(category.revenue + category.discounts),
                 formatCurrency(category.discounts),
                 formatCurrency(category.revenue),
                 category.quantity,
+
                 category.orderCount,
                 `${category.share.toFixed(1)}%`,
               ])}
@@ -221,7 +216,7 @@ export function ManagerReportTablePanel({
               headers={['Item', 'Category', 'Qty', 'Amount', 'Disc', 'Net Amount', 'Bills Count', 'Share %']}
               rows={topItems.map((item) => [
                 item.name,
-                categoryLabels[item.category] || item.category,
+                getLocalizedCategoryName(item.category, language) || item.category,
                 item.quantity,
                 formatCurrency(item.revenue + item.discounts),
                 formatCurrency(item.discounts),
@@ -229,6 +224,7 @@ export function ManagerReportTablePanel({
                 item.orderCount,
                 `${item.share.toFixed(1)}%`,
               ])}
+
               footer={[
                 'Total (Top Items)',
                 '—',

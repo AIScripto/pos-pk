@@ -3,6 +3,7 @@ import { Loader2, LogIn, Store, User, Lock } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { useTranslation } from '@/i18n';
 
 export interface TerminalOption {
   id: string;
@@ -23,14 +24,6 @@ interface CashierLoginFormProps {
   onSubmit: (e: React.FormEvent) => void;
 }
 
-/**
- * CashierLoginForm Component
- * 
- * Ergonomic POS Cashier authentication form optimized for touch displays and quick entry.
- * Features tactile 48px+ touch targets, clear field icons, and accessible focus states.
- * 
- * @component
- */
 export const CashierLoginForm: React.FC<CashierLoginFormProps> = ({
   username,
   setUsername,
@@ -43,6 +36,8 @@ export const CashierLoginForm: React.FC<CashierLoginFormProps> = ({
   loading,
   onSubmit,
 }) => {
+  const { t } = useTranslation();
+
   return (
     <form onSubmit={onSubmit} className="space-y-4">
       {/* Till / Register Selection */}
@@ -50,10 +45,10 @@ export const CashierLoginForm: React.FC<CashierLoginFormProps> = ({
         <div className="flex items-center justify-between">
           <Label htmlFor="till-select" className="text-xs font-semibold uppercase tracking-wider text-slate-300 flex items-center gap-1.5">
             <Store className="w-3.5 h-3.5 text-emerald-400" />
-            <span>Assigned Terminal / Register</span>
+            <span>{t.till.selectTerminal}</span>
           </Label>
           <span className="text-[11px] font-medium text-emerald-400/90 bg-emerald-950/60 border border-emerald-500/20 px-2 py-0.5 rounded">
-            POS Mode
+            POS
           </span>
         </div>
         <div className="relative">
@@ -66,12 +61,12 @@ export const CashierLoginForm: React.FC<CashierLoginFormProps> = ({
           >
             {terminals.length === 0 && (
               <option value="">
-                {terminalsLoading ? 'Scanning network tills...' : 'Default Register (Auto-assigned)'}
+                {terminalsLoading ? t.common.loading : t.till.selectTerminal}
               </option>
             )}
-            {terminals.map((t) => (
-              <option key={t.id} value={t.id}>
-                {t.code ? `${t.code} — ${t.name}` : t.name}
+            {terminals.map((tItem) => (
+              <option key={tItem.id} value={tItem.id}>
+                {tItem.code ? `${tItem.code} — ${tItem.name}` : tItem.name}
               </option>
             ))}
           </select>
@@ -87,13 +82,13 @@ export const CashierLoginForm: React.FC<CashierLoginFormProps> = ({
       <div className="space-y-1.5">
         <Label htmlFor="cashier-username" className="text-xs font-semibold uppercase tracking-wider text-slate-300 flex items-center gap-1.5">
           <User className="w-3.5 h-3.5 text-slate-400" />
-          <span>Cashier Username</span>
+          <span>{t.auth.username}</span>
         </Label>
         <div className="relative">
           <Input
             id="cashier-username"
             type="text"
-            placeholder="e.g. cashier1, cashier2, tariq"
+            placeholder={t.auth.username}
             value={username}
             onChange={(e) => setUsername(e.target.value)}
             autoComplete="username"
@@ -108,7 +103,7 @@ export const CashierLoginForm: React.FC<CashierLoginFormProps> = ({
       <div className="space-y-1.5">
         <Label htmlFor="cashier-password" className="text-xs font-semibold uppercase tracking-wider text-slate-300 flex items-center gap-1.5">
           <Lock className="w-3.5 h-3.5 text-slate-400" />
-          <span>Security Passcode / Password</span>
+          <span>{t.auth.password}</span>
         </Label>
         <div className="relative">
           <Input
@@ -127,17 +122,17 @@ export const CashierLoginForm: React.FC<CashierLoginFormProps> = ({
       <Button
         type="submit"
         disabled={loading}
-        className="w-full h-12 mt-6 bg-emerald-600 hover:bg-emerald-500 active:scale-[0.99] text-white font-bold text-sm sm:text-base rounded-xl transition-all shadow-lg shadow-emerald-900/30 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+        className="w-full h-12 mt-6 bg-emerald-600 hover:bg-emerald-500 active:scale-[0.99] text-white font-bold text-sm sm:text-base rounded-xl transition-all shadow-lg shadow-emerald-900/30 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 cursor-pointer"
       >
         {loading ? (
           <>
             <Loader2 className="w-4 h-4 animate-spin inline" />
-            <span>Verifying Terminal...</span>
+            <span>{t.common.loading}</span>
           </>
         ) : (
           <>
             <LogIn className="w-4 h-4 inline" />
-            <span>Launch POS Register</span>
+            <span>{t.auth.loginButton}</span>
           </>
         )}
       </Button>
@@ -146,3 +141,4 @@ export const CashierLoginForm: React.FC<CashierLoginFormProps> = ({
 };
 
 export default CashierLoginForm;
+

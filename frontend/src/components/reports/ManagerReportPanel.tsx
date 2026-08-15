@@ -95,13 +95,13 @@ export function ManagerReportPanel({ invoices }: ManagerReportPanelProps) {
             <div>
               <DialogTitle className="flex items-center gap-2 text-2xl font-bold text-foreground">
                 <ShieldCheck className="h-5 w-5 text-primary" />
-                Manager Report Panel
+                {t.managerReport.panelTitle}
               </DialogTitle>
               <DialogDescription className="mt-1 text-sm text-muted-foreground">
-                Input filters on the left, insight outputs across charts, grouped tables, and order slices.
+                {t.managerReport.panelDesc}
               </DialogDescription>
             </div>
-            <Button variant="ghost" size="icon" onClick={() => handleOpenChange(false)} className="rounded-2xl">
+            <Button variant="ghost" size="icon" onClick={() => handleOpenChange(false)} className="rounded-2xl cursor-pointer">
               <X className="h-5 w-5" />
             </Button>
           </div>
@@ -123,8 +123,8 @@ export function ManagerReportPanel({ invoices }: ManagerReportPanelProps) {
                         <Lock className="h-5 w-5" />
                       </div>
                       <div>
-                        <p className="text-xs font-semibold uppercase tracking-[0.24em] text-primary/75">Access scope</p>
-                        <h3 className="text-xl font-bold text-foreground">Owner visibility enabled</h3>
+                        <p className="text-xs font-semibold uppercase tracking-[0.24em] text-primary/75">{t.managerReport.accessScope}</p>
+                        <h3 className="text-xl font-bold text-foreground">{t.managerReport.ownerVisibility}</h3>
                         <p className="text-sm text-muted-foreground">
                           {report.meta.datasetLabel} across {report.meta.windowLabel.toLowerCase()}.
                         </p>
@@ -134,10 +134,10 @@ export function ManagerReportPanel({ invoices }: ManagerReportPanelProps) {
                   <div className="flex items-center">
                     <Button
                       variant="outline"
-                      className="h-12 rounded-2xl border-border/70 bg-card/80 px-5"
+                      className="h-12 rounded-2xl border-border/70 bg-card/80 px-5 cursor-pointer"
                       onClick={() => handleOpenChange(false)}
                     >
-                      Lock panel
+                      {t.managerReport.lockPanel}
                     </Button>
                   </div>
                 </div>
@@ -158,3 +158,4 @@ export function ManagerReportPanel({ invoices }: ManagerReportPanelProps) {
 }
 
 export default ManagerReportPanel;
+

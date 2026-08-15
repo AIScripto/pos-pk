@@ -2,6 +2,7 @@ import type { ReactNode } from 'react';
 import { CalendarDays, LayoutDashboard, Monitor, UtensilsCrossed } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { TabCategory } from '@/hooks/useManagerPanelState';
+import { useTranslation } from '@/i18n';
 
 interface ManagerTabNavigationProps {
   activeTab: TabCategory;
@@ -22,37 +23,39 @@ export function ManagerTabNavigation({
   pendingTills,
   totalKitchenOrders,
 }: ManagerTabNavigationProps) {
+  const { t } = useTranslation();
+
   const TABS: { id: TabCategory; label: string; icon: ReactNode; badge?: ReactNode }[] = [
     {
       id: 'overview',
-      label: 'Overview',
+      label: t.managerReport.managerOverview,
       icon: <LayoutDashboard className="h-4 w-4" />,
     },
     {
       id: 'openclosing',
-      label: 'Open & Closing',
+      label: t.till.openShift + ' & ' + t.till.closeShift,
       icon: <CalendarDays className="h-4 w-4" />,
       badge: (hasOpenDay || hasOpenShift) ? (
-        <span className="flex h-2 w-2 rounded-full bg-emerald-500" title="Day/Shift Active" />
+        <span className="flex h-2 w-2 rounded-full bg-emerald-500" title="Active" />
       ) : null,
     },
     {
       id: 'tills',
-      label: 'Tills Status',
+      label: t.admin.tillSetup,
       icon: <Monitor className="h-4 w-4" />,
       badge: pendingTills > 0 ? (
         <span className="rounded-full bg-amber-500 px-2 py-0.5 text-[10px] font-black text-white animate-pulse">
-          {pendingTills} Pending
+          {pendingTills} {t.pos.pending}
         </span>
       ) : openTills > 0 ? (
         <span className="rounded-full bg-emerald-100 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-400 px-2 py-0.5 text-[10px] font-black">
-          {openTills} Open
+          {openTills} {t.common.active}
         </span>
       ) : null,
     },
     {
       id: 'kitchen',
-      label: 'Kitchen Pipeline',
+      label: t.kds.kdsTitle,
       icon: <UtensilsCrossed className="h-4 w-4" />,
       badge: totalKitchenOrders > 0 ? (
         <span className="rounded-full bg-rose-500 px-2 py-0.5 text-[10px] font-black text-white">
@@ -72,7 +75,7 @@ export function ManagerTabNavigation({
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
               className={cn(
-                "flex flex-1 items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-xs font-bold transition-all duration-200",
+                "flex flex-1 items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-xs font-bold transition-all duration-200 cursor-pointer",
                 active
                   ? "bg-white text-slate-950 shadow-sm dark:bg-slate-950 dark:text-white"
                   : "text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white hover:bg-white/40 dark:hover:bg-slate-800/40"
@@ -88,3 +91,4 @@ export function ManagerTabNavigation({
     </div>
   );
 }
+

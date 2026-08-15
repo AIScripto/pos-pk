@@ -8,8 +8,10 @@ import {
 import { MessageBubble, TypingIndicator } from './ChatPrimitives';
 import { SuggestionPanel } from './SuggestionPanel';
 import type { AssistantMessage } from './types';
+import { useTranslation } from '@/i18n';
 
 export function SalesInsightAssistant() {
+  const { t } = useTranslation();
   const [messages, setMessages] = useState<AssistantMessage[]>([]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
@@ -143,9 +145,9 @@ export function SalesInsightAssistant() {
             <div className="flex justify-end">
               <button
                 onClick={clearChat}
-                className="flex items-center gap-1.5 rounded-full border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-3.5 py-1.5 text-[11px] font-semibold text-slate-600 dark:text-slate-300 shadow-sm transition-colors hover:border-slate-300 hover:text-slate-900 dark:hover:text-white"
+                className="flex items-center gap-1.5 rounded-full border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-3.5 py-1.5 text-[11px] font-semibold text-slate-600 dark:text-slate-300 shadow-sm transition-colors hover:border-slate-300 hover:text-slate-900 dark:hover:text-white cursor-pointer"
               >
-                <RotateCcw className="h-3 w-3" /> Clear chat
+                <RotateCcw className="h-3 w-3" /> {t.common.clear}
               </button>
             </div>
           )}
@@ -155,9 +157,9 @@ export function SalesInsightAssistant() {
               <div className="flex h-14 w-14 items-center justify-center rounded-2xl border border-blue-200 dark:border-blue-900/50 bg-blue-50 dark:bg-blue-950/40 text-blue-600 dark:text-blue-400 shadow-sm">
                 <Bot className="h-7 w-7" />
               </div>
-              <p className="text-base font-extrabold text-slate-900 dark:text-slate-100">Your insight assistant is ready</p>
+              <p className="text-base font-extrabold text-slate-900 dark:text-slate-100">{t.managerReport.aiAssistantTitle}</p>
               <p className="max-w-xs text-sm leading-relaxed text-slate-500 dark:text-slate-400 font-medium">
-                Pick a category above, tap a suggestion, or type your own question below.
+                {t.managerReport.askAiPlaceholder}
               </p>
             </div>
           )}
@@ -165,7 +167,7 @@ export function SalesInsightAssistant() {
           {messages.map(msg => <MessageBubble key={msg.id} msg={msg} />)}
 
           {(loading || transcribing) && (
-            <TypingIndicator label={transcribing ? 'Transcribing your voice...' : 'Querying live sales data...'} />
+            <TypingIndicator label={transcribing ? t.common.loading : t.managerReport.aiAssistantTitle} />
           )}
 
           {error && (
@@ -183,7 +185,7 @@ export function SalesInsightAssistant() {
             <button
               onClick={() => recording ? stopRecording() : startRecording()}
               disabled={loading || transcribing}
-              className={`relative flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-xl transition-all ${recording ? 'bg-red-500 text-white shadow-lg shadow-red-500/40' : 'bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-400 hover:bg-slate-300 dark:hover:bg-slate-600 hover:text-slate-900 dark:hover:text-white'} disabled:cursor-not-allowed disabled:opacity-40`}
+              className={`relative flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-xl transition-all cursor-pointer ${recording ? 'bg-red-500 text-white shadow-lg shadow-red-500/40' : 'bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-400 hover:bg-slate-300 dark:hover:bg-slate-600 hover:text-slate-900 dark:hover:text-white'} disabled:cursor-not-allowed disabled:opacity-40`}
             >
               {recording && <span className="absolute inset-0 animate-ping rounded-xl bg-red-500 opacity-25" />}
               {recording ? <MicOff className="relative z-10 h-4 w-4" /> : <Mic className="h-4 w-4" />}
@@ -196,8 +198,8 @@ export function SalesInsightAssistant() {
               onKeyDown={handleKeyDown}
               placeholder={
                 recording ? 'Recording... tap to stop' :
-                transcribing ? 'Transcribing audio...' :
-                'Ask about sales, revenue, products, customers...'
+                transcribing ? t.common.loading :
+                t.managerReport.askAiPlaceholder
               }
               disabled={loading || recording || transcribing}
               className="flex-1 bg-transparent px-1 py-1 text-sm font-medium text-slate-900 dark:text-slate-100 outline-none placeholder:text-slate-400 dark:placeholder:text-slate-500 disabled:cursor-not-allowed"
@@ -206,18 +208,18 @@ export function SalesInsightAssistant() {
             <button
               onClick={() => sendQuery(input)}
               disabled={!input.trim() || loading || recording || transcribing}
-              className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-blue-600 to-indigo-600 text-white shadow-md shadow-blue-500/20 transition-all hover:from-blue-500 hover:to-indigo-500 disabled:cursor-not-allowed disabled:opacity-30 disabled:shadow-none"
+              className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-blue-600 to-indigo-600 text-white shadow-md shadow-blue-500/20 transition-all hover:from-blue-500 hover:to-indigo-500 disabled:cursor-not-allowed disabled:opacity-30 disabled:shadow-none cursor-pointer"
             >
               {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
             </button>
           </div>
           <p className="mt-2 text-center text-[10px] text-slate-400 dark:text-slate-500 font-medium">
             <span className="font-semibold text-slate-600 dark:text-slate-400">Enter</span> to send &nbsp;·&nbsp;
-            <span className="font-semibold text-slate-600 dark:text-slate-400">Mic</span> for voice in any language &nbsp;·&nbsp;
-            Data queried live from your POS database
+            <span className="font-semibold text-slate-600 dark:text-slate-400">{t.managerReport.aiAssistantTitle}</span>
           </p>
         </div>
       </div>
     </div>
   );
 }
+

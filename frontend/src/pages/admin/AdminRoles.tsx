@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Plus, Edit2, Trash2, AlertCircle, Shield } from 'lucide-react';
+import { useTranslation } from '@/i18n';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -20,6 +21,7 @@ import RoleFormDialog from '@/components/admin/RoleFormDialog';
 import AdminPageLayout from '@/components/admin/AdminPageLayout';
 
 export default function AdminRoles() {
+  const { t } = useTranslation();
   const queryClient = useQueryClient();
   const { toast } = useToast();
   const [formDialogOpen, setFormDialogOpen] = useState(false);
@@ -42,8 +44,8 @@ export default function AdminRoles() {
     },
     onSuccess: () => {
       toast({
-        title: editingRole ? 'Role updated' : 'Role created',
-        description: editingRole ? 'Role has been updated successfully' : 'Role has been created successfully',
+        title: t.notifications.recordSaved,
+        description: t.notifications.recordSaved,
         variant: 'default',
       });
       queryClient.invalidateQueries({ queryKey: ['roles'] });
@@ -52,7 +54,7 @@ export default function AdminRoles() {
     },
     onError: (err: unknown) => {
       toast({
-        title: editingRole ? 'Failed to update role' : 'Failed to create role',
+        title: t.common.save,
         description: getUserFriendlyErrorMessage(err),
         variant: 'destructive',
       });
@@ -63,8 +65,8 @@ export default function AdminRoles() {
     mutationFn: async (roleId: string) => roleApi.delete(roleId),
     onSuccess: () => {
       toast({
-        title: 'Role deleted',
-        description: 'Role has been deleted successfully',
+        title: t.notifications.recordDeleted,
+        description: t.notifications.recordDeleted,
         variant: 'default',
       });
       queryClient.invalidateQueries({ queryKey: ['roles'] });
@@ -73,7 +75,7 @@ export default function AdminRoles() {
     },
     onError: (err: unknown) => {
       toast({
-        title: 'Failed to delete role',
+        title: t.common.delete,
         description: getUserFriendlyErrorMessage(err),
         variant: 'destructive',
       });
@@ -86,30 +88,30 @@ export default function AdminRoles() {
   return (
     <>
       <AdminPageLayout
-        title="Roles"
-        description="Manage user roles and permissions"
+        title={t.roles.rolesTitle}
+        description={t.roles.rolesTitle}
         icon={<Shield className="w-5 h-5" />}
         action={
           <Button
             onClick={() => { setEditingRole(null); setFormDialogOpen(true); }}
-            className="bg-slate-800 text-white hover:bg-slate-900 dark:bg-blue-600 dark:hover:bg-blue-700"
+            className="bg-slate-800 text-white hover:bg-slate-900 dark:bg-blue-600 dark:hover:bg-blue-700 cursor-pointer"
           >
             <Plus className="w-4 h-4 mr-2" />
-            Add Role
+            {t.common.addNew}
           </Button>
         }
       >
         <Alert className="border-amber-200 bg-amber-50 text-amber-800 dark:border-amber-800 dark:bg-amber-950/30 dark:text-amber-300">
           <AlertCircle className="h-4 w-4" />
           <AlertDescription>
-            System roles (Admin, Manager, Cashier, Kitchen Staff) cannot be edited or deleted.
+            {t.roles.admin}, {t.roles.manager}, {t.roles.cashier}, {t.roles.kitchen}
           </AlertDescription>
         </Alert>
 
         <Card className="border-slate-200 bg-slate-50/90 shadow-sm dark:border-slate-700 dark:bg-slate-900">
           <CardHeader>
             <CardTitle className="font-bold text-slate-900 dark:text-white">
-              Roles ({roles.length})
+              {t.roles.rolesTitle} ({roles.length})
             </CardTitle>
           </CardHeader>
           <CardContent className="p-0">
@@ -117,25 +119,25 @@ export default function AdminRoles() {
               <table className="w-full text-sm">
                 <thead>
                   <tr className="bg-slate-800 dark:bg-slate-950">
-                    <th className="px-4 py-3 text-left font-semibold text-white">Name</th>
-                    <th className="px-4 py-3 text-left font-semibold text-white">Tag</th>
-                    <th className="px-4 py-3 text-left font-semibold text-white">Description</th>
-                    <th className="px-4 py-3 text-left font-semibold text-white">Status</th>
-                    <th className="px-4 py-3 text-right font-semibold text-white">Actions</th>
+                    <th className="px-4 py-3 text-left font-semibold text-white">{t.roles.roleName}</th>
+                    <th className="px-4 py-3 text-left font-semibold text-white">{t.admin.slug}</th>
+                    <th className="px-4 py-3 text-left font-semibold text-white">{t.roles.description}</th>
+                    <th className="px-4 py-3 text-left font-semibold text-white">{t.common.status}</th>
+                    <th className="px-4 py-3 text-right font-semibold text-white">{t.common.actions}</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-200 dark:divide-slate-700">
                   {isLoading ? (
                     <tr>
                       <td colSpan={5} className="py-10 text-center text-slate-500 dark:text-slate-400">
-                        Loading roles...
+                        {t.common.loading}
                       </td>
                     </tr>
                   ) : roles.length === 0 ? (
                     <tr>
                       <td colSpan={5} className="py-10 text-center">
                         <Shield className="mx-auto mb-3 h-12 w-12 text-slate-400" />
-                        <p className="font-medium text-slate-600 dark:text-slate-300">No roles found</p>
+                        <p className="font-medium text-slate-600 dark:text-slate-300">{t.common.noData}</p>
                       </td>
                     </tr>
                   ) : (
@@ -161,7 +163,7 @@ export default function AdminRoles() {
                               ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300'
                               : 'bg-slate-200 text-slate-600 dark:bg-slate-700 dark:text-slate-400'
                           }`}>
-                            {role.isActive ? 'Active' : 'Inactive'}
+                            {role.isActive ? t.common.active : t.common.inactive}
                           </span>
                         </td>
                         <td className="px-4 py-3 text-right space-x-2">
@@ -169,7 +171,7 @@ export default function AdminRoles() {
                             variant="ghost" size="sm"
                             onClick={() => { setEditingRole(role); setFormDialogOpen(true); }}
                             disabled={isSystemRole(role.tag) || saveMutation.isPending}
-                            className="text-slate-600 hover:bg-slate-200 hover:text-slate-900 dark:text-slate-300 dark:hover:bg-slate-700 dark:hover:text-white"
+                            className="text-slate-600 hover:bg-slate-200 hover:text-slate-900 dark:text-slate-300 dark:hover:bg-slate-700 dark:hover:text-white cursor-pointer"
                           >
                             <Edit2 className="w-4 h-4" />
                           </Button>
@@ -177,7 +179,7 @@ export default function AdminRoles() {
                             variant="ghost" size="sm"
                             onClick={() => { setRoleToDelete(role); setDeleteConfirmOpen(true); }}
                             disabled={isSystemRole(role.tag) || deleteMutation.isPending}
-                            className="text-rose-600 hover:bg-rose-100 hover:text-rose-700 dark:text-rose-400 dark:hover:bg-rose-900/30"
+                            className="text-rose-600 hover:bg-rose-100 hover:text-rose-700 dark:text-rose-400 dark:hover:bg-rose-900/30 cursor-pointer"
                           >
                             <Trash2 className="w-4 h-4" />
                           </Button>
@@ -202,18 +204,18 @@ export default function AdminRoles() {
 
       <AlertDialog open={deleteConfirmOpen} onOpenChange={setDeleteConfirmOpen}>
         <AlertDialogContent className="border-slate-200 bg-slate-50 text-slate-900 dark:border-slate-600 dark:bg-slate-900 dark:text-white">
-          <AlertDialogTitle>Delete Role</AlertDialogTitle>
+          <AlertDialogTitle>{t.common.deleteConfirmTitle}</AlertDialogTitle>
           <AlertDialogDescription>
-            Are you sure you want to delete "{roleToDelete?.name}"? This action cannot be undone.
+            {t.common.deleteConfirmDesc} ({roleToDelete?.name})
           </AlertDialogDescription>
           <div className="flex justify-end gap-3">
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogCancel className="cursor-pointer">{t.common.cancel}</AlertDialogCancel>
             <AlertDialogAction
               onClick={() => roleToDelete && deleteMutation.mutate(roleToDelete.id)}
               disabled={deleteMutation.isPending}
-              className="bg-red-600 hover:bg-red-700"
+              className="bg-red-600 hover:bg-red-700 cursor-pointer"
             >
-              {deleteMutation.isPending ? 'Deleting...' : 'Delete'}
+              {deleteMutation.isPending ? t.common.loading : t.common.delete}
             </AlertDialogAction>
           </div>
         </AlertDialogContent>
@@ -221,3 +223,4 @@ export default function AdminRoles() {
     </>
   );
 }
+

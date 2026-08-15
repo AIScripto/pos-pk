@@ -297,7 +297,7 @@ export function PaymentModal({ grandTotal, onConfirm, onCancel }: PaymentModalPr
               {!clientSecret ? (
                 <div className="flex flex-col items-center justify-center gap-2 py-8 text-slate-400">
                   <Loader2 className="h-6 w-6 animate-spin text-blue-400" />
-                  <p className="text-xs font-semibold">Initialising secure card terminal…</p>
+                  <p className="text-xs font-semibold">{t.common.loading}</p>
                 </div>
               ) : (
                 <Elements stripe={stripePromise!} options={{ clientSecret }}>
@@ -334,7 +334,7 @@ export function PaymentModal({ grandTotal, onConfirm, onCancel }: PaymentModalPr
           >
             {stripeProcessing ? (
               <span className="flex items-center justify-center gap-2">
-                <Loader2 className="h-5 w-5 animate-spin" /> Authorizing Payment…
+                <Loader2 className="h-5 w-5 animate-spin" /> {t.common.loading}
               </span>
             ) : (
               <>
@@ -344,6 +344,7 @@ export function PaymentModal({ grandTotal, onConfirm, onCancel }: PaymentModalPr
             )}
           </button>
         </div>
+
 
       </div>
     </div>

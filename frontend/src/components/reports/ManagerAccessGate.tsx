@@ -1,6 +1,7 @@
 import { ShieldCheck, LockKeyhole, Sparkles } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { useTranslation } from '@/i18n';
 
 interface ManagerAccessGateProps {
   password: string;
@@ -15,6 +16,8 @@ export function ManagerAccessGate({
   onPasswordChange,
   onUnlock,
 }: ManagerAccessGateProps) {
+  const { t } = useTranslation();
+
   return (
     <div className="relative flex h-full min-h-[560px] items-center justify-center overflow-hidden rounded-[32px] bg-slate-950 px-6 py-10 text-slate-50">
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(251,146,60,0.32),transparent_28%),radial-gradient(circle_at_bottom_right,rgba(16,185,129,0.22),transparent_24%),linear-gradient(160deg,#020617,#0f172a_55%,#111827)]" />
@@ -25,29 +28,25 @@ export function ManagerAccessGate({
         <div className="space-y-6">
           <div className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-4 py-2 text-sm font-medium text-white/80 backdrop-blur">
             <ShieldCheck className="h-4 w-4 text-emerald-300" />
-            Manager / Owner Intelligence Panel
+            {t.managerReport.reportsTitle}
           </div>
           <div className="space-y-4">
             <h2 className="max-w-2xl font-sans text-4xl font-bold leading-tight text-white sm:text-5xl">
-              View revenue, product movement, discount impact, and order behavior from one clean control room.
+              {t.managerReport.panelDesc}
             </h2>
-            <p className="max-w-2xl text-base leading-7 text-slate-300">
-              This panel combines live POS orders with seeded sample sales so you can inspect trends, compare categories,
-              and validate reporting views before connecting a backend.
-            </p>
           </div>
           <div className="grid gap-4 sm:grid-cols-3">
             <div className="rounded-3xl border border-white/10 bg-white/5 p-5 backdrop-blur">
-              <p className="text-xs uppercase tracking-[0.24em] text-slate-400">What You Get</p>
-              <p className="mt-3 text-lg font-semibold text-white">Revenue trend analysis</p>
+              <p className="text-xs uppercase tracking-[0.24em] text-slate-400">{t.managerReport.trendOutput}</p>
+              <p className="mt-3 text-lg font-semibold text-white">{t.managerReport.salesTrend}</p>
             </div>
             <div className="rounded-3xl border border-white/10 bg-white/5 p-5 backdrop-blur">
-              <p className="text-xs uppercase tracking-[0.24em] text-slate-400">Grouping Views</p>
-              <p className="mt-3 text-lg font-semibold text-white">Daily, hourly, and weekday slices</p>
+              <p className="text-xs uppercase tracking-[0.24em] text-slate-400">{t.managerReport.grouping}</p>
+              <p className="mt-3 text-lg font-semibold text-white">{t.managerReport.dailyTrend}</p>
             </div>
             <div className="rounded-3xl border border-white/10 bg-white/5 p-5 backdrop-blur">
-              <p className="text-xs uppercase tracking-[0.24em] text-slate-400">Item Insight</p>
-              <p className="mt-3 text-lg font-semibold text-white">Top products, combos, and discount load</p>
+              <p className="text-xs uppercase tracking-[0.24em] text-slate-400">{t.managerReport.mixOutput}</p>
+              <p className="mt-3 text-lg font-semibold text-white">{t.managerReport.topProducts}</p>
             </div>
           </div>
         </div>
@@ -59,10 +58,10 @@ export function ManagerAccessGate({
                 <LockKeyhole className="h-7 w-7 text-orange-200" />
               </div>
               <div>
-                <p className="text-xs uppercase tracking-[0.24em] text-slate-400">Protected Access</p>
-                <h3 className="mt-2 text-2xl font-semibold text-white">Enter manager password</h3>
+                <p className="text-xs uppercase tracking-[0.24em] text-slate-400">{t.managerReport.managerGate}</p>
+                <h3 className="mt-2 text-2xl font-semibold text-white">{t.managerReport.enterPassword}</h3>
                 <p className="mt-2 text-sm leading-6 text-slate-300">
-                  Use the fixed password configured for this build to open the reporting workspace.
+                  {t.managerReport.enterManagerPin}
                 </p>
               </div>
             </div>
@@ -78,16 +77,16 @@ export function ManagerAccessGate({
                 type="password"
                 value={password}
                 onChange={(event) => onPasswordChange(event.target.value)}
-                placeholder="Enter password"
+                placeholder={t.auth.password}
                 className="h-12 rounded-2xl border-white/10 bg-slate-900/70 px-4 text-white placeholder:text-slate-500 focus-visible:ring-orange-400"
               />
               <Button
                 type="submit"
                 disabled={isSubmitting}
-                className="h-12 w-full rounded-2xl border-0 bg-gradient-to-r from-orange-400 via-orange-500 to-emerald-400 text-slate-950 shadow-lg shadow-orange-500/30 hover:opacity-95"
+                className="h-12 w-full rounded-2xl border-0 bg-gradient-to-r from-orange-400 via-orange-500 to-emerald-400 text-slate-950 shadow-lg shadow-orange-500/30 hover:opacity-95 cursor-pointer"
               >
                 <Sparkles className="h-4 w-4" />
-                Open report panel
+                {t.managerReport.openReportPanel}
               </Button>
             </form>
           </div>
@@ -96,3 +95,4 @@ export function ManagerAccessGate({
     </div>
   );
 }
+

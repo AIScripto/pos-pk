@@ -1,6 +1,7 @@
 import { DenominationEntry, PKR_DENOMINATIONS, sumDenominations } from '@/types/till';
 import { formatCurrency } from '@/utils/pos';
 import { useAppConfig } from '@/context/AppConfigContext';
+import { useTranslation } from '@/i18n';
 import { cn } from '@/lib/utils';
 
 interface DenominationTableProps {
@@ -20,6 +21,7 @@ export function DenominationTable({
   highlightFilled = true,
   layout = 'table',
 }: DenominationTableProps) {
+  const { t } = useTranslation();
   const { currencyConfig } = useAppConfig();
   const total = sumDenominations(entries);
 
@@ -78,7 +80,7 @@ export function DenominationTable({
         {showTotal && (
           <div className="mt-1.5 flex items-center justify-between rounded-lg border border-pos-success/30 bg-pos-success/8 px-3 py-1.5">
             <span className="font-display text-xs font-black uppercase tracking-[0.14em] text-muted-foreground">
-              Total Cash
+              {t.till.totalCounted}
             </span>
             <span className="font-display text-base font-black tabular-nums text-pos-success">
               {formatCurrency(total)}
@@ -94,14 +96,14 @@ export function DenominationTable({
       {/* Header */}
       <div className="grid grid-cols-[1fr_80px_24px_90px] gap-0 bg-secondary/80 px-4 py-2">
         <span className="font-display font-bold text-[10px] uppercase tracking-[0.15em] text-muted-foreground">
-          Denomination
+          {t.till.denominationGrid}
         </span>
         <span className="font-display font-bold text-[10px] uppercase tracking-[0.15em] text-muted-foreground text-right">
-          Count
+          {t.receipt.qty}
         </span>
         <span />
         <span className="font-display font-bold text-[10px] uppercase tracking-[0.15em] text-muted-foreground text-right">
-          Sub-total
+          {t.pos.subtotal}
         </span>
       </div>
 
@@ -159,7 +161,7 @@ export function DenominationTable({
       {showTotal && (
         <div className="grid grid-cols-[1fr_80px_24px_90px] items-center gap-0 px-4 py-3 border-t-2 border-border bg-secondary/60">
           <span className="font-display font-extrabold text-sm text-foreground uppercase tracking-wide col-span-3">
-            Total Cash
+            {t.till.totalCounted}
           </span>
           <span className="text-right font-display font-black text-[18px] text-primary tabular-nums">
             {formatCurrency(total)}
@@ -169,3 +171,4 @@ export function DenominationTable({
     </div>
   );
 }
+

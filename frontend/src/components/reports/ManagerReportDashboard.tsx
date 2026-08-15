@@ -18,6 +18,7 @@ import { ManagerReportSnapshot } from '@/types/reports';
 import { formatCurrency, formatDate } from '@/utils/pos';
 import { TAX_CONFIG } from '@/config/tax';
 import { useAppConfig } from '@/context/AppConfigContext';
+import { useTranslation, getLocalizedCategoryName } from '@/i18n';
 import {
   chartConfig,
   pieColors,
@@ -30,6 +31,7 @@ interface ManagerReportDashboardProps {
 }
 
 export function ManagerReportDashboard({ report }: ManagerReportDashboardProps) {
+  const { t, language } = useTranslation();
   const { currencyConfig } = useAppConfig();
   const { metrics, categories, topItems, productItems, dealItems, payments, visibleInvoices, hourly, meta } = report;
 
@@ -44,10 +46,10 @@ export function ManagerReportDashboard({ report }: ManagerReportDashboardProps) 
       {/* ── Tabs ── */}
       <Tabs defaultValue="performance" className="space-y-4">
         <TabsList className="h-auto rounded-[20px] bg-card/80 p-1.5">
-          <TabsTrigger value="performance" className="rounded-md px-4 py-2.5">Performance</TabsTrigger>
-          <TabsTrigger value="items" className="rounded-md px-4 py-2.5">Items</TabsTrigger>
-          <TabsTrigger value="payments" className="rounded-md px-4 py-2.5">Payments</TabsTrigger>
-          <TabsTrigger value="orders" className="rounded-md px-4 py-2.5">Orders</TabsTrigger>
+          <TabsTrigger value="performance" className="rounded-md px-4 py-2.5 cursor-pointer">{t.managerReport.tabPerformance}</TabsTrigger>
+          <TabsTrigger value="items" className="rounded-md px-4 py-2.5 cursor-pointer">{t.managerReport.tabItems}</TabsTrigger>
+          <TabsTrigger value="payments" className="rounded-md px-4 py-2.5 cursor-pointer">{t.managerReport.tabPayments}</TabsTrigger>
+          <TabsTrigger value="orders" className="rounded-md px-4 py-2.5 cursor-pointer">{t.managerReport.tabOrders}</TabsTrigger>
         </TabsList>
 
         {/* ─ Performance Tab ─ */}
@@ -55,13 +57,14 @@ export function ManagerReportDashboard({ report }: ManagerReportDashboardProps) 
           <div className="rounded-lg border border-border/70 bg-card/85 p-4 shadow-[0_18px_44px_-28px_rgba(15,23,42,0.55)]">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-xs font-semibold uppercase tracking-[0.24em] text-primary/75">Grouped Analysis</p>
-                <h3 className="mt-2 text-xl font-bold text-foreground">Hourly order momentum</h3>
+                <p className="text-xs font-semibold uppercase tracking-[0.24em] text-primary/75">{t.managerReport.grouping}</p>
+                <h3 className="mt-2 text-xl font-bold text-foreground">{t.managerReport.hourlyMomentum}</h3>
               </div>
               <div className="rounded-md bg-sky-500/10 p-3 text-sky-500">
                 <Layers3 className="h-5 w-5" />
               </div>
             </div>
+
             <ChartContainer config={chartConfig} className="mt-4 h-[240px] w-full aspect-auto">
               <BarChart data={hourly} margin={{ left: 12, right: 12, top: 12 }}>
                 <CartesianGrid vertical={false} strokeDasharray="3 3" />
@@ -89,8 +92,8 @@ export function ManagerReportDashboard({ report }: ManagerReportDashboardProps) 
           <div className="rounded-lg border border-border/70 bg-card/85 p-4 shadow-[0_18px_44px_-28px_rgba(15,23,42,0.55)]">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-xs font-semibold uppercase tracking-[0.24em] text-primary/75">Owner Notes</p>
-                <h3 className="mt-2 text-xl font-bold text-foreground">Quick operational takeaways</h3>
+                <p className="text-xs font-semibold uppercase tracking-[0.24em] text-primary/75">{t.managerReport.ownerNotes}</p>
+                <h3 className="mt-2 text-xl font-bold text-foreground">{t.managerReport.quickTakeaways}</h3>
               </div>
               <div className="rounded-md bg-primary/10 p-3 text-primary">
                 <ArrowDownRight className="h-5 w-5" />
@@ -98,21 +101,21 @@ export function ManagerReportDashboard({ report }: ManagerReportDashboardProps) 
             </div>
             <div className="mt-4 space-y-3">
               <div className="rounded-lg border border-border/70 bg-background/70 p-4">
-                <p className="text-xs uppercase tracking-[0.22em] text-muted-foreground">Top category</p>
+                <p className="text-xs uppercase tracking-[0.22em] text-muted-foreground">{t.managerReport.categoryShareTitle}</p>
                 <p className="mt-2 text-lg font-semibold text-foreground">{meta.topCategoryLabel}</p>
               </div>
               <div className="rounded-lg border border-border/70 bg-background/70 p-4">
-                <p className="text-xs uppercase tracking-[0.22em] text-muted-foreground">Best hour</p>
+                <p className="text-xs uppercase tracking-[0.22em] text-muted-foreground">{t.managerReport.salesTrend}</p>
                 <p className="mt-2 text-lg font-semibold text-foreground">{meta.bestHourLabel}</p>
               </div>
               <div className="rounded-lg border border-border/70 bg-background/70 p-4">
-                <p className="text-xs uppercase tracking-[0.22em] text-muted-foreground">Best seller</p>
+                <p className="text-xs uppercase tracking-[0.22em] text-muted-foreground">{t.managerReport.topProducts}</p>
                 <p className="mt-2 text-lg font-semibold text-foreground">{meta.bestItemLabel}</p>
               </div>
               {TAX_CONFIG.enabled && (
                 <div className="rounded-lg border border-blue-500/20 bg-blue-500/5 p-4">
                   <p className="text-xs uppercase tracking-[0.22em] text-blue-500/70">
-                    {TAX_CONFIG.label} collected ({metrics.taxRate}%)
+                    {TAX_CONFIG.label} {t.managerReport.taxCollected} ({metrics.taxRate}%)
                   </p>
                   <p className="mt-2 text-lg font-semibold text-foreground">{formatCurrency(metrics.totalTax)}</p>
                 </div>
@@ -123,15 +126,15 @@ export function ManagerReportDashboard({ report }: ManagerReportDashboardProps) 
               <table className="w-full text-left">
                 <thead className="bg-background/80 text-xs uppercase tracking-[0.18em] text-muted-foreground">
                   <tr>
-                    <th className="px-3 py-2">Category</th>
-                    <th className="px-3 py-2">Revenue</th>
-                    <th className="px-3 py-2">Share</th>
+                    <th className="px-3 py-2">{t.admin.categories}</th>
+                    <th className="px-3 py-2">{t.managerReport.netRevenue}</th>
+                    <th className="px-3 py-2">{t.managerReport.mixOutput}</th>
                   </tr>
                 </thead>
                 <tbody>
                   {categories.map((category) => (
                     <tr key={category.category} className="border-t border-border/60">
-                      <td className="px-3 py-2 font-medium text-foreground">{category.label}</td>
+                      <td className="px-3 py-2 font-medium text-foreground">{getLocalizedCategoryName(category.category, language) || category.label}</td>
                       <td className="px-3 py-2 font-mono text-foreground">{formatCurrency(category.revenue)}</td>
                       <td className="px-3 py-2 text-muted-foreground">{category.share.toFixed(1)}%</td>
                     </tr>
@@ -142,11 +145,12 @@ export function ManagerReportDashboard({ report }: ManagerReportDashboardProps) 
           </div>
         </TabsContent>
 
+
         {/* ─ Items Tab ─ */}
         <TabsContent value="items" className="grid gap-3 xl:grid-cols-[0.95fr_1.05fr]">
           <div className="rounded-lg border border-border/70 bg-card/85 p-4 shadow-[0_18px_44px_-28px_rgba(15,23,42,0.55)]">
-            <p className="text-xs font-semibold uppercase tracking-[0.24em] text-primary/75">Ranking Output</p>
-            <h3 className="mt-2 text-xl font-bold text-foreground">Top items from the selected view</h3>
+            <p className="text-xs font-semibold uppercase tracking-[0.24em] text-primary/75">{t.managerReport.ranking}</p>
+            <h3 className="mt-2 text-xl font-bold text-foreground">{t.managerReport.topProducts}</h3>
             <div className="mt-4 space-y-3">
               {topItems.map((item, index) => (
                 <div key={item.itemKey} className="flex items-center justify-between rounded-lg border border-border/70 bg-background/70 px-3 py-2.5">
@@ -156,12 +160,12 @@ export function ManagerReportDashboard({ report }: ManagerReportDashboardProps) 
                     </div>
                     <div>
                       <p className="font-semibold text-foreground">{item.name}</p>
-                      <p className="text-xs text-muted-foreground capitalize">{item.category}</p>
+                      <p className="text-xs text-muted-foreground capitalize">{getLocalizedCategoryName(item.category, language) || item.category}</p>
                     </div>
                   </div>
                   <div className="text-right">
                     <p className="font-mono font-semibold text-foreground">{formatCurrency(item.revenue)}</p>
-                    <p className="text-xs text-muted-foreground">{item.quantity} sold</p>
+                    <p className="text-xs text-muted-foreground">{item.quantity} {t.receipt.qty}</p>
                   </div>
                 </div>
               ))}
@@ -169,8 +173,8 @@ export function ManagerReportDashboard({ report }: ManagerReportDashboardProps) 
           </div>
 
           <div className="rounded-lg border border-border/70 bg-card/85 p-4 shadow-[0_18px_44px_-28px_rgba(15,23,42,0.55)]">
-            <p className="text-xs font-semibold uppercase tracking-[0.24em] text-primary/75">Category Output</p>
-            <h3 className="mt-2 text-xl font-bold text-foreground">Revenue vs discount by category</h3>
+            <p className="text-xs font-semibold uppercase tracking-[0.24em] text-primary/75">{t.managerReport.mixOutput}</p>
+            <h3 className="mt-2 text-xl font-bold text-foreground">{t.managerReport.revenueDiscountTax}</h3>
             <ChartContainer config={chartConfig} className="mt-4 h-[260px] w-full aspect-auto">
               <BarChart data={categories} layout="vertical" margin={{ left: 10, right: 20, top: 10, bottom: 0 }}>
                 <CartesianGrid horizontal={false} strokeDasharray="3 3" />
@@ -195,12 +199,12 @@ export function ManagerReportDashboard({ report }: ManagerReportDashboardProps) 
           </div>
 
           <div className="rounded-lg border border-border/70 bg-card/85 p-4 shadow-[0_18px_44px_-28px_rgba(15,23,42,0.55)] xl:col-span-2">
-            <p className="text-xs font-semibold uppercase tracking-[0.24em] text-primary/75">Product vs Deal Output</p>
-            <h3 className="mt-2 text-xl font-bold text-foreground">Separate product and deal leaders</h3>
+            <p className="text-xs font-semibold uppercase tracking-[0.24em] text-primary/75">{t.managerReport.reportsTitle}</p>
+            <h3 className="mt-2 text-xl font-bold text-foreground">{t.admin.products} & {t.admin.deals}</h3>
             <div className="mt-4 grid gap-3 xl:grid-cols-2">
               {[
-                { title: 'Top products', rows: productItems },
-                { title: 'Top deals', rows: dealItems },
+                { title: t.admin.products, rows: productItems },
+                { title: t.admin.deals, rows: dealItems },
               ].map((section) => (
                 <div key={section.title} className="overflow-hidden rounded-lg border border-border/70">
                   <div className="bg-background/80 px-3 py-2 text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">
@@ -209,10 +213,10 @@ export function ManagerReportDashboard({ report }: ManagerReportDashboardProps) 
                   <table className="w-full text-left">
                     <thead className="bg-background/50 text-xs uppercase tracking-[0.12em] text-muted-foreground">
                       <tr>
-                        <th className="px-3 py-2">Name</th>
-                        <th className="px-3 py-2">Qty</th>
-                        <th className="px-3 py-2">Revenue</th>
-                        <th className="px-3 py-2">Share</th>
+                        <th className="px-3 py-2">{t.receipt.itemDescription}</th>
+                        <th className="px-3 py-2">{t.receipt.qty}</th>
+                        <th className="px-3 py-2">{t.receipt.amount}</th>
+                        <th className="px-3 py-2">{t.managerReport.mixOutput}</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -225,7 +229,7 @@ export function ManagerReportDashboard({ report }: ManagerReportDashboardProps) 
                         </tr>
                       )) : (
                         <tr>
-                          <td className="px-4 py-6 text-xs text-muted-foreground" colSpan={4}>No rows for this filter.</td>
+                          <td className="px-4 py-6 text-xs text-muted-foreground" colSpan={4}>{t.common.noData}</td>
                         </tr>
                       )}
                     </tbody>
@@ -239,8 +243,8 @@ export function ManagerReportDashboard({ report }: ManagerReportDashboardProps) 
         {/* ─ Payments Tab ─ */}
         <TabsContent value="payments" className="grid gap-3 xl:grid-cols-[0.85fr_1.15fr]">
           <div className="rounded-lg border border-border/70 bg-card/85 p-4 shadow-[0_18px_44px_-28px_rgba(15,23,42,0.55)]">
-            <p className="text-xs font-semibold uppercase tracking-[0.24em] text-primary/75">Tender Mix</p>
-            <h3 className="mt-2 text-xl font-bold text-foreground">Cash, credit and pending value</h3>
+            <p className="text-xs font-semibold uppercase tracking-[0.24em] text-primary/75">{t.managerReport.paymentBreakdown}</p>
+            <h3 className="mt-2 text-xl font-bold text-foreground">{t.managerReport.paymentBreakdown}</h3>
             <ChartContainer config={chartConfig} className="mt-4 h-[240px] w-full aspect-auto">
               <PieChart>
                 <ChartTooltip
@@ -265,16 +269,16 @@ export function ManagerReportDashboard({ report }: ManagerReportDashboardProps) 
           </div>
 
           <div className="rounded-lg border border-border/70 bg-card/85 p-4 shadow-[0_18px_44px_-28px_rgba(15,23,42,0.55)]">
-            <p className="text-xs font-semibold uppercase tracking-[0.24em] text-primary/75">Payment Ledger</p>
-            <h3 className="mt-2 text-xl font-bold text-foreground">Tender reconciliation summary</h3>
+            <p className="text-xs font-semibold uppercase tracking-[0.24em] text-primary/75">{t.receipt.paymentMode}</p>
+            <h3 className="mt-2 text-xl font-bold text-foreground">{t.managerReport.paymentBreakdown}</h3>
             <div className="mt-4 overflow-hidden rounded-lg border border-border/70">
               <table className="w-full text-left">
                 <thead className="bg-background/80 text-xs uppercase tracking-[0.18em] text-muted-foreground">
                   <tr>
-                    <th className="px-3 py-2">Tender</th>
-                    <th className="px-3 py-2">Amount</th>
-                    <th className="px-3 py-2">Share</th>
-                    <th className="px-3 py-2">Order refs</th>
+                    <th className="px-3 py-2">{t.receipt.paymentMode}</th>
+                    <th className="px-3 py-2">{t.receipt.amount}</th>
+                    <th className="px-3 py-2">{t.managerReport.mixOutput}</th>
+                    <th className="px-3 py-2">{t.managerReport.totalOrders}</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -291,9 +295,9 @@ export function ManagerReportDashboard({ report }: ManagerReportDashboardProps) 
             </div>
             {metrics.pendingTotal > 0 && (
               <div className="mt-4 rounded-lg border border-amber-500/20 bg-amber-500/5 p-4">
-                <p className="text-xs uppercase tracking-[0.2em] text-amber-500/80">Collection watch</p>
+                <p className="text-xs uppercase tracking-[0.2em] text-amber-500/80">{t.pos.pending}</p>
                 <p className="mt-2 text-xs text-muted-foreground">
-                  {formatCurrency(metrics.pendingTotal)} is still pending, usually COD orders awaiting settlement.
+                  {formatCurrency(metrics.pendingTotal)} {t.pos.pending}
                 </p>
               </div>
             )}
@@ -303,18 +307,18 @@ export function ManagerReportDashboard({ report }: ManagerReportDashboardProps) 
         {/* ─ Orders Tab ─ */}
         <TabsContent value="orders" className="grid gap-3 xl:grid-cols-[0.9fr_1.1fr]">
           <div className="rounded-lg border border-border/70 bg-card/85 p-4 shadow-[0_18px_44px_-28px_rgba(15,23,42,0.55)]">
-            <p className="text-xs font-semibold uppercase tracking-[0.24em] text-primary/75">Order Output</p>
-            <h3 className="mt-2 text-xl font-bold text-foreground">Recent order slice</h3>
+            <p className="text-xs font-semibold uppercase tracking-[0.24em] text-primary/75">{t.managerReport.tabOrders}</p>
+            <h3 className="mt-2 text-xl font-bold text-foreground">{t.managerReport.tabOrders}</h3>
             <div className="mt-4 overflow-hidden rounded-lg border border-border/70">
               <table className="w-full text-left">
                 <thead className="bg-background/80 text-xs uppercase tracking-[0.18em] text-muted-foreground">
                   <tr>
-                    <th className="px-3 py-2">Invoice</th>
-                    <th className="px-3 py-2">Source</th>
-                    <th className="px-3 py-2">Items</th>
-                    <th className="px-3 py-2">Revenue</th>
+                    <th className="px-3 py-2">{t.receipt.invoiceNumber}</th>
+                    <th className="px-3 py-2">{t.pos.orderType}</th>
+                    <th className="px-3 py-2">{t.receipt.qty}</th>
+                    <th className="px-3 py-2">{t.managerReport.netRevenue}</th>
                     {TAX_CONFIG.enabled && <th className="px-3 py-2">{TAX_CONFIG.label}</th>}
-                    <th className="px-3 py-2">Total</th>
+                    <th className="px-3 py-2">{t.receipt.grandTotal}</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -335,7 +339,7 @@ export function ManagerReportDashboard({ report }: ManagerReportDashboardProps) 
                       <td className="px-3 py-2 text-muted-foreground">{invoice.itemCount}</td>
                       <td className="px-3 py-2">
                         <p className="font-mono font-semibold text-foreground">{formatCurrency(invoice.revenue)}</p>
-                        <p className="text-xs text-emerald-600">Discount {formatCurrency(invoice.discounts)}</p>
+                        <p className="text-xs text-emerald-600">{t.receipt.discount} {formatCurrency(invoice.discounts)}</p>
                       </td>
                       {TAX_CONFIG.enabled && (
                         <td className="px-3 py-2">
@@ -355,44 +359,45 @@ export function ManagerReportDashboard({ report }: ManagerReportDashboardProps) 
           </div>
 
           <div className="rounded-lg border border-border/70 bg-card/85 p-4 shadow-[0_18px_44px_-28px_rgba(15,23,42,0.55)]">
-            <p className="text-xs font-semibold uppercase tracking-[0.24em] text-primary/75">Analysis Output</p>
-            <h3 className="mt-2 text-xl font-bold text-foreground">What this filter set is telling you</h3>
+            <p className="text-xs font-semibold uppercase tracking-[0.24em] text-primary/75">{t.managerReport.reportsTitle}</p>
+            <h3 className="mt-2 text-xl font-bold text-foreground">{t.managerReport.panelTitle}</h3>
             <div className="mt-4 grid gap-3 md:grid-cols-2">
               <div className="rounded-lg border border-border/70 bg-background/70 p-4">
-                <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">Ticket density</p>
+                <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">{t.managerReport.totalOrders}</p>
                 <p className="mt-2 text-xl font-semibold text-foreground">{metrics.orders}</p>
-                <p className="mt-2 text-xs text-muted-foreground">orders are visible under the active dataset, category, and time window.</p>
+                <p className="mt-2 text-xs text-muted-foreground">{t.managerReport.totalOrders}</p>
               </div>
               <div className="rounded-lg border border-border/70 bg-background/70 p-4">
-                <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">Merchandising signal</p>
+                <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">{t.managerReport.categoryShareTitle}</p>
                 <p className="mt-2 text-xl font-semibold text-foreground">{meta.topCategoryLabel}</p>
-                <p className="mt-2 text-xs text-muted-foreground">is currently leading revenue contribution inside the selected slice.</p>
+                <p className="mt-2 text-xs text-muted-foreground">{t.managerReport.categoryShareDesc}</p>
               </div>
               <div className="rounded-lg border border-border/70 bg-background/70 p-4">
-                <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">Discount watch</p>
+                <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">{t.managerReport.discountLoad}</p>
                 <p className="mt-2 text-xl font-semibold text-foreground">{metrics.discountRate.toFixed(1)}%</p>
-                <p className="mt-2 text-xs text-muted-foreground">of gross sales is being given away through discounts in this view.</p>
+                <p className="mt-2 text-xs text-muted-foreground">{t.managerReport.discountsGiven}</p>
               </div>
               {TAX_CONFIG.enabled ? (
                 <div className="rounded-lg border border-blue-500/20 bg-blue-500/5 p-4">
                   <p className="text-xs uppercase tracking-[0.2em] text-blue-500/70">
-                    {TAX_CONFIG.label} liability ({metrics.taxRate}%)
+                    {TAX_CONFIG.label} ({metrics.taxRate}%)
                   </p>
                   <p className="mt-2 text-xl font-semibold text-foreground">{formatCurrency(metrics.totalTax)}</p>
                   <p className="mt-2 text-xs text-muted-foreground">
-                    collected across {metrics.orders} order{metrics.orders !== 1 ? 's' : ''} in this view.
+                    {t.managerReport.taxCollected}
                   </p>
                 </div>
               ) : (
                 <div className="rounded-lg border border-border/70 bg-background/70 p-4">
-                  <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">Fast read</p>
+                  <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">{t.managerReport.topProducts}</p>
                   <p className="mt-2 text-xl font-semibold text-foreground">{meta.bestItemLabel}</p>
-                  <p className="mt-2 text-xs text-muted-foreground">is the strongest performer based on the current item ranking input.</p>
+                  <p className="mt-2 text-xs text-muted-foreground">{t.managerReport.topProducts}</p>
                 </div>
               )}
             </div>
           </div>
         </TabsContent>
+
       </Tabs>
     </div>
   );

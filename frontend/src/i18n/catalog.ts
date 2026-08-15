@@ -214,44 +214,86 @@ export const PRODUCT_TRANSLATIONS: Record<string, Record<LanguageCode, string>> 
 };
 
 /**
- * Returns localized name for a product or deal
+ * Returns localized name for a product or deal dynamically
  */
 export function getLocalizedItemName(
-  item: { name: string; nameAr?: string; nameUr?: string } | undefined | null,
+  item: { name: unknown; nameAr?: string; nameUr?: string; nameEn?: string; translations?: Record<string, string> } | undefined | null,
   lang: LanguageCode = 'en'
 ): string {
-  if (!item || !item.name) return '';
-  
-  // 1. Direct database multilingual override (Dynamic Add/Update/Delete support)
+  if (!item) return '';
+
+  // 1. If item.name is a multi-language object or JSON string
+  if (typeof item.name === 'object' && item.name !== null) {
+    const obj = item.name as Record<string, string>;
+    return obj[lang] || obj.en || obj.ur || obj.ar || '';
+  }
+
+  // 2. Direct database multilingual override (Dynamic Add/Update/Delete support)
   if (lang === 'ar' && item.nameAr) return item.nameAr;
   if (lang === 'ur' && item.nameUr) return item.nameUr;
+  if (lang === 'en' && item.nameEn) return item.nameEn;
+  if (item.translations && item.translations[lang]) return item.translations[lang];
 
-  // 2. Direct dictionary lookup
-  const cleanName = item.name.trim();
+  const rawName = typeof item.name === 'string' ? item.name : String(item.name || '');
+  if (!rawName) return '';
+
+  // Check if rawName is a JSON string
+  if (rawName.startsWith('{') && rawName.endsWith('}')) {
+    try {
+      const parsed = JSON.parse(rawName) as Record<string, string>;
+      if (parsed && typeof parsed === 'object') {
+        return parsed[lang] || parsed.en || parsed.ur || parsed.ar || rawName;
+      }
+    } catch {
+      // Continue to fallback
+    }
+  }
+
+  // 3. Fallback dictionary lookup for demo catalog
+  const cleanName = rawName.trim();
   const directMatch = PRODUCT_TRANSLATIONS[cleanName];
   if (directMatch && directMatch[lang]) {
     return directMatch[lang];
   }
 
-  // 3. Case-insensitive dictionary lookup
+  // 4. Case-insensitive dictionary lookup
   const lowerName = cleanName.toLowerCase();
   const foundKey = Object.keys(PRODUCT_TRANSLATIONS).find((k) => k.toLowerCase() === lowerName);
   if (foundKey && PRODUCT_TRANSLATIONS[foundKey][lang]) {
     return PRODUCT_TRANSLATIONS[foundKey][lang];
   }
 
-  // 4. Fallback to base name (for newly added custom products)
-  return item.name;
+  // 5. Ultimate fallback to base name (for custom dynamically created products)
+  return rawName;
 }
 
 /**
- * Returns localized category title
+ * Returns localized category title dynamically
  */
-export function getLocalizedCategoryName(categoryKey: string, lang: LanguageCode = 'en'): string {
-  const lower = (categoryKey || '').toLowerCase();
+export function getLocalizedCategoryName(
+  category: { name?: unknown; nameAr?: string; nameUr?: string; slug?: string } | string,
+  lang: LanguageCode = 'en'
+): string {
+  if (!category) return '';
+
+  if (typeof category === 'object' && category !== null) {
+    if (lang === 'ar' && category.nameAr) return category.nameAr;
+    if (lang === 'ur' && category.nameUr) return category.nameUr;
+    if (typeof category.name === 'object' && category.name !== null) {
+      const obj = category.name as Record<string, string>;
+      return obj[lang] || obj.en || obj.ur || obj.ar || '';
+    }
+    const catName = typeof category.name === 'string' ? category.name : category.slug || '';
+    return getLocalizedCategoryName(catName, lang);
+  }
+
+
+  const categoryKey = String(category);
+  const lower = (categoryKey || '').toLowerCase().trim();
   const match = CATEGORY_TRANSLATIONS[lower];
   if (match && match[lang]) {
     return match[lang];
   }
   return categoryKey;
 }
+

@@ -22,18 +22,11 @@ import { useAuth } from '@/context/AuthContext';
 import { KitchenProvider, useKitchen } from '@/context/KitchenContext';
 import { KitchenOrderCard, type KitchenDensity } from '@/components/kitchen/KitchenOrderCard';
 import { authApi } from '@/lib/api/auth.api';
+import { useTranslation } from '@/i18n';
 import type { Branch } from '@/lib/api/branch.api';
 import type { KitchenOrder } from '@/context/KitchenContext';
 
 const KDS_BRANCH_KEY = 'pos-app-kds-branch';
-
-// ── Column config — 3-column board ───────────────────────────────────────────
-
-const COLUMNS: { label: string; statuses: KitchenOrder['status'][]; color: string; dot: string }[] = [
-  { label: 'New Orders',  statuses: ['new', 'acknowledged'], color: 'border-blue-400',    dot: 'bg-blue-500'    },
-  { label: 'In Progress', statuses: ['in_progress'],         color: 'border-amber-400',   dot: 'bg-amber-500'   },
-  { label: 'Ready',       statuses: ['ready'],               color: 'border-emerald-400', dot: 'bg-emerald-500' },
-];
 
 // ── Clock ─────────────────────────────────────────────────────────────────────
 
@@ -58,6 +51,7 @@ interface BranchSelectorProps {
 }
 
 function BranchSelector({ allowedBranchIds, onSelect }: BranchSelectorProps) {
+  const { t } = useTranslation();
   const [branches, setBranches] = useState<{ id: string; name: string; label: string; addrCity: string }[]>([]);
   const [loading,  setLoading]  = useState(true);
   const [error,    setError]    = useState<string | null>(null);
@@ -82,12 +76,12 @@ function BranchSelector({ allowedBranchIds, onSelect }: BranchSelectorProps) {
       </div>
 
       <div className="text-center">
-        <h1 className="text-2xl font-bold">Kitchen Display</h1>
-        <p className="text-slate-400 mt-1 text-sm">Select a branch to monitor</p>
+        <h1 className="text-2xl font-bold">{t.kds.kdsTitle}</h1>
+        <p className="text-slate-400 mt-1 text-sm">{t.auth.selectBranch}</p>
       </div>
 
       {loading && (
-        <div className="text-slate-400 text-sm">Loading branches…</div>
+        <div className="text-slate-400 text-sm">{t.common.loading}</div>
       )}
 
       {error && (
@@ -98,18 +92,18 @@ function BranchSelector({ allowedBranchIds, onSelect }: BranchSelectorProps) {
       )}
 
       {!loading && !error && branches.length === 0 && (
-        <div className="text-slate-400 text-sm">No active branches found.</div>
+        <div className="text-slate-400 text-sm">{t.common.noData}</div>
       )}
 
-      <div className="flex flex-col gap-3 w-full max-w-sm">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 w-full max-w-2xl">
         {branches.map((b) => (
           <button
             key={b.id}
             onClick={() => onSelect(b.id, b.name)}
-            className="flex items-center gap-3 w-full rounded-2xl border border-slate-700 bg-slate-800 px-5 py-4 text-left hover:bg-slate-700 hover:border-orange-500 transition-all active:scale-95"
+            className="flex items-center gap-3 p-4 rounded-xl bg-slate-800 border border-slate-700 hover:border-orange-500 hover:bg-slate-750 transition-all text-left group cursor-pointer"
           >
-            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-slate-700">
-              <Store className="h-5 w-5 text-orange-400" />
+            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-orange-500/20 text-orange-400 group-hover:bg-orange-500 group-hover:text-white transition-colors shrink-0">
+              <Store className="h-5 w-5" />
             </div>
             <div>
               <p className="font-semibold text-white">{b.name}</p>
@@ -134,11 +128,18 @@ function orderAgeSeconds(order: KitchenOrder): number {
 }
 
 function KitchenBoard({ branchName, onChangeBranch }: BoardProps) {
+  const { t } = useTranslation();
   const { orders, connected, realtimeEnabled, error, acknowledge, start, markReady, markServed } = useKitchen();
   const [query, setQuery] = useState('');
   const [orderTypeFilter, setOrderTypeFilter] = useState<OrderTypeFilter>('all');
   const [sortMode, setSortMode] = useState<SortMode>('oldest');
   const [density, setDensity] = useState<KitchenDensity>('compact');
+
+  const COLUMNS: { label: string; statuses: KitchenOrder['status'][]; color: string; dot: string }[] = [
+    { label: t.kds.newOrders,  statuses: ['new', 'acknowledged'], color: 'border-blue-400',    dot: 'bg-blue-500'    },
+    { label: t.kds.prepping,   statuses: ['in_progress'],         color: 'border-amber-400',   dot: 'bg-amber-500'   },
+    { label: t.kds.ready,      statuses: ['ready'],               color: 'border-emerald-400', dot: 'bg-emerald-500' },
+  ];
 
   const activeOrders = useMemo(
     () => orders.filter((o) => o.status !== 'served'),

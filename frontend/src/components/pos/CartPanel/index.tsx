@@ -273,19 +273,19 @@ export function CartPanel({ onCheckout, onDirectCashCheckout, isConfirming, onHo
         <div className="border-t border-border/60 px-3 py-2 shrink-0">
           <button
             onClick={() => setShowNotes(!showNotes)}
-            className="flex items-center gap-1.5 font-display font-semibold text-[10px] uppercase tracking-wide text-muted-foreground hover:text-primary transition-colors w-full"
+            className="flex items-center gap-1.5 font-display font-semibold text-[10px] uppercase tracking-wide text-muted-foreground hover:text-primary transition-colors w-full cursor-pointer"
           >
             <StickyNote className="w-3 h-3" />
-            {orderNotes ? 'Edit notes' : 'Add order notes'}
+            {orderNotes ? `${t.notes.notesTitle} (${t.common.edit})` : t.common.addOrderNotes}
             {showNotes ? <ChevronUp className="w-3 h-3 ml-auto" /> : <ChevronDown className="w-3 h-3 ml-auto" />}
             {orderNotes && !showNotes && (
-              <span className="ml-auto rounded-full bg-primary/15 border border-primary/25 px-1.5 text-[9px] text-primary">saved</span>
+              <span className="ml-auto rounded-full bg-primary/15 border border-primary/25 px-1.5 text-[9px] text-primary">{t.common.active}</span>
             )}
           </button>
           {showNotes && (
             <textarea
               rows={2}
-              placeholder="Special instructions, allergies, preferences…"
+              placeholder={t.notes.notesPlaceholder}
               value={orderNotes}
               onChange={(e) => setOrderNotes(e.target.value)}
               className="pos-notes-input mt-2 animate-slide-up"
@@ -323,16 +323,16 @@ export function CartPanel({ onCheckout, onDirectCashCheckout, isConfirming, onHo
           <AlertDialogHeader>
             <AlertDialogTitle className="flex items-center gap-2">
               <AlertTriangle className="w-5 h-5 text-destructive" />
-              Clear Cart
+              {t.cart.clearCart}
             </AlertDialogTitle>
             <AlertDialogDescription>
-              Remove all items from the current order? This cannot be undone.
+              {t.cart.clearCartConfirm}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogCancel>{t.common.cancel}</AlertDialogCancel>
             <AlertDialogAction onClick={confirmClear} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
-              Clear All
+              {t.common.clear}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
@@ -342,17 +342,18 @@ export function CartPanel({ onCheckout, onDirectCashCheckout, isConfirming, onHo
       <AlertDialog open={!!itemToRemove} onOpenChange={() => setItemToRemove(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Remove Item</AlertDialogTitle>
-            <AlertDialogDescription>Remove this item from the order?</AlertDialogDescription>
+            <AlertDialogTitle>{t.common.delete}</AlertDialogTitle>
+            <AlertDialogDescription>{t.common.deleteConfirmDesc}</AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogCancel>{t.common.cancel}</AlertDialogCancel>
             <AlertDialogAction onClick={confirmRemove} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
-              Remove
+              {t.common.delete}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
 
       <ManagerApprovalDialog
         open={approvalOpen}

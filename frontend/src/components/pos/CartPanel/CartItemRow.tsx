@@ -21,8 +21,9 @@ export function CartItemRow({
   onUpdateLumpDiscount,
   onRemove,
 }: CartItemRowProps) {
-  const { language } = useTranslation();
+  const { t, language } = useTranslation();
   const [showDiscounts, setShowDiscounts] = useState(false);
+
 
   const name = getLocalizedItemName(item.product || item.deal, language);
   const code = item.product?.code || item.deal?.code || '';
@@ -95,12 +96,12 @@ export function CartItemRow({
       {/* Discount toggle */}
       <button
         onClick={() => setShowDiscounts(!showDiscounts)}
-        className="flex items-center gap-1 text-[10px] font-display font-semibold text-muted-foreground hover:text-primary mt-1.5 transition-colors uppercase tracking-wide"
+        className="flex items-center gap-1 text-[10px] font-display font-semibold text-muted-foreground hover:text-primary mt-1.5 transition-colors uppercase tracking-wide cursor-pointer"
       >
         {showDiscounts ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
         {hasDiscount
-          ? <span className="text-accent">Discount applied · Edit</span>
-          : 'Add discount'}
+          ? <span className="text-accent">{t.cart.appliedDiscount} · {t.common.edit}</span>
+          : t.common.addDiscount}
       </button>
 
       {/* Discount inputs */}
@@ -110,7 +111,7 @@ export function CartItemRow({
             <div className="w-5 h-5 rounded bg-secondary flex items-center justify-center shrink-0">
               <Percent className="w-3 h-3 text-muted-foreground" />
             </div>
-            <span className="text-xs text-muted-foreground flex-1">Discount %</span>
+            <span className="text-xs text-muted-foreground flex-1">{t.discount.typePercentage}</span>
             <input
               type="number" min="0" max="100"
               value={item.discountPercent || ''}
@@ -123,7 +124,7 @@ export function CartItemRow({
             <div className="w-5 h-5 rounded bg-secondary flex items-center justify-center shrink-0">
               <DollarSign className="w-3 h-3 text-muted-foreground" />
             </div>
-            <span className="text-xs text-muted-foreground flex-1">Fixed amount</span>
+            <span className="text-xs text-muted-foreground flex-1">{t.discount.typeFixed}</span>
             <input
               type="number" min="0" step="0.01"
               value={item.lumpSumDiscount || ''}
@@ -137,3 +138,4 @@ export function CartItemRow({
     </div>
   );
 }
+

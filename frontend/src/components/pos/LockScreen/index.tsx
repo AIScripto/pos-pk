@@ -4,12 +4,14 @@ import { useLock }   from '@/context/LockContext';
 import { useAuth }   from '@/context/AuthContext';
 import { useAppConfig } from '@/context/AppConfigContext';
 import { authApi }   from '@/lib/api/auth.api';
+import { useTranslation } from '@/i18n';
 import { SHOW_DEMO_CREDENTIALS, LOCAL_DEV_CREDENTIALS, localDefault } from '@/config/localCredentials';
 
 const KEYS = ['1','2','3','4','5','6','7','8','9','','0','⌫'];
 const PIN_LENGTH = 4;
 
 export function LockScreen() {
+  const { t }                     = useTranslation();
   const { unlock }                = useLock();
   const { user }                  = useAuth();
   const { currencyConfig }        = useAppConfig();
@@ -45,22 +47,23 @@ export function LockScreen() {
       const { valid, reason } = await authApi.verifyPin(fullPin);
       if (!valid) {
         if (reason === 'NO_PIN_SET') {
-          setError('No PIN is set for this account. Use your password to unlock.');
+          setError(t.lock.invalidPin);
           setUsePassword(true);
         } else {
-          setError('Incorrect PIN. Try again.');
+          setError(t.lock.invalidPin);
         }
         shake();
         return;
       }
       unlock();
     } catch {
-      setError('Could not verify PIN. Try your password instead.');
+      setError(t.lock.invalidPin);
       shake();
     } finally {
       setLoading(false);
     }
-  }, [user, unlock, shake]);
+  }, [user, unlock, shake, t]);
+
 
   // ── PIN key handler ───────────────────────────────────────────────────────
 
@@ -140,7 +143,7 @@ export function LockScreen() {
           </div>
           <div className="text-center">
             <p className="font-display font-extrabold text-base text-foreground">
-              {user?.name ?? 'Screen Locked'}
+              {user?.name ?? t.lock.lockedTitle}
             </p>
             {user?.role && (
               <span className="inline-block mt-0.5 rounded-full bg-primary/10 border border-primary/20 px-2.5 py-0.5 font-body text-[10px] uppercase tracking-wider text-primary font-semibold">
@@ -185,7 +188,7 @@ export function LockScreen() {
                       key={idx}
                       onClick={() => handleKey(key)}
                       disabled={loading}
-                      className={`flex items-center justify-center rounded-xl border font-display font-bold text-lg transition-all active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary
+                      className={`flex items-center justify-center rounded-xl border font-display font-bold text-lg transition-all active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary cursor-pointer
                         ${key === '⌫'
                           ? 'border-border bg-secondary text-muted-foreground hover:bg-muted h-11'
                           : 'border-border bg-secondary text-foreground hover:bg-muted h-11'
@@ -207,23 +210,17 @@ export function LockScreen() {
                   setUsername(user?.username ?? user?.email ?? LOCAL_DEV_CREDENTIALS.admin.username);
                   setPassword(localDefault(LOCAL_DEV_CREDENTIALS.admin.password));
                 }}
-                className="mt-4 w-full text-center text-xs text-muted-foreground hover:text-foreground transition-colors font-body"
+                className="mt-4 w-full text-center text-xs text-muted-foreground hover:text-foreground transition-colors font-body cursor-pointer"
               >
-                Use password instead
+                {t.auth.passwordLoginTab}
               </button>
             </>
           ) : (
             /* Password form */
             <form onSubmit={submitPassword} className="flex flex-col gap-3">
-              {SHOW_DEMO_CREDENTIALS && (
-                <div className="rounded-xl border border-primary/30 bg-primary/10 px-3 py-2 text-xs text-foreground">
-                  <p className="font-semibold">MVP demo unlock</p>
-                  <p className="mt-1 font-mono">{username || LOCAL_DEV_CREDENTIALS.admin.username} / {LOCAL_DEV_CREDENTIALS.admin.password}</p>
-                </div>
-              )}
               <input
                 type="text"
-                placeholder="Username"
+                placeholder={t.auth.emailPlaceholder}
                 value={username}
                 onChange={e => setUsername(e.target.value)}
                 autoFocus
@@ -232,7 +229,7 @@ export function LockScreen() {
               />
               <input
                 type="password"
-                placeholder="Password"
+                placeholder={t.auth.passwordPlaceholder}
                 value={password}
                 onChange={e => setPassword(e.target.value)}
                 required
@@ -244,10 +241,10 @@ export function LockScreen() {
               <button
                 type="submit"
                 disabled={loading}
-                className="flex items-center justify-center gap-2 rounded-xl bg-primary px-4 py-2.5 font-display font-bold text-sm text-white transition-all hover:bg-primary/90 active:scale-[0.98] disabled:opacity-60"
+                className="flex items-center justify-center gap-2 rounded-xl bg-primary px-4 py-2.5 font-display font-bold text-sm text-white transition-all hover:bg-primary/90 active:scale-[0.98] disabled:opacity-60 cursor-pointer"
               >
                 <LogIn className="w-4 h-4" />
-                {loading ? 'Unlocking…' : 'Unlock'}
+                {loading ? t.common.loading : t.lock.unlock}
               </button>
               <button
                 type="button"
@@ -257,14 +254,15 @@ export function LockScreen() {
                   setUsername(user?.username ?? user?.email ?? LOCAL_DEV_CREDENTIALS.admin.username);
                   setPassword(localDefault(LOCAL_DEV_CREDENTIALS.admin.password));
                 }}
-                className="text-center text-xs text-muted-foreground hover:text-foreground transition-colors font-body"
+                className="text-center text-xs text-muted-foreground hover:text-foreground transition-colors font-body cursor-pointer"
               >
-                Use PIN instead
+                {t.auth.pinLoginTab}
               </button>
             </form>
           )}
         </div>
       </div>
+
 
       {/* Brand footer */}
       <p className="mt-8 font-display text-[10px] uppercase tracking-widest text-muted-foreground/50">

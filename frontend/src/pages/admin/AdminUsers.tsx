@@ -8,6 +8,7 @@ import { Plus, Edit2, Trash2, Users, MapPin, KeyRound } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useToast } from '@/hooks/use-toast';
 import { getUserFriendlyErrorMessage } from '@/lib/error-handler';
+import { useTranslation } from '@/i18n';
 import {
   AlertDialog, AlertDialogAction, AlertDialogCancel,
   AlertDialogContent, AlertDialogDescription, AlertDialogTitle,
@@ -16,6 +17,7 @@ import UserFormDialog from '@/components/admin/UserFormDialog';
 import AdminPageLayout from '@/components/admin/AdminPageLayout';
 
 export default function AdminUsers() {
+  const { t } = useTranslation();
   const queryClient = useQueryClient();
   const { toast } = useToast();
   const [formOpen, setFormOpen]       = useState(false);
@@ -44,10 +46,9 @@ export default function AdminUsers() {
       editingUser ? userApi.update(editingUser.id, data as UpdateUserInput)
                   : userApi.create(data as CreateUserInput),
     onSuccess: () => {
-      const action = editingUser ? 'updated' : 'created';
       toast({
-        title: `User ${action}`,
-        description: `User has been ${action} successfully`,
+        title: t.notifications.recordSaved,
+        description: t.notifications.recordSaved,
         variant: 'default',
       });
       queryClient.invalidateQueries({ queryKey: ['users'] });
@@ -55,9 +56,8 @@ export default function AdminUsers() {
       setEditingUser(null);
     },
     onError: (error) => {
-      const action = editingUser ? 'update' : 'create';
       toast({
-        title: `Failed to ${action} user`,
+        title: t.common.save,
         description: getUserFriendlyErrorMessage(error),
         variant: 'destructive',
       });
@@ -68,8 +68,8 @@ export default function AdminUsers() {
     mutationFn: (id: string) => userApi.delete(id),
     onSuccess: () => {
       toast({
-        title: 'User deleted',
-        description: 'User has been deleted successfully',
+        title: t.notifications.recordDeleted,
+        description: t.notifications.recordDeleted,
         variant: 'default',
       });
       queryClient.invalidateQueries({ queryKey: ['users'] });
@@ -78,7 +78,7 @@ export default function AdminUsers() {
     },
     onError: (error) => {
       toast({
-        title: 'Failed to delete user',
+        title: t.common.delete,
         description: getUserFriendlyErrorMessage(error),
         variant: 'destructive',
       });
@@ -92,23 +92,24 @@ export default function AdminUsers() {
   return (
     <>
       <AdminPageLayout
-        title="Users"
-        description="Manage user accounts, roles, and branch assignments"
+        title={t.users.usersTitle}
+        description={t.users.allUsers}
         icon={<Users className="w-5 h-5" />}
         action={
           <Button
             onClick={openCreate}
             variant="create"
+            className="cursor-pointer"
           >
             <Plus className="w-4 h-4 mr-2" />
-            Add User
+            {t.common.addNew}
           </Button>
         }
       >
         <Card className="border-slate-200 bg-slate-50/90 shadow-sm dark:border-slate-700 dark:bg-slate-900">
           <CardHeader>
             <CardTitle className="font-bold text-slate-900 dark:text-white">
-              Users ({users.length})
+              {t.users.usersTitle} ({users.length})
             </CardTitle>
           </CardHeader>
           <CardContent className="p-0">
@@ -116,20 +117,20 @@ export default function AdminUsers() {
               <table className="w-full text-sm">
                 <thead>
                   <tr className="bg-slate-800 dark:bg-slate-950">
-                    <th className="px-4 py-3 text-left font-semibold text-white">Name</th>
-                    <th className="px-4 py-3 text-left font-semibold text-white">Email</th>
-                    <th className="px-4 py-3 text-left font-semibold text-white">Role</th>
+                    <th className="px-4 py-3 text-left font-semibold text-white">{t.users.name}</th>
+                    <th className="px-4 py-3 text-left font-semibold text-white">{t.users.email}</th>
+                    <th className="px-4 py-3 text-left font-semibold text-white">{t.users.role}</th>
                     <th className="px-4 py-3 text-left font-semibold text-white">
                       <span className="flex items-center gap-1">
                         <MapPin className="h-3.5 w-3.5 text-orange-400" />
-                        Branch
+                        {t.admin.branches}
                       </span>
                     </th>
                     <th className="px-4 py-3 text-left font-semibold text-white">
-                      <span className="flex items-center gap-1"><KeyRound className="h-3.5 w-3.5 text-orange-400" />PIN</span>
+                      <span className="flex items-center gap-1"><KeyRound className="h-3.5 w-3.5 text-orange-400" />{t.users.pinCode}</span>
                     </th>
-                    <th className="px-4 py-3 text-left font-semibold text-white">Status</th>
-                    <th className="px-4 py-3 text-right font-semibold text-white">Actions</th>
+                    <th className="px-4 py-3 text-left font-semibold text-white">{t.common.status}</th>
+                    <th className="px-4 py-3 text-right font-semibold text-white">{t.common.actions}</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-200 dark:divide-slate-700">
@@ -151,10 +152,9 @@ export default function AdminUsers() {
                     <tr>
                       <td colSpan={7} className="py-10 text-center">
                         <Users className="mx-auto mb-3 h-10 w-10 text-slate-400" />
-                        <p className="font-medium text-slate-600 dark:text-slate-300">No users yet</p>
-                        <p className="mt-1 text-sm text-slate-500">Click "Add User" to create one</p>
+                        <p className="font-medium text-slate-600 dark:text-slate-300">{t.common.noData}</p>
+                        <p className="mt-1 text-sm text-slate-500">{t.common.addNew}</p>
                       </td>
-
                     </tr>
                   ) : users.map((user) => (
                     <tr key={user.id} className="hover:bg-slate-100/70 dark:hover:bg-slate-800">
@@ -181,10 +181,10 @@ export default function AdminUsers() {
                       <td className="px-4 py-3">
                         {user.hasPin ? (
                           <span className="flex items-center gap-1 text-xs font-semibold text-emerald-600 dark:text-emerald-400">
-                            <KeyRound className="h-3.5 w-3.5" /> Set
+                            <KeyRound className="h-3.5 w-3.5" /> {t.common.active}
                           </span>
                         ) : (
-                          <span className="text-xs text-slate-400">Not set</span>
+                          <span className="text-xs text-slate-400">{t.common.inactive}</span>
                         )}
                       </td>
                       <td className="px-4 py-3">
@@ -193,7 +193,7 @@ export default function AdminUsers() {
                             ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300'
                             : 'bg-slate-200 text-slate-600 dark:bg-slate-700 dark:text-slate-400'
                         }`}>
-                          {user.isActive ? 'Active' : 'Inactive'}
+                          {user.isActive ? t.common.active : t.common.inactive}
                         </span>
                       </td>
                       <td className="px-4 py-3 space-x-2 text-right">
@@ -201,6 +201,7 @@ export default function AdminUsers() {
                           variant="edit" size="sm"
                           onClick={() => openEdit(user)}
                           disabled={saveMutation.isPending}
+                          className="cursor-pointer"
                         >
                           <Edit2 className="w-4 h-4" />
                         </Button>
@@ -208,6 +209,7 @@ export default function AdminUsers() {
                           variant="delete" size="sm"
                           onClick={() => openDelete(user)}
                           disabled={deleteMutation.isPending}
+                          className="cursor-pointer"
                         >
                           <Trash2 className="w-4 h-4" />
                         </Button>
@@ -231,18 +233,18 @@ export default function AdminUsers() {
 
       <AlertDialog open={deleteOpen} onOpenChange={setDeleteOpen}>
         <AlertDialogContent className="border-slate-200 bg-slate-50 text-slate-900 dark:border-slate-600 dark:bg-slate-900 dark:text-white">
-          <AlertDialogTitle>Delete User</AlertDialogTitle>
+          <AlertDialogTitle>{t.common.deleteConfirmTitle}</AlertDialogTitle>
           <AlertDialogDescription>
-            Delete "{toDelete?.name}"? This cannot be undone.
+            {t.common.deleteConfirmDesc} ({toDelete?.name})
           </AlertDialogDescription>
           <div className="flex justify-end gap-3">
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogCancel className="cursor-pointer">{t.common.cancel}</AlertDialogCancel>
             <AlertDialogAction
               onClick={() => toDelete && deleteMutation.mutate(toDelete.id)}
               disabled={deleteMutation.isPending}
-              className="bg-red-600 hover:bg-red-700"
+              className="bg-red-600 hover:bg-red-700 cursor-pointer"
             >
-              {deleteMutation.isPending ? 'Deleting…' : 'Delete'}
+              {deleteMutation.isPending ? t.common.loading : t.common.delete}
             </AlertDialogAction>
           </div>
         </AlertDialogContent>
@@ -250,3 +252,4 @@ export default function AdminUsers() {
     </>
   );
 }
+

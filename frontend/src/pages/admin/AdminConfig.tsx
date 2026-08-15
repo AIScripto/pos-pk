@@ -1,7 +1,3 @@
-// =============================================================================
-// AdminConfig — Section-based configuration page
-// =============================================================================
-
 import { useState } from 'react';
 import {
   Building2, Globe, Receipt, Percent, Gift, Star,
@@ -13,21 +9,23 @@ import { ReceiptSection } from '@/components/admin/config/sections/ReceiptSectio
 import { TaxSection } from '@/components/admin/config/sections/TaxSection';
 import { DiscountsSection } from '@/components/admin/config/sections/DiscountsSection';
 import { LoyaltySection } from '@/components/admin/config/sections/LoyaltySection';
+import { useTranslation } from '@/i18n';
 
 // ── Section IDs ───────────────────────────────────────────────────────────────
 type SectionId = 'profile' | 'currency' | 'receipt' | 'tax' | 'discounts' | 'loyalty';
 
-const SECTIONS = [
-  { id: 'profile'   as SectionId, label: 'Organisation Profile', icon: Building2,  desc: 'Business info, logo, contact' },
-  { id: 'currency'  as SectionId, label: 'Currency & Locale',    icon: Globe,       desc: 'Currency, timezone, date format' },
-  { id: 'receipt'   as SectionId, label: 'Receipt Settings',     icon: Receipt,     desc: 'Header, footer, receipt options' },
-  { id: 'tax'       as SectionId, label: 'Tax Configuration',    icon: Percent,     desc: 'GST rates, inclusive/exclusive' },
-  { id: 'discounts' as SectionId, label: 'Discount Presets',     icon: Gift,        desc: 'Staff, student, custom discounts' },
-  { id: 'loyalty'   as SectionId, label: 'Loyalty Program',      icon: Star,        desc: 'Points, earn rate, redemption' },
-];
-
 export default function AdminConfig() {
+  const { t } = useTranslation();
   const [activeSection, setActiveSection] = useState<SectionId>('profile');
+
+  const SECTIONS = [
+    { id: 'profile'   as SectionId, label: t.config.businessProfile, icon: Building2,  desc: t.config.orgInfo },
+    { id: 'currency'  as SectionId, label: t.config.currencySymbol,  icon: Globe,       desc: t.config.currencySymbol },
+    { id: 'receipt'   as SectionId, label: t.config.receiptTemplates, icon: Receipt,    desc: t.receipt.invoiceNumber },
+    { id: 'tax'       as SectionId, label: t.config.taxSettings,     icon: Percent,     desc: t.config.taxRate },
+    { id: 'discounts' as SectionId, label: t.discount.discountTitle, icon: Gift,        desc: t.discount.discountTitle },
+    { id: 'loyalty'   as SectionId, label: t.customer.customerTitle, icon: Star,        desc: t.customer.phone },
+  ];
 
   const renderSection = () => {
     switch (activeSection) {
@@ -46,8 +44,8 @@ export default function AdminConfig() {
     <div className="space-y-6">
       {/* Page header */}
       <div>
-        <h1 className="text-2xl font-bold text-slate-900 dark:text-white">Configuration</h1>
-        <p className="text-sm text-slate-500 dark:text-slate-300 mt-1">Manage organisation settings and system preferences</p>
+        <h1 className="text-2xl font-bold text-slate-900 dark:text-white">{t.config.configTitle}</h1>
+        <p className="text-sm text-slate-500 dark:text-slate-300 mt-1">{t.config.businessProfile}</p>
       </div>
 
       <div className="flex gap-6">
@@ -61,7 +59,7 @@ export default function AdminConfig() {
                 <button
                   key={section.id}
                   onClick={() => setActiveSection(section.id)}
-                  className={`w-full flex items-center gap-3 rounded-lg px-3 py-2.5 text-left transition-colors ${
+                  className={`w-full flex items-center gap-3 rounded-lg px-3 py-2.5 text-left transition-colors cursor-pointer ${
                     isActive
                       ? 'bg-blue-600 text-white'
                       : 'text-slate-700 hover:bg-slate-100 dark:text-slate-200 dark:hover:bg-slate-800'
@@ -82,7 +80,7 @@ export default function AdminConfig() {
         {/* Section content */}
         <div className="flex-1 min-w-0">
           <div className="mb-4 flex items-center gap-2 text-sm text-slate-500 dark:text-slate-300">
-            <span>Configuration</span>
+            <span>{t.config.configTitle}</span>
             <ChevronRight className="w-3 h-3" />
             <span className="font-medium text-slate-900 dark:text-white">{active.label}</span>
           </div>
@@ -92,3 +90,4 @@ export default function AdminConfig() {
     </div>
   );
 }
+
