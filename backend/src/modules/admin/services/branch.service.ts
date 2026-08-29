@@ -6,9 +6,9 @@ import prisma from '../../../shared/lib/prisma';
 import { Decimal } from '@prisma/client/runtime/library';
 
 interface CreateBranchInput {
-  brandId: bigint;
-  cityId: bigint;
-  areaId?: bigint;
+  brandId: number;
+  cityId: number;
+  areaId?: number;
   label: string;
   name: string;
   phone?: string;
@@ -30,7 +30,7 @@ interface CreateBranchInput {
 interface UpdateBranchInput {
   label?: string;
   name?: string;
-  areaId?: bigint | null;
+  areaId?: number | null;
   phone?: string;
   email?: string;
   managerId?: string;
@@ -49,7 +49,7 @@ interface UpdateBranchInput {
 }
 
 export class BranchService {
-  static async create(orgId: bigint, data: CreateBranchInput) {
+  static async create(orgId: number, data: CreateBranchInput) {
     // Verify brand exists
     const brand = await prisma.brand.findFirst({
       where: { id: data.brandId, orgId },
@@ -139,7 +139,7 @@ export class BranchService {
     return branch;
   }
 
-  static async update(orgId: bigint, branchId: bigint, data: UpdateBranchInput) {
+  static async update(orgId: number, branchId: number, data: UpdateBranchInput) {
     // Verify branch exists
     const branch = await prisma.branch.findFirst({
       where: { id: branchId, orgId },
@@ -204,7 +204,7 @@ export class BranchService {
     return updated;
   }
 
-  static async delete(orgId: bigint, branchId: bigint) {
+  static async delete(orgId: number, branchId: number) {
     // Verify branch exists
     const branch = await prisma.branch.findFirst({
       where: { id: branchId, orgId },
@@ -232,7 +232,7 @@ export class BranchService {
     return updated;
   }
 
-  static async getById(orgId: bigint, branchId: bigint) {
+  static async getById(orgId: number, branchId: number) {
     const branch = await prisma.branch.findFirst({
       where: { id: branchId, orgId },
       include: {
@@ -249,7 +249,7 @@ export class BranchService {
     return branch;
   }
 
-  static async listByCity(orgId: bigint, cityId: bigint) {
+  static async listByCity(orgId: number, cityId: number) {
     const branches = await prisma.branch.findMany({
       where: { orgId, cityId, isActive: true },
       include: {
@@ -263,14 +263,14 @@ export class BranchService {
     return branches;
   }
 
-  static async list(orgId: bigint, cityId?: bigint, search?: string) {
+  static async list(orgId: number, cityId?: number, search?: string) {
     const branches = await prisma.branch.findMany({
       where: {
         orgId,
         isActive: true,
         ...(cityId && { cityId }),
         ...(search && {
-          OR: [{ label: { contains: search, mode: 'insensitive' } }, { name: { contains: search, mode: 'insensitive' } }],
+          OR: [{ label: { contains: search } }, { name: { contains: search } }],
         }),
       },
       include: {

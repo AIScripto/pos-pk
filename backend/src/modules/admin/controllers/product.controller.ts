@@ -8,7 +8,7 @@ import * as R from '../../../shared/lib/response';
 // Uses the numeric suffix of ALL existing SKUs (including soft-deleted) so
 // sequence numbers are never reused.
 // ---------------------------------------------------------------------------
-async function computeNextSku(orgId: bigint, categoryId: bigint, categoryTag: string): Promise<string> {
+async function computeNextSku(orgId: number, categoryId: number, categoryTag: string): Promise<string> {
   const existing = await prisma.product.findMany({
     where: { orgId, categoryId },   // includes soft-deleted (isActive: false)
     select: { sku: true },
@@ -30,8 +30,8 @@ async function computeNextSku(orgId: bigint, categoryId: bigint, categoryTag: st
 export class ProductController {
 
   static async list(req: Request, res: Response) {
-    const orgId    = BigInt((req.query.orgId as string) ?? req.auth!.orgId);
-    const branchId = BigInt((req.query.branchId as string) ?? req.auth!.branchId);
+    const orgId    = Number((req.query.orgId as string) ?? req.auth!.orgId);
+    const branchId = Number((req.query.branchId as string) ?? req.auth!.branchId);
 
     const products = await prisma.product.findMany({
       where:   { orgId, isActive: true },
@@ -76,7 +76,7 @@ export class ProductController {
   static async get(req: Request, res: Response) {
     try {
       const product = await prisma.product.findUnique({
-        where: { id: BigInt(req.params.id) },
+        where: { id: Number(req.params.id) },
         include: {
           branchConfigs: true,
           inventory: true,
@@ -99,8 +99,8 @@ export class ProductController {
   // Returns the SKU that will be assigned to the next product in this category.
   static async nextSku(req: Request, res: Response) {
     try {
-      const orgId      = BigInt(req.auth!.orgId);
-      const categoryId = BigInt(req.params.categoryId);
+      const orgId      = Number(req.auth!.orgId);
+      const categoryId = Number(req.params.categoryId);
 
       const category = await prisma.category.findFirst({
         where: { id: categoryId, orgId, isActive: true },
@@ -117,24 +117,24 @@ export class ProductController {
   static async create(req: Request, res: Response) {
     try {
       const { categoryId, name, basePricePaisa, salePricePaisa, description, imageUrl, sortOrder } = req.body;
-      const orgId = BigInt(req.auth!.orgId);
+      const orgId = Number(req.auth!.orgId);
 
       if (!categoryId)                                                   return R.badRequest(res, 'CATEGORY_REQUIRED');
       if (!name?.trim())                                                 return R.badRequest(res, 'NAME_REQUIRED');
       if (typeof basePricePaisa !== 'number' || basePricePaisa < 0)     return R.badRequest(res, 'INVALID_PRICE');
 
       const category = await prisma.category.findFirst({
-        where: { id: BigInt(categoryId), orgId, isActive: true },
+        where: { id: Number(categoryId), orgId, isActive: true },
       });
       if (!category) return R.badRequest(res, 'CATEGORY_NOT_FOUND');
 
       // Generate SKU using the shared helper (same logic as nextSku endpoint)
-      const sku = await computeNextSku(orgId, BigInt(categoryId), category.tag);
+      const sku = await computeNextSku(orgId, Number(categoryId), category.tag);
 
       const product = await prisma.product.create({
         data: {
           org:      { connect: { id: orgId } },
-          category: { connect: { id: BigInt(categoryId) } },
+          category: { connect: { id: Number(categoryId) } },
           name:           name.trim(),
           sku,
           basePricePaisa,
@@ -161,7 +161,7 @@ export class ProductController {
     try {
       const { id, ...data } = req.body;
       const product = await prisma.product.update({
-        where: { id: BigInt(req.params.id) },
+        where: { id: Number(req.params.id) },
         data:  { ...data, updatedAt: new Date() },
       });
 
@@ -177,7 +177,7 @@ export class ProductController {
 
   static async remove(req: Request, res: Response) {
     await prisma.product.update({
-      where: { id: BigInt(req.params.id) },
+      where: { id: Number(req.params.id) },
       data:  { isActive: false },
     });
     R.noContent(res);

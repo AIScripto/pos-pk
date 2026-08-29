@@ -26,7 +26,7 @@ const USERNAME_PREFIX: Record<string, string> = {
 /** Determine the correct scopeType and scopeId for a role assignment. */
 function resolveScope(
   roleTag:  string,
-  orgId:    bigint,
+  orgId:    number,
   branchId?: string,
 ): { scopeType: string; scopeId: string } {
   const normalizedTag = roleTag.toLowerCase().trim();
@@ -50,7 +50,7 @@ export interface CreateUserInput {
   name:      string;
   email:     string;
   phone?:    string;
-  roleId:    bigint;
+  roleId:    number;
   branchId?: string;
   /** 4-digit PIN — required for cashier/kitchen, optional for manager */
   pin?:      string;
@@ -61,7 +61,7 @@ export interface UpdateUserInput {
   username?: string;
   name?:     string;
   phone?:    string;
-  roleId?:   bigint;
+  roleId?:   number;
   branchId?: string;
   isActive?: boolean;
   /** Provide to change the PIN; omit to leave unchanged */
@@ -71,7 +71,7 @@ export interface UpdateUserInput {
 
 export class UserService {
 
-  static async list(orgId: bigint) {
+  static async list(orgId: number) {
     const users = await prisma.user.findMany({
       where:   { orgId, isActive: true },
       orderBy: { name: 'asc' },
@@ -80,7 +80,7 @@ export class UserService {
     return users.map((u) => ({ ...u, hasPin: u.pinHash !== null, pinHash: undefined }));
   }
 
-  static async getById(orgId: bigint, userId: bigint) {
+  static async getById(orgId: number, userId: number) {
     const user = await prisma.user.findUnique({
       where:  { id: userId },
       select: { ...userSelect, pinHash: true },
@@ -89,7 +89,7 @@ export class UserService {
     return { ...user, hasPin: user.pinHash !== null, pinHash: undefined };
   }
 
-  static async create(orgId: bigint, input: CreateUserInput) {
+  static async create(orgId: number, input: CreateUserInput) {
     const [existingUsername, existingEmail, role] = await Promise.all([
       prisma.user.findUnique({
         where: { orgId_username: { orgId, username: input.username.toLowerCase().trim() } },
@@ -114,7 +114,7 @@ export class UserService {
     const { scopeType, scopeId } = resolveScope(role.tag, orgId, input.branchId);
     if (scopeType === 'branch') {
       const branch = await prisma.branch.findFirst({
-        where: { id: BigInt(scopeId), orgId, isActive: true },
+        where: { id: toBigInt(scopeId), orgId, isActive: true },
       });
       if (!branch) throw new Error('BRANCH_NOT_FOUND');
     }
@@ -150,7 +150,7 @@ export class UserService {
     return { ...user, tempPassword: passToHash, hasPin: !!input.pin };
   }
 
-  static async update(orgId: bigint, userId: bigint, input: UpdateUserInput) {
+  static async update(orgId: number, userId: number, input: UpdateUserInput) {
     const user = await this.getById(orgId, userId);
 
     if (input.username && input.username.toLowerCase().trim() !== user.username) {
@@ -189,7 +189,7 @@ export class UserService {
       const { scopeType, scopeId } = resolveScope(role.tag, orgId, input.branchId);
       if (scopeType === 'branch') {
         const branch = await prisma.branch.findFirst({
-          where: { id: BigInt(scopeId), orgId, isActive: true },
+          where: { id: toBigInt(scopeId), orgId, isActive: true },
         });
         if (!branch) throw new Error('BRANCH_NOT_FOUND');
       }
@@ -207,7 +207,7 @@ export class UserService {
   }
 
   /** Reset a user's PIN independently of other profile data. */
-  static async setPin(orgId: bigint, userId: bigint, pin: string) {
+  static async setPin(orgId: number, userId: number, pin: string) {
     const user = await this.getById(orgId, userId);
     validatePin(pin);
     const pinHash = await bcrypt.hash(pin, 10);
@@ -218,7 +218,7 @@ export class UserService {
   }
 
   /** Remove a user's PIN (disable PIN login). */
-  static async clearPin(orgId: bigint, userId: bigint) {
+  static async clearPin(orgId: number, userId: number) {
     await this.getById(orgId, userId);
     await prisma.user.update({
       where: { id: userId },
@@ -226,7 +226,7 @@ export class UserService {
     });
   }
 
-  static async delete(orgId: bigint, userId: bigint) {
+  static async delete(orgId: number, userId: number) {
     const user = await this.getById(orgId, userId);
     await Promise.all([
       prisma.user.update({ where: { id: userId }, data: { isActive: false } }),
@@ -235,7 +235,7 @@ export class UserService {
     return user;
   }
 
-  static async suggestUsername(orgId: bigint, roleTag: string): Promise<string> {
+  static async suggestUsername(orgId: number, roleTag: string): Promise<string> {
     const prefix = USERNAME_PREFIX[roleTag] ?? roleTag;
     const existing = await prisma.user.findMany({
       where: { orgId, username: { startsWith: prefix, endsWith: '@pos.com' } },

@@ -20,7 +20,7 @@ export class AreaController {
 
       const cityIdBigInt = toBigInt(String(cityId));
       const results = await AreaService.list(
-        BigInt(auth.orgId),
+        toBigInt(auth.orgId),
         cityIdBigInt,
         search ? String(search) : undefined
       );
@@ -51,7 +51,7 @@ export class AreaController {
       const { id } = req.params;
       const auth = req.auth!;
 
-      const area = await AreaService.get(BigInt(auth.orgId), toBigInt(id));
+      const area = await AreaService.get(toBigInt(auth.orgId), toBigInt(id));
       if (!area) return R.notFound(res, 'Area not found');
 
       const mapped = {
@@ -96,7 +96,7 @@ export class AreaController {
         return R.badRequest(res, 'longitude must be between -180 and 180');
       }
 
-      const result = await AreaService.create(BigInt(auth.orgId), {
+      const result = await AreaService.create(toBigInt(auth.orgId), {
         cityId: toBigInt(cityId),
         tag: String(tag).toUpperCase().trim(),
         name: String(name).trim(),
@@ -150,7 +150,7 @@ export class AreaController {
         return R.badRequest(res, 'longitude must be between -180 and 180');
       }
 
-      const result = await AreaService.update(BigInt(auth.orgId), toBigInt(id), {
+      const result = await AreaService.update(toBigInt(auth.orgId), toBigInt(id), {
         tag: tag ? String(tag).toUpperCase().trim() : undefined,
         name: name ? String(name).trim() : undefined,
         details: details !== undefined ? (details ? String(details).trim() : null) : undefined,
@@ -190,7 +190,7 @@ export class AreaController {
       const { id } = req.params;
       const auth = req.auth!;
 
-      const deleted = await AreaService.delete(BigInt(auth.orgId), toBigInt(id));
+      const deleted = await AreaService.delete(toBigInt(auth.orgId), toBigInt(id));
       if (!deleted) return R.notFound(res, 'Area not found');
 
       R.noContent(res);

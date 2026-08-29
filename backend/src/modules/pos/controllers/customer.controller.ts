@@ -11,9 +11,9 @@ export class CustomerController {
       const phone = req.query.phone as string | undefined;
       const name  = req.query.name  as string | undefined;
 
-      const where: Record<string, unknown> = { orgId: BigInt(req.auth!.orgId), isActive: true };
+      const where: Record<string, unknown> = { orgId: Number(req.auth!.orgId), isActive: true };
       if (phone) where.phone = { contains: phone };
-      if (name)  where.name  = { contains: name, mode: 'insensitive' };
+      if (name)  where.name  = { contains: name };
 
       const [customers, total] = await Promise.all([
         prisma.customer.findMany({ where, skip: (page - 1) * limit, take: limit, orderBy: { name: 'asc' } }),
@@ -27,14 +27,14 @@ export class CustomerController {
   }
 
   static async getById(req: Request, res: Response) {
-    const customer = await prisma.customer.findUnique({ where: { id: BigInt(req.params.id) } });
+    const customer = await prisma.customer.findUnique({ where: { id: Number(req.params.id) } });
     if (!customer) return R.notFound(res, 'Customer');
     R.ok(res, customer);
   }
 
   static async getByPhone(req: Request, res: Response) {
     const customer = await prisma.customer.findFirst({
-      where: { phone: req.params.phone, orgId: BigInt(req.auth!.orgId), isActive: true },
+      where: { phone: req.params.phone, orgId: Number(req.auth!.orgId), isActive: true },
     });
     if (!customer) return R.notFound(res, 'Customer');
     R.ok(res, customer);
@@ -43,7 +43,7 @@ export class CustomerController {
   static async create(req: Request, res: Response) {
     try {
       const customer = await prisma.customer.create({
-        data: { ...req.body, orgId: BigInt(req.auth!.orgId), createdBy: req.auth!.userId },
+        data: { ...req.body, orgId: Number(req.auth!.orgId), createdBy: req.auth!.userId },
       });
       R.created(res, customer);
     } catch (err: any) {
@@ -55,7 +55,7 @@ export class CustomerController {
   static async update(req: Request, res: Response) {
     try {
       const customer = await prisma.customer.update({
-        where: { id: BigInt(req.params.id) },
+        where: { id: Number(req.params.id) },
         data:  { ...req.body, updatedAt: new Date() },
       });
       R.ok(res, customer);
@@ -66,7 +66,7 @@ export class CustomerController {
 
   static async loyaltyHistory(req: Request, res: Response) {
     try {
-      const customerId = BigInt(req.params.id);
+      const customerId = Number(req.params.id);
       const [customer, transactions] = await Promise.all([
         prisma.customer.findUnique({ where: { id: customerId } }),
         prisma.loyaltyTransaction.findMany({

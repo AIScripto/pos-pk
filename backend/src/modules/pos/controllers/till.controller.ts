@@ -49,7 +49,7 @@ export class TillController {
 
       // The selected till is the source of truth for branch/city during POS opening.
       const terminal = await prisma.terminal.findUnique({
-        where:  { id: BigInt(terminalId) },
+        where:  { id: Number(terminalId) },
         select: { branchId: true, branch: { select: { cityId: true } } },
       });
       if (!terminal) return R.badRequest(res, 'Terminal not found');

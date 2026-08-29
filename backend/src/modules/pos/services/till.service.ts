@@ -8,8 +8,8 @@ import { toBigInt } from '../../../shared/utils/bigint';
 
 export class TillService {
   private static async appendLog(input: {
-    tillSessionId: bigint;
-    terminalId: bigint;
+    tillSessionId: number;
+    terminalId: number;
     userId: string;
     userName: string;
     action: string;

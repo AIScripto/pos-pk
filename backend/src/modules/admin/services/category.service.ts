@@ -9,7 +9,7 @@ import { assertUnique } from '../../../shared/utils/validation';
 interface CreateCategoryInput {
   name: string;
   tag: string;
-  foodTypeId: bigint;
+  foodTypeId: number;
   sortOrder?: number;
   isActive?: boolean;
 }
@@ -17,21 +17,21 @@ interface CreateCategoryInput {
 interface UpdateCategoryInput {
   name?: string;
   tag?: string;
-  foodTypeId?: bigint;
+  foodTypeId?: number;
   sortOrder?: number;
   isActive?: boolean;
 }
 
 export class CategoryService {
 
-  static async list(orgId: bigint, search?: string) {
+  static async list(orgId: number, search?: string) {
     const where: Prisma.CategoryWhereInput = {
       orgId,
       isActive: true,
       ...(search ? {
         OR: [
-          { name: { contains: search, mode: 'insensitive' } },
-          { tag:  { contains: search, mode: 'insensitive' } },
+          { name: { contains: search } },
+          { tag:  { contains: search } },
         ],
       } : {}),
     };
@@ -42,7 +42,7 @@ export class CategoryService {
     });
   }
 
-  static async get(orgId: bigint, id: bigint) {
+  static async get(orgId: number, id: number) {
     // Get single category with org validation
     const category = await prisma.category.findFirst({
       where: { id, orgId, isActive: true },
@@ -52,7 +52,7 @@ export class CategoryService {
     return category;
   }
 
-  static async create(orgId: bigint, input: CreateCategoryInput) {
+  static async create(orgId: number, input: CreateCategoryInput) {
     // Validate required fields
     if (!input.name?.trim()) throw new Error('INVALID_NAME');
     if (!input.tag?.trim()) throw new Error('INVALID_TAG');
@@ -94,7 +94,7 @@ export class CategoryService {
     });
   }
 
-  static async update(orgId: bigint, id: bigint, input: UpdateCategoryInput) {
+  static async update(orgId: number, id: number, input: UpdateCategoryInput) {
     // Verify category exists and belongs to org
     const existing = await prisma.category.findFirst({
       where: { id, orgId },
@@ -147,7 +147,7 @@ export class CategoryService {
     });
   }
 
-  static async delete(orgId: bigint, id: bigint) {
+  static async delete(orgId: number, id: number) {
     // Verify category exists and belongs to org
     const category = await prisma.category.findFirst({
       where: { id, orgId },

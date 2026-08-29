@@ -12,8 +12,10 @@ import { getIO }           from '../../lib/socket';
 
 /** Convert BigInt fields to strings so JSON serialisation doesn't crash. */
 function serialize<T>(data: T): T {
-  return JSON.parse(JSON.stringify(data, (_key, value) =>
-    typeof value === 'bigint' ? String(value) : value
+  return JSON.parse(JSON.stringify(data, (key, value) =>
+    typeof value === 'bigint' ? String(value)
+      : (typeof value === 'number' && /^id$|Id$/.test(key)) ? String(value)
+      : value
   ));
 }
 

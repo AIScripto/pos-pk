@@ -57,7 +57,7 @@ export class InvoiceService {
       const productIds = input.items
         .map((i) => i.productId)
         .filter((id): id is string => isBigIntId(id));
-      const productMap: Record<string, { name: string; sku: string; categoryId: bigint | null }> = {};
+      const productMap: Record<string, { name: string; sku: string; categoryId: number | null }> = {};
       if (productIds.length > 0) {
         const products = await t.product.findMany({
           where: { id: { in: productIds.map(toBigInt) } },

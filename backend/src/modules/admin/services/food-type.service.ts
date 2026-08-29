@@ -22,14 +22,14 @@ interface UpdateFoodTypeInput {
 
 export class FoodTypeService {
 
-  static async list(orgId: bigint, search?: string) {
+  static async list(orgId: number, search?: string) {
     const where: Prisma.FoodTypeWhereInput = {
       orgId,
       isActive: true,
       ...(search ? {
         OR: [
-          { name: { contains: search, mode: 'insensitive' } },
-          { slug: { contains: search, mode: 'insensitive' } },
+          { name: { contains: search } },
+          { slug: { contains: search } },
         ],
       } : {}),
     };
@@ -40,7 +40,7 @@ export class FoodTypeService {
     });
   }
 
-  static async get(orgId: bigint, id: bigint) {
+  static async get(orgId: number, id: number) {
     // Get single food type with org validation
     const foodType = await prisma.foodType.findFirst({
       where: { id, orgId, isActive: true },
@@ -50,7 +50,7 @@ export class FoodTypeService {
     return foodType;
   }
 
-  static async create(orgId: bigint, input: CreateFoodTypeInput) {
+  static async create(orgId: number, input: CreateFoodTypeInput) {
     // Validate required fields
     if (!input.name?.trim()) throw new Error('INVALID_NAME');
     if (!input.slug?.trim()) throw new Error('INVALID_SLUG');
@@ -86,7 +86,7 @@ export class FoodTypeService {
     });
   }
 
-  static async update(orgId: bigint, id: bigint, input: UpdateFoodTypeInput) {
+  static async update(orgId: number, id: number, input: UpdateFoodTypeInput) {
     // Verify food type exists and belongs to org
     const existing = await prisma.foodType.findFirst({
       where: { id, orgId },
@@ -139,7 +139,7 @@ export class FoodTypeService {
     });
   }
 
-  static async delete(orgId: bigint, id: bigint) {
+  static async delete(orgId: number, id: number) {
     // Verify food type exists and belongs to org
     const foodType = await prisma.foodType.findFirst({
       where: { id, orgId },

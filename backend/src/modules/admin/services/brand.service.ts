@@ -5,7 +5,7 @@
 import prisma from '../../../shared/lib/prisma';
 
 export class BrandService {
-  static async list(orgId: bigint) {
+  static async list(orgId: number) {
     const brands = await prisma.brand.findMany({
       where: { orgId, isActive: true },
       orderBy: { tag: 'asc' },
@@ -14,7 +14,7 @@ export class BrandService {
     return brands;
   }
 
-  static async getById(orgId: bigint, brandId: bigint) {
+  static async getById(orgId: number, brandId: number) {
     const brand = await prisma.brand.findFirst({
       where: { id: brandId, orgId },
     });
@@ -26,7 +26,7 @@ export class BrandService {
     return brand;
   }
 
-  static async getByTag(orgId: bigint, tag: string) {
+  static async getByTag(orgId: number, tag: string) {
     const brand = await prisma.brand.findFirst({
       where: { orgId, tag },
     });
@@ -38,7 +38,7 @@ export class BrandService {
     return brand;
   }
 
-  static async create(orgId: bigint, data: { name: string; tag: string; tagline?: string; primaryColor?: string; logo?: string; createdBy?: string }) {
+  static async create(orgId: number, data: { name: string; tag: string; tagline?: string; primaryColor?: string; logo?: string; createdBy?: string }) {
     const tagUpper = data.tag.trim().toUpperCase();
     const existing = await prisma.brand.findFirst({
       where: { orgId, tag: tagUpper },
@@ -60,7 +60,7 @@ export class BrandService {
     });
   }
 
-  static async update(orgId: bigint, brandId: bigint, data: { name?: string; tagline?: string; primaryColor?: string; logo?: string; isActive?: boolean }) {
+  static async update(orgId: number, brandId: number, data: { name?: string; tagline?: string; primaryColor?: string; logo?: string; isActive?: boolean }) {
     const brand = await this.getById(orgId, brandId);
     return prisma.brand.update({
       where: { id: brand.id },
@@ -74,7 +74,7 @@ export class BrandService {
     });
   }
 
-  static async delete(orgId: bigint, brandId: bigint) {
+  static async delete(orgId: number, brandId: number) {
     const brand = await this.getById(orgId, brandId);
     return prisma.brand.update({
       where: { id: brand.id },

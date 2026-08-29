@@ -1,6 +1,6 @@
 // =============================================================================
 // Crip & Crumbs — Enterprise POS Database Schema
-// Database: PostgreSQL with auto-generated numeric IDs
+// Database: SQLite (local file) with auto-generated numeric IDs
 // Money:    All amounts stored as INTEGER in smallest unit (paisa / cents)
 // Audit:    Every model has isActive, createdAt, updatedAt, createdBy
 // Refs:     Every transaction carries orgId, cityId, branchId, terminalId
@@ -11,9 +11,8 @@ generator client {
 }
 
 datasource db {
-  provider  = "postgresql"
-  url       = env("DATABASE_URL")
-  directUrl = env("DIRECT_URL")
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -21,7 +20,7 @@ datasource db {
 // ─────────────────────────────────────────────────────────────────────────────
 
 model Organisation {
-  id        BigInt   @id @default(autoincrement())
+  id        Int   @id @default(autoincrement())
   name      String
   slug      String   @unique
   logo      String?
@@ -66,8 +65,8 @@ model Organisation {
 // ─────────────────────────────────────────────────────────────────────────────
 
 model Brand {
-  id       BigInt       @id @default(autoincrement())
-  orgId    BigInt
+  id       Int       @id @default(autoincrement())
+  orgId    Int
   org      Organisation @relation(fields: [orgId], references: [id])
 
   tag      String       // "CC", "CB" — unique identifier per org
@@ -86,8 +85,8 @@ model Brand {
 }
 
 model State {
-  id       BigInt   @id @default(autoincrement())
-  orgId    BigInt
+  id       Int   @id @default(autoincrement())
+  orgId    Int
   org      Organisation @relation(fields: [orgId], references: [id])
 
   tag      String       // Unique identifier — "PB", "CA", "NY"
@@ -110,18 +109,18 @@ model State {
 }
 
 model City {
-  id       BigInt       @id @default(autoincrement())
-  orgId    BigInt
+  id       Int       @id @default(autoincrement())
+  orgId    Int
   org      Organisation @relation(fields: [orgId], references: [id])
-  stateId  BigInt?
+  stateId  Int?
   state    State?       @relation(fields: [stateId], references: [id])
 
   name      String       // "Lahore"
   code      String       // "LHR" — used as prefix in branch labels
 
   // Geographic coordinates (optional, GPS accuracy to ~1.1cm)
-  latitude  Decimal?     @db.Decimal(10, 8)   // -90 to 90
-  longitude Decimal?     @db.Decimal(11, 8)   // -180 to 180
+  latitude  Decimal?   // -90 to 90
+  longitude Decimal?   // -180 to 180
 
   country  String  @default("PK")
   isActive Boolean  @default(true)
@@ -143,10 +142,10 @@ model City {
 // ─────────────────────────────────────────────────────────────────────────────
 
 model Area {
-  id       BigInt       @id @default(autoincrement())
-  cityId   BigInt
+  id       Int       @id @default(autoincrement())
+  cityId   Int
   city     City         @relation(fields: [cityId], references: [id])
-  orgId    BigInt
+  orgId    Int
   org      Organisation @relation(fields: [orgId], references: [id])
 
   tag       String       // Identifier (e.g., "DHA", "FD-01")
@@ -154,8 +153,8 @@ model Area {
   details   String?      // Description/notes
 
   // Geographic coordinates (optional, GPS accuracy to ~1.1cm)
-  latitude  Decimal?     @db.Decimal(10, 8)   // -90 to 90
-  longitude Decimal?     @db.Decimal(11, 8)   // -180 to 180
+  latitude  Decimal?   // -90 to 90
+  longitude Decimal?   // -180 to 180
 
   isActive  Boolean      @default(true)
   createdAt DateTime     @default(now())
@@ -170,13 +169,13 @@ model Area {
 }
 
 model Branch {
-  id      BigInt @id @default(autoincrement())
-  orgId   BigInt
-  brandId BigInt
+  id      Int @id @default(autoincrement())
+  orgId   Int
+  brandId Int
   brand   Brand  @relation(fields: [brandId], references: [id])
-  cityId  BigInt
+  cityId  Int
   city    City   @relation(fields: [cityId], references: [id])
-  areaId  BigInt?
+  areaId  Int?
   area    Area?  @relation(fields: [areaId], references: [id])
 
   // ── Human-readable identifiers ───────────────────────────────────────────
@@ -194,7 +193,7 @@ model Branch {
   openTime  String  @default("09:00")
   closeTime String  @default("23:00")
 
-  taxConfigId BigInt?
+  taxConfigId Int?
   isActive    Boolean  @default(true)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
@@ -231,8 +230,8 @@ model Branch {
 }
 
 model Terminal {
-  id          BigInt   @id @default(autoincrement())
-  branchId    BigInt
+  id          Int   @id @default(autoincrement())
+  branchId    Int
   branch      Branch   @relation(fields: [branchId], references: [id])
   name        String   // Display name shown to cashiers, e.g. "Till 1"
   code        String?
@@ -253,8 +252,8 @@ model Terminal {
 }
 
 model ShiftTemplate {
-  id          BigInt   @id @default(autoincrement())
-  branchId    BigInt
+  id          Int   @id @default(autoincrement())
+  branchId    Int
   branch      Branch   @relation(fields: [branchId], references: [id])
   name        String
   startTime   String   // HH:mm in branch local time
@@ -273,10 +272,10 @@ model ShiftTemplate {
 }
 
 model BusinessDay {
-  id           BigInt   @id @default(autoincrement())
-  orgId        BigInt
-  cityId       BigInt
-  branchId     BigInt
+  id           Int   @id @default(autoincrement())
+  orgId        Int
+  cityId       Int
+  branchId     Int
   branch       Branch   @relation(fields: [branchId], references: [id])
   businessDate DateTime
   status       String   @default("open") // "open" | "closed" | "locked"
@@ -299,12 +298,12 @@ model BusinessDay {
 }
 
 model ShiftSession {
-  id              BigInt        @id @default(autoincrement())
-  businessDayId   BigInt
+  id              Int        @id @default(autoincrement())
+  businessDayId   Int
   businessDay     BusinessDay   @relation(fields: [businessDayId], references: [id])
-  branchId        BigInt
+  branchId        Int
   branch          Branch        @relation(fields: [branchId], references: [id])
-  shiftTemplateId BigInt
+  shiftTemplateId Int
   shiftTemplate   ShiftTemplate @relation(fields: [shiftTemplateId], references: [id])
   name            String
   startTime       String
@@ -332,8 +331,8 @@ model ShiftSession {
 // ─────────────────────────────────────────────────────────────────────────────
 
 model OrgConfig {
-  id    BigInt       @id @default(autoincrement())
-  orgId BigInt       @unique
+  id    Int       @id @default(autoincrement())
+  orgId Int       @unique
   org   Organisation @relation(fields: [orgId], references: [id])
 
   // Currency
@@ -366,7 +365,7 @@ model OrgConfig {
   logoUrl       String @default("")
 
   // Default branch — drives address, city, area on receipts & config
-  defaultBranchId BigInt?
+  defaultBranchId Int?
   defaultBranch   Branch? @relation(fields: [defaultBranchId], references: [id])
 
   isActive  Boolean  @default(true)
@@ -376,10 +375,10 @@ model OrgConfig {
 }
 
 model TaxConfig {
-  id        BigInt       @id @default(autoincrement())
-  orgId     BigInt
+  id        Int       @id @default(autoincrement())
+  orgId     Int
   org       Organisation @relation(fields: [orgId], references: [id])
-  branchId  BigInt?      // null = org-wide; set = branch override
+  branchId  Int?      // null = org-wide; set = branch override
   name          String
   label         String  @default("GST")
   rate          Float   @default(16.0)
@@ -394,8 +393,8 @@ model TaxConfig {
 }
 
 model DiscountPreset {
-  id                 BigInt       @id @default(autoincrement())
-  orgId              BigInt
+  id                 Int       @id @default(autoincrement())
+  orgId              Int
   org                Organisation @relation(fields: [orgId], references: [id])
   name               String
   type               String       // "percent" | "fixed"
@@ -418,8 +417,8 @@ model DiscountPreset {
 // ─────────────────────────────────────────────────────────────────────────────
 
 model Role {
-  id          BigInt   @id @default(autoincrement())
-  orgId       BigInt
+  id          Int   @id @default(autoincrement())
+  orgId       Int
   org         Organisation @relation(fields: [orgId], references: [id])
 
   name        String   // "Admin", "Manager", "Cashier", "Kitchen Staff"
@@ -442,10 +441,10 @@ model Role {
 // ─────────────────────────────────────────────────────────────────────────────
 
 model User {
-  id           BigInt       @id @default(autoincrement())
-  orgId        BigInt
+  id           Int       @id @default(autoincrement())
+  orgId        Int
   org          Organisation @relation(fields: [orgId], references: [id])
-  roleId       BigInt?
+  roleId       Int?
   role         Role?        @relation(fields: [roleId], references: [id])
 
   username     String       // Login username e.g., "john.doe"
@@ -467,10 +466,10 @@ model User {
 }
 
 model UserRoleAssignment {
-  id        BigInt @id @default(autoincrement())
-  userId    BigInt
+  id        Int @id @default(autoincrement())
+  userId    Int
   user      User   @relation(fields: [userId], references: [id])
-  roleId    BigInt
+  roleId    Int
   role      Role   @relation(fields: [roleId], references: [id])
   scopeType String // "platform"|"organisation"|"city"|"branch"
   scopeId   String
@@ -491,10 +490,10 @@ model UserRoleAssignment {
 // ─────────────────────────────────────────────────────────────────────────────
 
 model OrgRolePermission {
-  id         BigInt @id @default(autoincrement())
-  orgId      BigInt
+  id         Int @id @default(autoincrement())
+  orgId      Int
   org        Organisation @relation(fields: [orgId], references: [id])
-  roleId     BigInt
+  roleId     Int
   role       Role   @relation(fields: [roleId], references: [id])
 
   permission String  // Permission — e.g. "invoice.void"
@@ -509,8 +508,8 @@ model OrgRolePermission {
 }
 
 model OtpCode {
-  id         BigInt   @id @default(autoincrement())
-  userId     BigInt?
+  id         Int   @id @default(autoincrement())
+  userId     Int?
   user       User?    @relation(fields: [userId], references: [id])
   phone      String
   code       String
@@ -531,10 +530,10 @@ model OtpCode {
 // ─────────────────────────────────────────────────────────────────────────────
 
 model Product {
-  id              BigInt       @id @default(autoincrement())
-  orgId           BigInt
+  id              Int       @id @default(autoincrement())
+  orgId           Int
   org             Organisation @relation(fields: [orgId], references: [id])
-  categoryId      BigInt?
+  categoryId      Int?
   category        Category?    @relation(fields: [categoryId], references: [id])
 
   name            String
@@ -559,10 +558,10 @@ model Product {
 }
 
 model ProductBranchConfig {
-  id             BigInt  @id @default(autoincrement())
-  productId      BigInt
+  id             Int  @id @default(autoincrement())
+  productId      Int
   product        Product @relation(fields: [productId], references: [id])
-  branchId       BigInt
+  branchId       Int
   branch         Branch  @relation(fields: [branchId], references: [id])
   pricePaisa     Int
   salePricePaisa Int?
@@ -575,10 +574,10 @@ model ProductBranchConfig {
 }
 
 model Deal {
-  id                  BigInt       @id @default(autoincrement())
-  orgId               BigInt
+  id                  Int       @id @default(autoincrement())
+  orgId               Int
   org                 Organisation @relation(fields: [orgId], references: [id])
-  categoryId          BigInt?
+  categoryId          Int?
   category            Category?    @relation(fields: [categoryId], references: [id])
   name                String
   tag                 String       // Deal tag/identifier (e.g., "combo-burger-special")
@@ -606,8 +605,8 @@ model Deal {
 // ─────────────────────────────────────────────────────────────────────────────
 
 model FoodType {
-  id        BigInt       @id @default(autoincrement())
-  orgId     BigInt
+  id        Int       @id @default(autoincrement())
+  orgId     Int
   org       Organisation @relation(fields: [orgId], references: [id])
 
   name      String       // Display name (e.g., "Fast Food", "Chinese", "Western")
@@ -631,10 +630,10 @@ model FoodType {
 // ─────────────────────────────────────────────────────────────────────────────
 
 model Category {
-  id          BigInt       @id @default(autoincrement())
-  orgId       BigInt
+  id          Int       @id @default(autoincrement())
+  orgId       Int
   org         Organisation @relation(fields: [orgId], references: [id])
-  foodTypeId  BigInt?
+  foodTypeId  Int?
   foodType    FoodType?    @relation(fields: [foodTypeId], references: [id])
 
   name        String       // Display name (e.g., "Burgers")
@@ -660,10 +659,10 @@ model Category {
 // ─────────────────────────────────────────────────────────────────────────────
 
 model Inventory {
-  id           BigInt   @id @default(autoincrement())
-  productId    BigInt
+  id           Int   @id @default(autoincrement())
+  productId    Int
   product      Product  @relation(fields: [productId], references: [id])
-  branchId     BigInt
+  branchId     Int
   branch       Branch   @relation(fields: [branchId], references: [id])
   quantity     Float    @default(0)
   minThreshold Float    @default(5)
@@ -682,8 +681,8 @@ model Inventory {
 // ─────────────────────────────────────────────────────────────────────────────
 
 model TableSection {
-  id        BigInt   @id @default(autoincrement())
-  branchId  BigInt
+  id        Int   @id @default(autoincrement())
+  branchId  Int
   branch    Branch   @relation(fields: [branchId], references: [id])
   name      String
   color     String   @default("#3B82F6")
@@ -699,10 +698,10 @@ model TableSection {
 }
 
 model Table {
-  id          BigInt        @id @default(autoincrement())
-  branchId    BigInt
+  id          Int        @id @default(autoincrement())
+  branchId    Int
   branch      Branch        @relation(fields: [branchId], references: [id])
-  sectionId   BigInt?
+  sectionId   Int?
   section     TableSection? @relation(fields: [sectionId], references: [id])
   number      Int           // 1, 2, 3 ...
   name        String        // "T1", "VIP-3", "BAR-1"
@@ -726,10 +725,10 @@ model Table {
 }
 
 model Reservation {
-  id          BigInt   @id @default(autoincrement())
-  branchId    BigInt
+  id          Int   @id @default(autoincrement())
+  branchId    Int
   branch      Branch   @relation(fields: [branchId], references: [id])
-  tableId     BigInt?
+  tableId     Int?
   table       Table?   @relation(fields: [tableId], references: [id])
   guestName   String
   guestPhone  String
@@ -753,18 +752,18 @@ model Reservation {
 // ─────────────────────────────────────────────────────────────────────────────
 
 model TillSession {
-  id           BigInt   @id @default(autoincrement())
-  orgId        BigInt
-  cityId       BigInt
-  branchId     BigInt
+  id           Int   @id @default(autoincrement())
+  orgId        Int
+  cityId       Int
+  branchId     Int
   branch       Branch   @relation(fields: [branchId], references: [id])
-  terminalId   BigInt
+  terminalId   Int
   terminal     Terminal @relation(fields: [terminalId], references: [id])
-  businessDayId BigInt?
+  businessDayId Int?
   businessDay   BusinessDay? @relation(fields: [businessDayId], references: [id])
-  shiftSessionId BigInt?
+  shiftSessionId Int?
   shiftSession   ShiftSession? @relation(fields: [shiftSessionId], references: [id])
-  shiftTemplateId BigInt?
+  shiftTemplateId Int?
   shiftTemplate   ShiftTemplate? @relation(fields: [shiftTemplateId], references: [id])
   shiftName       String?
   businessDate    DateTime @default(now()) // Operational trading date, not calendar close date.
@@ -774,13 +773,13 @@ model TillSession {
   openedBy          String   // userId
   openedByName      String   @default("")
   openingCashPaisa  Int      @default(0)
-  openingDenom      Json     @default("[]")  // DenominationEntry[]
+  openingDenom      String     @default("[]")  // DenominationEntry[]
 
   closedAt          DateTime?
   closedBy          String?
   closedByName      String?
   closingCashPaisa  Int?
-  closingDenom      Json?    // DenominationEntry[]
+  closingDenom      String?    // DenominationEntry[]
   variance          Int?     // paisa — closingCash − expectedCash
   closeSubmittedAt  DateTime?
   closeSubmittedBy  String?
@@ -809,16 +808,16 @@ model TillSession {
 }
 
 model TillSessionLog {
-  id            BigInt      @id @default(autoincrement())
-  tillSessionId BigInt
+  id            Int      @id @default(autoincrement())
+  tillSessionId Int
   tillSession   TillSession @relation(fields: [tillSessionId], references: [id])
-  terminalId    BigInt
+  terminalId    Int
   userId        String
   userName      String      @default("")
   action        String
   actionAt      DateTime    @default(now())
   notes         String?
-  metadata      Json        @default("{}")
+  metadata      String        @default("{}")
 
   @@index([tillSessionId, actionAt])
   @@index([terminalId, actionAt])
@@ -826,19 +825,19 @@ model TillSessionLog {
 }
 
 model OperationAuditLog {
-  id           BigInt   @id @default(autoincrement())
-  orgId        BigInt
-  cityId       BigInt?
-  branchId     BigInt
+  id           Int   @id @default(autoincrement())
+  orgId        Int
+  cityId       Int?
+  branchId     Int
   branch       Branch   @relation(fields: [branchId], references: [id])
-  businessDayId BigInt?
-  shiftSessionId BigInt?
-  tillSessionId BigInt?
+  businessDayId Int?
+  shiftSessionId Int?
+  tillSessionId Int?
   action       String
   actorId      String
   actorName    String   @default("")
   notes        String?
-  metadata     Json     @default("{}")
+  metadata     String     @default("{}")
   createdAt    DateTime @default(now())
 
   @@index([branchId, createdAt])
@@ -852,21 +851,21 @@ model OperationAuditLog {
 // ─────────────────────────────────────────────────────────────────────────────
 
 model Invoice {
-  id             BigInt      @id @default(autoincrement())
+  id             Int      @id @default(autoincrement())
 
   // ── Complete organisational reference ─────────────────────────────────────
-  orgId          BigInt
-  cityId         BigInt
-  branchId       BigInt
+  orgId          Int
+  cityId         Int
+  branchId       Int
   branch         Branch      @relation(fields: [branchId], references: [id])
-  terminalId     BigInt
+  terminalId     Int
   terminal       Terminal    @relation(fields: [terminalId], references: [id])
-  tillSessionId  BigInt
+  tillSessionId  Int
   tillSession    TillSession @relation(fields: [tillSessionId], references: [id])
   cashierId      String      // userId
 
   // ── Table reference ────────────────────────────────────────────────────────
-  tableId        BigInt?
+  tableId        Int?
   table          Table?      @relation(fields: [tableId], references: [id])
   tableName      String?     // denormalised
   covers         Int?
@@ -895,13 +894,13 @@ model Invoice {
   roundingPaisa       Int  @default(0)
 
   // ── Discounts JSON ─────────────────────────────────────────────────────────
-  discountsJson  Json    @default("[]")   // AppliedDiscount[]
+  discountsJson  String    @default("[]")   // AppliedDiscount[]
 
   // ── Payment ────────────────────────────────────────────────────────────────
   paymentMethod  String  @default("cash")
   paymentStatus  String  @default("paid")
   paidAt         DateTime?
-  allocationsJson Json   @default("[]")  // PaymentAllocation[]
+  allocationsJson String   @default("[]")  // PaymentAllocation[]
 
   // ── Void ───────────────────────────────────────────────────────────────────
   voidReason     String?
@@ -928,11 +927,11 @@ model Invoice {
 }
 
 model InvoiceItem {
-  id                  BigInt  @id @default(autoincrement())
-  invoiceId           BigInt
+  id                  Int  @id @default(autoincrement())
+  invoiceId           Int
   invoice             Invoice @relation(fields: [invoiceId], references: [id])
-  productId           BigInt?
-  dealId              BigInt?
+  productId           Int?
+  dealId              Int?
   productName         String
   productCode         String  @default("")
   category            String  @default("other")
@@ -957,8 +956,8 @@ model InvoiceItem {
 // ─────────────────────────────────────────────────────────────────────────────
 
 model Customer {
-  id              BigInt       @id @default(autoincrement())
-  orgId           BigInt
+  id              Int       @id @default(autoincrement())
+  orgId           Int
   org             Organisation @relation(fields: [orgId], references: [id])
   name            String
   phone           String
@@ -988,8 +987,8 @@ model Customer {
 }
 
 model LoyaltyConfig {
-  id              BigInt       @id @default(autoincrement())
-  orgId           BigInt       @unique
+  id              Int       @id @default(autoincrement())
+  orgId           Int       @unique
   org             Organisation @relation(fields: [orgId], references: [id])
   isEnabled       Boolean      @default(true)
   earnRatePaisa   Int          @default(1000)   // spend Rs 10 = 1 point
@@ -1007,8 +1006,8 @@ model LoyaltyConfig {
 }
 
 model LoyaltyTier {
-  id              BigInt        @id @default(autoincrement())
-  configId        BigInt
+  id              Int        @id @default(autoincrement())
+  configId        Int
   config          LoyaltyConfig @relation(fields: [configId], references: [id])
   name            String
   minPoints       Int
@@ -1023,13 +1022,13 @@ model LoyaltyTier {
 }
 
 model LoyaltyTransaction {
-  id          BigInt   @id @default(autoincrement())
-  customerId  BigInt
+  id          Int   @id @default(autoincrement())
+  customerId  Int
   customer    Customer @relation(fields: [customerId], references: [id])
-  orgId       BigInt
-  branchId    BigInt
+  orgId       Int
+  branchId    Int
   branch      Branch   @relation(fields: [branchId], references: [id])
-  invoiceId   BigInt?
+  invoiceId   Int?
   invoice     Invoice? @relation(fields: [invoiceId], references: [id])
   type        String   // "earn"|"redeem"|"expire"|"manual_add"|"manual_deduct"
   points      Int
@@ -1051,10 +1050,10 @@ model LoyaltyTransaction {
 // ─────────────────────────────────────────────────────────────────────────────
 
 model CustomerMessage {
-  id          BigInt   @id @default(autoincrement())
-  customerId  BigInt
+  id          Int   @id @default(autoincrement())
+  customerId  Int
   customer    Customer @relation(fields: [customerId], references: [id])
-  orgId       BigInt
+  orgId       Int
   channel     String   // "sms"|"whatsapp"|"email"
   type        String   // "otp"|"deal"|"birthday"|"points_earned"|...
   content     String
@@ -1071,8 +1070,8 @@ model CustomerMessage {
 }
 
 model MessageTemplate {
-  id       BigInt       @id @default(autoincrement())
-  orgId    BigInt
+  id       Int       @id @default(autoincrement())
+  orgId    Int
   org      Organisation @relation(fields: [orgId], references: [id])
   type     String
   channel  String
@@ -1089,19 +1088,19 @@ model MessageTemplate {
 // ─────────────────────────────────────────────────────────────────────────────
 
 model HeldOrder {
-  id            BigInt   @id @default(autoincrement())
-  orgId         BigInt
-  cityId        BigInt
-  branchId      BigInt
+  id            Int   @id @default(autoincrement())
+  orgId         Int
+  cityId        Int
+  branchId      Int
   branch        Branch   @relation(fields: [branchId], references: [id])
-  terminalId    BigInt   // terminal that held it — informational only
+  terminalId    Int   // terminal that held it — informational only
   cashierId     String
 
   label         String   @default("Held Order")
-  itemsJson     Json     @default("[]")          // CartItem[] snapshot
-  activeCustomerJson Json?                        // ActiveCustomer | null
+  itemsJson     String     @default("[]")          // CartItem[] snapshot
+  activeCustomerJson String?                        // ActiveCustomer | null
   orderType     String   @default("dine-in")
-  tableId       BigInt?
+  tableId       Int?
   tableName     String?
   covers        Int?
   customerId    String?
@@ -1124,14 +1123,14 @@ model HeldOrder {
 // ─────────────────────────────────────────────────────────────────────────────
 
 model KitchenOrder {
-  id          BigInt   @id @default(autoincrement())
-  invoiceId   BigInt   @unique
-  orgId       BigInt
-  branchId    BigInt
-  terminalId  BigInt
+  id          Int   @id @default(autoincrement())
+  invoiceId   Int   @unique
+  orgId       Int
+  branchId    Int
+  terminalId  Int
   orderNumber String   // "#042"
   orderType   String   // "dine_in" | "takeaway" | "delivery"
-  tableId     BigInt?
+  tableId     Int?
   tableName   String?
   covers      Int?
   cashierName String   @default("")
@@ -1158,10 +1157,10 @@ model KitchenOrder {
 }
 
 model KitchenOrderItem {
-  id             BigInt       @id @default(autoincrement())
-  kitchenOrderId BigInt
+  id             Int       @id @default(autoincrement())
+  kitchenOrderId Int
   kitchenOrder   KitchenOrder @relation(fields: [kitchenOrderId], references: [id])
-  productId      BigInt?
+  productId      Int?
   productName    String
   quantity       Int
   notes          String?
@@ -1175,8 +1174,8 @@ model KitchenOrderItem {
 }
 
 model Campaign {
-  id          BigInt       @id @default(autoincrement())
-  orgId       BigInt
+  id          Int       @id @default(autoincrement())
+  orgId       Int
   org         Organisation @relation(fields: [orgId], references: [id])
   name        String
   channel     String

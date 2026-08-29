@@ -11,7 +11,9 @@ function serialize(obj: any): any {
   if (!obj) return obj;
   const result = { ...obj };
   for (const key of Object.keys(result)) {
+    // Ids are numbers now; keep them strings on the wire (see id-serializer.ts).
     if (typeof result[key] === 'bigint') result[key] = result[key].toString();
+    else if (typeof result[key] === 'number' && /^id$|Id$/.test(key)) result[key] = String(result[key]);
     else if (result[key] instanceof Date) result[key] = result[key].toISOString();
     else if (Array.isArray(result[key])) result[key] = result[key].map(serialize);
     else if (result[key] !== null && typeof result[key] === 'object') {
@@ -26,7 +28,7 @@ export class OrganisationController {
   // GET /admin/organisation
   static async getOrg(req: Request, res: Response) {
     const org = await prisma.organisation.findUnique({
-      where: { id: BigInt(req.auth!.orgId) },
+      where: { id: Number(req.auth!.orgId) },
       select: {
         id:           true,
         name:         true,
@@ -53,7 +55,7 @@ export class OrganisationController {
   // PATCH /admin/organisation
   static async updateOrg(req: Request, res: Response) {
     try {
-      const orgId = BigInt(req.auth!.orgId);
+      const orgId = Number(req.auth!.orgId);
       const allowedFields = [
         'name', 'logo', 'website', 'email', 'phone', 'isActive',
         'addrLine1', 'addrLine2', 'addrCity', 'addrState', 'addrCountry', 'addrPostCode',

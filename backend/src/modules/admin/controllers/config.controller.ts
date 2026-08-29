@@ -7,7 +7,9 @@ function serializeConfig(obj: any): any {
   if (!obj) return obj;
   const result = { ...obj };
   for (const key of Object.keys(result)) {
+    // Ids are numbers now; keep them strings on the wire (see id-serializer.ts).
     if (typeof result[key] === 'bigint') result[key] = result[key].toString();
+    else if (typeof result[key] === 'number' && /^id$|Id$/.test(key)) result[key] = String(result[key]);
     else if (Array.isArray(result[key])) result[key] = result[key].map(serializeConfig);
     else if (result[key] !== null && typeof result[key] === 'object' && !(result[key] instanceof Date)) {
       result[key] = serializeConfig(result[key]);
@@ -25,7 +27,7 @@ export class ConfigController {
   static async getOrgConfig(req: Request, res: Response) {
     try {
       const config = await prisma.orgConfig.findFirst({
-        where:   { orgId: BigInt(req.auth!.orgId), isActive: true },
+        where:   { orgId: Number(req.auth!.orgId), isActive: true },
         include: {
           defaultBranch: {
             include: {
@@ -43,12 +45,12 @@ export class ConfigController {
 
   static async upsertOrgConfig(req: Request, res: Response) {
     try {
-      const orgId = BigInt(req.auth!.orgId);
+      const orgId = Number(req.auth!.orgId);
       // Strip read-only / relation fields
       const { id, createdAt, updatedAt, createdBy, orgId: _oid, org, defaultBranch, ...rest } = req.body;
       const data = { ...rest };
       if (data.defaultBranchId && data.defaultBranchId !== '') {
-        data.defaultBranchId = BigInt(data.defaultBranchId);
+        data.defaultBranchId = Number(data.defaultBranchId);
       } else {
         data.defaultBranchId = null;
       }
@@ -70,7 +72,7 @@ export class ConfigController {
   static async listTaxConfigs(req: Request, res: Response) {
     try {
       const configs = await prisma.taxConfig.findMany({
-        where:   { orgId: BigInt(req.auth!.orgId), isActive: true },
+        where:   { orgId: Number(req.auth!.orgId), isActive: true },
         orderBy: [{ isDefault: 'desc' }, { name: 'asc' }],
       });
       R.ok(res, configs.map(serializeConfig));
@@ -84,7 +86,7 @@ export class ConfigController {
   // Resolution order: exact paymentMethod match → "all" fallback → org default
   static async getTaxConfig(req: Request, res: Response) {
     try {
-      const orgId         = BigInt(req.auth!.orgId);
+      const orgId         = Number(req.auth!.orgId);
       const paymentMethod = (req.query.paymentMethod as string) || 'all';
 
       // 1. Try exact payment method match (e.g. "card" → Card WHT 5%)
@@ -108,9 +110,9 @@ export class ConfigController {
 
   static async createTaxConfig(req: Request, res: Response) {
     try {
-      const orgId = BigInt(req.auth!.orgId);
+      const orgId = Number(req.auth!.orgId);
       const data  = { ...req.body };
-      if (data.branchId) data.branchId = BigInt(data.branchId);
+      if (data.branchId) data.branchId = Number(data.branchId);
       if (data.isDefault) {
         await prisma.taxConfig.updateMany({ where: { orgId, isDefault: true }, data: { isDefault: false } });
       }
@@ -125,13 +127,13 @@ export class ConfigController {
 
   static async updateTaxConfig(req: Request, res: Response) {
     try {
-      const orgId = BigInt(req.auth!.orgId);
+      const orgId = Number(req.auth!.orgId);
       const data  = { ...req.body };
       if (data.isDefault) {
         await prisma.taxConfig.updateMany({ where: { orgId, isDefault: true }, data: { isDefault: false } });
       }
       const config = await prisma.taxConfig.update({
-        where: { id: BigInt(req.params.id) },
+        where: { id: Number(req.params.id) },
         data:  { ...data, updatedAt: new Date() },
       });
       R.ok(res, serializeConfig(config));
@@ -141,7 +143,7 @@ export class ConfigController {
   }
 
   static async deleteTaxConfig(req: Request, res: Response) {
-    await prisma.taxConfig.update({ where: { id: BigInt(req.params.id) }, data: { isActive: false } });
+    await prisma.taxConfig.update({ where: { id: Number(req.params.id) }, data: { isActive: false } });
     R.noContent(res);
   }
 
@@ -152,7 +154,7 @@ export class ConfigController {
   static async listDiscounts(req: Request, res: Response) {
     try {
       const presets = await prisma.discountPreset.findMany({
-        where:   { orgId: BigInt(req.auth!.orgId), isActive: true },
+        where:   { orgId: Number(req.auth!.orgId), isActive: true },
         orderBy: { sortOrder: 'asc' },
       });
       R.ok(res, presets.map(serializeConfig));
@@ -164,7 +166,7 @@ export class ConfigController {
   static async createDiscount(req: Request, res: Response) {
     try {
       const preset = await prisma.discountPreset.create({
-        data: { ...req.body, orgId: BigInt(req.auth!.orgId), createdBy: req.auth!.userId },
+        data: { ...req.body, orgId: Number(req.auth!.orgId), createdBy: req.auth!.userId },
       });
       R.created(res, serializeConfig(preset));
     } catch (err: any) {
@@ -175,7 +177,7 @@ export class ConfigController {
   static async updateDiscount(req: Request, res: Response) {
     try {
       const preset = await prisma.discountPreset.update({
-        where: { id: BigInt(req.params.id) },
+        where: { id: Number(req.params.id) },
         data:  { ...req.body, updatedAt: new Date() },
       });
       R.ok(res, serializeConfig(preset));
@@ -185,7 +187,7 @@ export class ConfigController {
   }
 
   static async removeDiscount(req: Request, res: Response) {
-    await prisma.discountPreset.update({ where: { id: BigInt(req.params.id) }, data: { isActive: false } });
+    await prisma.discountPreset.update({ where: { id: Number(req.params.id) }, data: { isActive: false } });
     R.noContent(res);
   }
 
@@ -196,7 +198,7 @@ export class ConfigController {
   static async getLoyaltyConfig(req: Request, res: Response) {
     try {
       const config = await prisma.loyaltyConfig.findFirst({
-        where:   { orgId: BigInt(req.auth!.orgId), isActive: true },
+        where:   { orgId: Number(req.auth!.orgId), isActive: true },
         include: { tiers: { where: { isActive: true }, orderBy: { minPoints: 'asc' } } },
       });
       R.ok(res, serializeConfig(config));
@@ -207,7 +209,7 @@ export class ConfigController {
 
   static async upsertLoyaltyConfig(req: Request, res: Response) {
     try {
-      const orgId = BigInt(req.auth!.orgId);
+      const orgId = Number(req.auth!.orgId);
       // Strip read-only / relation fields that Prisma rejects on update
       const { id, tiers, createdAt, updatedAt, createdBy, orgId: _oid, org, ...data } = req.body;
       const config = await prisma.loyaltyConfig.upsert({
@@ -227,7 +229,7 @@ export class ConfigController {
 
   static async getBranch(req: Request, res: Response) {
     const branch = await prisma.branch.findUnique({
-      where:   { id: BigInt(req.params.branchId) },
+      where:   { id: Number(req.params.branchId) },
       include: { city: true, area: true },
     });
     if (!branch) return R.notFound(res, 'Branch');
@@ -237,7 +239,7 @@ export class ConfigController {
   static async updateBranch(req: Request, res: Response) {
     try {
       const branch = await prisma.branch.update({
-        where: { id: BigInt(req.params.branchId) },
+        where: { id: Number(req.params.branchId) },
         data:  { ...req.body, updatedAt: new Date() },
       });
       R.ok(res, serializeConfig(branch));

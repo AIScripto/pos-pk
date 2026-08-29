@@ -6,7 +6,7 @@ import prisma from '../../../shared/lib/prisma';
 import { toDecimal } from '../../../shared/utils/decimal';
 
 interface CreateAreaInput {
-  cityId: bigint;
+  cityId: number;
   tag: string;
   name: string;
   details: string | null;
@@ -26,7 +26,7 @@ interface UpdateAreaInput {
 
 export class AreaService {
 
-  static async list(orgId: bigint, cityId: bigint, search?: string) {
+  static async list(orgId: number, cityId: number, search?: string) {
     const city = await prisma.city.findFirst({
       where: { id: cityId, orgId, isActive: true },
     });
@@ -38,8 +38,8 @@ export class AreaService {
         orgId,
         ...(search ? {
           OR: [
-            { tag:  { contains: search, mode: 'insensitive' } },
-            { name: { contains: search, mode: 'insensitive' } },
+            { tag:  { contains: search } },
+            { name: { contains: search } },
           ],
         } : {}),
       },
@@ -47,13 +47,13 @@ export class AreaService {
     });
   }
 
-  static async get(orgId: bigint, id: bigint) {
+  static async get(orgId: number, id: number) {
     return prisma.area.findFirst({
       where: { id, orgId },
     });
   }
 
-  static async create(orgId: bigint, input: CreateAreaInput) {
+  static async create(orgId: number, input: CreateAreaInput) {
     const city = await prisma.city.findFirst({
       where: { id: input.cityId, orgId, isActive: true },
     });
@@ -62,7 +62,7 @@ export class AreaService {
     const existing = await prisma.area.findFirst({
       where: {
         cityId: input.cityId,
-        tag: { equals: input.tag, mode: 'insensitive' },
+        tag: { equals: input.tag },
       },
     });
     if (existing) throw new Error('DUPLICATE_TAG');
@@ -82,7 +82,7 @@ export class AreaService {
     });
   }
 
-  static async update(orgId: bigint, id: bigint, input: UpdateAreaInput) {
+  static async update(orgId: number, id: number, input: UpdateAreaInput) {
     const area = await prisma.area.findFirst({
       where: { id, orgId },
     });
@@ -92,7 +92,7 @@ export class AreaService {
       const existing = await prisma.area.findFirst({
         where: {
           cityId: area.cityId,
-          tag: { equals: input.tag, mode: 'insensitive' },
+          tag: { equals: input.tag },
           id: { not: id },
         },
       });
@@ -112,7 +112,7 @@ export class AreaService {
     });
   }
 
-  static async delete(orgId: bigint, id: bigint) {
+  static async delete(orgId: number, id: number) {
     const area = await prisma.area.findFirst({
       where: { id, orgId },
     });

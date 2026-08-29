@@ -8,7 +8,7 @@ export class TableController {
   // ── Sections ──────────────────────────────────────────────────────────────
 
   static async listSections(req: Request, res: Response) {
-    const branchId = BigInt((req.query.branchId as string) ?? req.auth!.branchId);
+    const branchId = Number((req.query.branchId as string) ?? req.auth!.branchId);
 
     const sections = await prisma.tableSection.findMany({
       where:   { branchId, isActive: true },
@@ -21,7 +21,7 @@ export class TableController {
   static async createSection(req: Request, res: Response) {
     try {
       const section = await prisma.tableSection.create({
-        data: { ...req.body, branchId: BigInt(req.body.branchId ?? req.auth!.branchId), createdBy: req.auth!.userId },
+        data: { ...req.body, branchId: Number(req.body.branchId ?? req.auth!.branchId), createdBy: req.auth!.userId },
       });
       R.created(res, section);
     } catch (err: any) {
@@ -32,7 +32,7 @@ export class TableController {
   static async updateSection(req: Request, res: Response) {
     try {
       const section = await prisma.tableSection.update({
-        where: { id: BigInt(req.params.id) },
+        where: { id: Number(req.params.id) },
         data:  { ...req.body, updatedAt: new Date() },
       });
       R.ok(res, section);
@@ -42,14 +42,14 @@ export class TableController {
   }
 
   static async removeSection(req: Request, res: Response) {
-    await prisma.tableSection.update({ where: { id: BigInt(req.params.id) }, data: { isActive: false } });
+    await prisma.tableSection.update({ where: { id: Number(req.params.id) }, data: { isActive: false } });
     R.noContent(res);
   }
 
   // ── Tables ────────────────────────────────────────────────────────────────
 
   static async list(req: Request, res: Response) {
-    const branchId = BigInt((req.query.branchId as string) ?? req.auth!.branchId);
+    const branchId = Number((req.query.branchId as string) ?? req.auth!.branchId);
     const status   = req.query.status as string | undefined;
 
     const tables = await prisma.table.findMany({
@@ -74,7 +74,7 @@ export class TableController {
   static async update(req: Request, res: Response) {
     try {
       const table = await prisma.table.update({
-        where: { id: BigInt(req.params.id) },
+        where: { id: Number(req.params.id) },
         data:  { ...req.body, updatedAt: new Date() },
       });
       R.ok(res, table);
@@ -96,7 +96,7 @@ export class TableController {
             ? { ...base, occupiedAt: null, assignedTo: null }
             : base;
 
-      const table = await prisma.table.update({ where: { id: BigInt(req.params.id) }, data });
+      const table = await prisma.table.update({ where: { id: Number(req.params.id) }, data });
       R.ok(res, table);
     } catch {
       R.notFound(res, 'Table');
@@ -104,7 +104,7 @@ export class TableController {
   }
 
   static async remove(req: Request, res: Response) {
-    await prisma.table.update({ where: { id: BigInt(req.params.id) }, data: { isActive: false } });
+    await prisma.table.update({ where: { id: Number(req.params.id) }, data: { isActive: false } });
     R.noContent(res);
   }
 }

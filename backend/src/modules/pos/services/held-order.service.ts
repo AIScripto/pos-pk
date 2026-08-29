@@ -36,7 +36,7 @@ export class HeldOrderService {
         cashierId:           input.cashierId,
         label:               input.label,
         itemsJson:           JSON.parse(input.itemsJson),
-        activeCustomerJson:  input.activeCustomerJson ? JSON.parse(input.activeCustomerJson) : null,
+        activeCustomerJson:  input.activeCustomerJson ?? null,
         orderType:           input.orderType,
         tableId:             input.tableId ? toBigInt(input.tableId) : null,
         tableName:           input.tableName  ?? null,

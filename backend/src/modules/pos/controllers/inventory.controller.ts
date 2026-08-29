@@ -5,7 +5,7 @@ import * as R from '../../../shared/lib/response';
 export class InventoryController {
 
   static async list(req: Request, res: Response) {
-    const branchId = BigInt((req.query.branchId as string) ?? req.auth!.branchId);
+    const branchId = Number((req.query.branchId as string) ?? req.auth!.branchId);
 
     const inventory = await prisma.inventory.findMany({
       where:   { branchId },
@@ -17,7 +17,7 @@ export class InventoryController {
   }
 
   static async lowStock(req: Request, res: Response) {
-    const branchId = BigInt((req.query.branchId as string) ?? req.auth!.branchId);
+    const branchId = Number((req.query.branchId as string) ?? req.auth!.branchId);
 
     const all   = await prisma.inventory.findMany({
       where:   { branchId },
@@ -31,8 +31,8 @@ export class InventoryController {
   static async setStock(req: Request, res: Response) {
     try {
       const { quantity, minThreshold } = req.body;
-      const branchId = BigInt(req.body.branchId ?? req.auth!.branchId);
-      const productId = BigInt(req.params.productId);
+      const branchId = Number(req.body.branchId ?? req.auth!.branchId);
+      const productId = Number(req.params.productId);
 
       const record = await prisma.inventory.upsert({
         where:  { productId_branchId: { productId, branchId } },
@@ -57,8 +57,8 @@ export class InventoryController {
       const { delta, branchId: bodyBranchId } = req.body;
       if (delta === undefined) return R.badRequest(res, 'delta required');
 
-      const branchId = BigInt(bodyBranchId ?? req.auth!.branchId);
-      const productId = BigInt(req.params.productId);
+      const branchId = Number(bodyBranchId ?? req.auth!.branchId);
+      const productId = Number(req.params.productId);
 
       const existing = await prisma.inventory.findUnique({
         where: { productId_branchId: { productId, branchId } },

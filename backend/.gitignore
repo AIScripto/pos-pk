@@ -1,0 +1,7 @@
+backups/
+
+# SQLite sidecar files — WAL journal and shared-memory index.
+# They belong to a running database and are meaningless (and harmful) in git.
+*.db-shm
+*.db-wal
+*.db-journal

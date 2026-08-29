@@ -13,7 +13,7 @@ export interface UpdateRoleInput {
 }
 
 export class RoleService {
-  static async list(orgId: bigint) {
+  static async list(orgId: number) {
     const roles = await prisma.role.findMany({
       where: { orgId, isActive: true },
       orderBy: { name: 'asc' },
@@ -21,7 +21,7 @@ export class RoleService {
     return roles;
   }
 
-  static async getById(orgId: bigint, roleId: bigint) {
+  static async getById(orgId: number, roleId: number) {
     const role = await prisma.role.findUnique({
       where: { id: roleId },
     });
@@ -33,7 +33,7 @@ export class RoleService {
     return role;
   }
 
-  static async getByTag(orgId: bigint, tag: string) {
+  static async getByTag(orgId: number, tag: string) {
     const role = await prisma.role.findUnique({
       where: { orgId_tag: { orgId, tag } },
     });
@@ -45,7 +45,7 @@ export class RoleService {
     return role;
   }
 
-  static async create(orgId: bigint, input: CreateRoleInput) {
+  static async create(orgId: number, input: CreateRoleInput) {
     // Check if tag already exists for this org
     const existingRole = await prisma.role.findUnique({
       where: { orgId_tag: { orgId, tag: input.tag.toLowerCase().trim() } },
@@ -68,7 +68,7 @@ export class RoleService {
     return role;
   }
 
-  static async update(orgId: bigint, roleId: bigint, input: UpdateRoleInput) {
+  static async update(orgId: number, roleId: number, input: UpdateRoleInput) {
     const role = await this.getById(orgId, roleId);
 
     // Prevent editing system roles
@@ -89,7 +89,7 @@ export class RoleService {
     return updated;
   }
 
-  static async delete(orgId: bigint, roleId: bigint) {
+  static async delete(orgId: number, roleId: number) {
     const role = await this.getById(orgId, roleId);
 
     // Prevent deleting system roles

@@ -109,7 +109,7 @@ export class AuthController {
       const whereClause: any = { isActive: true };
       const sessionWhere: any = { status: 'open', isActive: true };
       if (branchId) {
-        const bId = BigInt(String(branchId));
+        const bId = Number(String(branchId));
         whereClause.branchId = bId;
         sessionWhere.branchId = bId;
       }
@@ -162,7 +162,7 @@ export class AuthController {
       if (!pin || !/^\d{4}$/.test(pin)) return R.badRequest(res, 'pin must be 4 digits');
 
       const user = await prisma.user.findUnique({
-        where:  { id: BigInt(req.auth!.userId) },
+        where:  { id: Number(req.auth!.userId) },
         select: { pinHash: true },
       });
 

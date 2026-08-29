@@ -3,6 +3,7 @@
 // ─────────────────────────────────────────────────────────────────────────────
 
 import http                 from 'http';
+import { idReplacer }        from './shared/utils/id-serializer';
 import express              from 'express';
 import cors                 from 'cors';
 import helmet               from 'helmet';
@@ -16,7 +17,7 @@ import { mountAdminModule } from './modules/admin';
 import { errorHandler, notFoundHandler } from './shared/middleware';
 import { initIO }           from './lib/socket';
 import { registerKitchenGateway } from './modules/kitchen/kitchen.gateway';
-import db                    from './shared/lib/prisma';
+import db, { applySqlitePragmas } from './shared/lib/prisma';
 
 const app    = express();
 const server = http.createServer(app);
@@ -24,7 +25,7 @@ const server = http.createServer(app);
 app.disable('etag');
 
 // ── JSON BigInt serialisation ───────────────────────────────────────────────
-app.set('json replacer', (_key: string, value: unknown) => typeof value === 'bigint' ? value.toString() : value);
+app.set('json replacer', idReplacer);
 
 // ─── Socket.io ───────────────────────────────────────────────────────────────
 const io = initIO(server);
@@ -122,12 +123,24 @@ app.use(notFoundHandler);
 app.use(errorHandler);
 
 // ─── Start & Graceful Shutdown ───────────────────────────────────────────────
-server.listen(env.PORT, () => {
+server.listen(env.PORT, async () => {
+  // WAL, foreign-key enforcement and the busy timeout have to be set on the
+  // connection before the first sale, not after. See shared/lib/prisma.ts.
+  const isSqlite = process.env.DATABASE_URL?.startsWith('file:') ?? false;
+  if (isSqlite) {
+    try {
+      await applySqlitePragmas();
+    } catch (err) {
+      console.error('   DB      : FAILED to apply SQLite pragmas —', err);
+      process.exit(1);
+    }
+  }
+
   console.log(`\n🍔  Enterprise POS server running (Production Grade)`);
   console.log(`   Port    : ${env.PORT}`);
   console.log(`   Env     : ${env.NODE_ENV}`);
   console.log(`   Client  : ${env.CLIENT_NAME}`);
-  console.log(`   DB      : Connected`);
+  console.log(`   DB      : ${isSqlite ? 'SQLite (WAL, FK on)' : 'Connected'}`);
   console.log(`   CORS    : Active\n`);
 });
 

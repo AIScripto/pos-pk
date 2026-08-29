@@ -16,7 +16,7 @@ export class CategoryController {
       const auth = req.auth!;
 
       const results = await CategoryService.list(
-        BigInt(auth.orgId),
+        toBigInt(auth.orgId),
         search ? String(search) : undefined
       );
 
@@ -43,7 +43,7 @@ export class CategoryController {
       const { id } = req.params;
       const auth = req.auth!;
 
-      const category = await CategoryService.get(BigInt(auth.orgId), toBigInt(id));
+      const category = await CategoryService.get(toBigInt(auth.orgId), toBigInt(id));
 
       const mapped = {
         id: toStringId(category.id),
@@ -73,10 +73,10 @@ export class CategoryController {
         return R.badRequest(res, 'name, tag, and foodTypeId are required');
       }
 
-      const category = await CategoryService.create(BigInt(auth.orgId), {
+      const category = await CategoryService.create(toBigInt(auth.orgId), {
         name,
         tag,
-        foodTypeId: BigInt(foodTypeId),
+        foodTypeId: toBigInt(foodTypeId),
         sortOrder,
         isActive,
       });
@@ -126,7 +126,7 @@ export class CategoryController {
       const { name, tag, sortOrder, isActive } = req.body;
       const auth = req.auth!;
 
-      const category = await CategoryService.update(BigInt(auth.orgId), toBigInt(id), {
+      const category = await CategoryService.update(toBigInt(auth.orgId), toBigInt(id), {
         name,
         tag,
         sortOrder,
@@ -176,7 +176,7 @@ export class CategoryController {
       const { id } = req.params;
       const auth = req.auth!;
 
-      const category = await CategoryService.delete(BigInt(auth.orgId), toBigInt(id));
+      const category = await CategoryService.delete(toBigInt(auth.orgId), toBigInt(id));
 
       const mapped = {
         id: toStringId(category.id),

@@ -9,7 +9,7 @@ export class DealController {
       if (!orgIdStr) {
         return R.ok(res, []);
       }
-      const orgId = BigInt(orgIdStr);
+      const orgId = Number(orgIdStr);
 
       const deals = await prisma.deal.findMany({
         where: { orgId },
@@ -41,9 +41,9 @@ export class DealController {
 
   static async get(req: Request, res: Response) {
     try {
-      const orgId = BigInt(req.auth!.orgId);
+      const orgId = Number(req.auth!.orgId);
       const deal = await prisma.deal.findFirst({
-        where: { id: BigInt(req.params.id), orgId },
+        where: { id: Number(req.params.id), orgId },
         include: { category: true },
       });
 
@@ -88,7 +88,7 @@ export class DealController {
         productIds,
       } = req.body;
 
-      const orgId = BigInt(req.auth!.orgId);
+      const orgId = Number(req.auth!.orgId);
       const userId = req.auth!.userId;
 
       // Validation
@@ -120,9 +120,9 @@ export class DealController {
         return R.badRequest(res, 'Deal tag already exists in this organization');
       }
 
-      let parsedCategoryId: bigint | null = null;
+      let parsedCategoryId: number | null = null;
       if (categoryId) {
-        parsedCategoryId = BigInt(categoryId);
+        parsedCategoryId = Number(categoryId);
       }
 
       const deal = await prisma.deal.create({
@@ -182,8 +182,8 @@ export class DealController {
         productIds,
       } = req.body;
 
-      const orgId = BigInt(req.auth!.orgId);
-      const dealId = BigInt(req.params.id);
+      const orgId = Number(req.auth!.orgId);
+      const dealId = Number(req.params.id);
 
       // Validation
       if (name !== undefined && !name?.trim()) {
@@ -210,11 +210,11 @@ export class DealController {
         return R.notFound(res, 'Deal');
       }
 
-      let parsedCategoryId: bigint | null | undefined = undefined;
+      let parsedCategoryId: number | null | undefined = undefined;
       if (categoryId === null) {
         parsedCategoryId = null;
       } else if (categoryId !== undefined) {
-        parsedCategoryId = BigInt(categoryId);
+        parsedCategoryId = Number(categoryId);
       }
 
       const deal = await prisma.deal.update({
@@ -262,8 +262,8 @@ export class DealController {
 
   static async delete(req: Request, res: Response) {
     try {
-      const dealId = BigInt(req.params.id);
-      const orgId = BigInt(req.auth!.orgId);
+      const dealId = Number(req.params.id);
+      const orgId = Number(req.auth!.orgId);
 
       const existingDeal = await prisma.deal.findFirst({
         where: { id: dealId, orgId },

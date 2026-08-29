@@ -29,8 +29,10 @@ interface KitchenJwtPayload {
 
 /** Recursively convert BigInt fields to strings so socket.io can serialize them. */
 function serialize<T>(data: T): T {
-  return JSON.parse(JSON.stringify(data, (_key, value) =>
-    typeof value === 'bigint' ? String(value) : value
+  return JSON.parse(JSON.stringify(data, (key, value) =>
+    typeof value === 'bigint' ? String(value)
+      : (typeof value === 'number' && /^id$|Id$/.test(key)) ? String(value)
+      : value
   ));
 }
 
@@ -119,6 +121,6 @@ export function registerKitchenGateway(io: Server) {
 
 /** Utility — emit a new kitchen order to all screens in a branch.
  *  Called from InvoiceService after creating an invoice. */
-export function emitNewKitchenOrder(io: Server, branchId: string | bigint, order: unknown) {
+export function emitNewKitchenOrder(io: Server, branchId: string | number, order: unknown) {
   io.to(`kitchen:${branchId}`).emit('kitchen:order:new', serialize(order));
 }

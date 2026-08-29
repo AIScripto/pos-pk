@@ -6,7 +6,7 @@ export class StateService {
   /**
    * List all active states for an organization
    */
-  static async list(orgId: bigint) {
+  static async list(orgId: number) {
     const states = await prisma.state.findMany({
       where: { orgId, isActive: true },
       orderBy: { name: 'asc' },
@@ -28,7 +28,7 @@ export class StateService {
   /**
    * Get a single state by ID
    */
-  static async getById(orgId: bigint, stateId: bigint) {
+  static async getById(orgId: number, stateId: number) {
     const state = await prisma.state.findUnique({
       where: { id: stateId },
       select: {
@@ -55,7 +55,7 @@ export class StateService {
   /**
    * Get state by tag
    */
-  static async getByTag(orgId: bigint, tag: string) {
+  static async getByTag(orgId: number, tag: string) {
     const state = await prisma.state.findUnique({
       where: { orgId_tag: { orgId, tag } },
       select: {
@@ -76,7 +76,7 @@ export class StateService {
   /**
    * Create a new state
    */
-  static async create(orgId: bigint, data: any) {
+  static async create(orgId: number, data: any) {
     // Check if tag already exists for this org
     const existing = await prisma.state.findUnique({
       where: { orgId_tag: { orgId, tag: data.tag.toUpperCase() } },
@@ -117,7 +117,7 @@ export class StateService {
   /**
    * Update an existing state
    */
-  static async update(orgId: bigint, stateId: bigint, data: any) {
+  static async update(orgId: number, stateId: number, data: any) {
     const state = await prisma.state.findUnique({
       where: { id: stateId },
     });
@@ -167,7 +167,7 @@ export class StateService {
   /**
    * Soft delete a state
    */
-  static async delete(orgId: bigint, stateId: bigint) {
+  static async delete(orgId: number, stateId: number) {
     const state = await prisma.state.findUnique({
       where: { id: stateId },
     });

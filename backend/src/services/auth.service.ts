@@ -38,8 +38,8 @@ export class AuthService {
     const user = await prisma.user.findFirst({
       where: {
         OR: [
-          { email: { equals: normalizedInput, mode: 'insensitive' } },
-          { username: { equals: normalizedInput, mode: 'insensitive' } },
+          { email: { equals: normalizedInput } },
+          { username: { equals: normalizedInput } },
         ],
         isActive: true,
       },
@@ -65,7 +65,7 @@ export class AuthService {
       let resolvedTerminalId = terminalId?.trim();
       if (!resolvedTerminalId && resolvedBranchId) {
         const defaultTerminal = await prisma.terminal.findFirst({
-          where: { branchId: BigInt(resolvedBranchId), isActive: true },
+          where: { branchId: Number(resolvedBranchId), isActive: true },
           orderBy: { id: 'asc' },
         });
         if (defaultTerminal) resolvedTerminalId = defaultTerminal.id.toString();
@@ -112,7 +112,7 @@ export class AuthService {
     let resolvedTerminalId = terminalId?.trim();
     if (!resolvedTerminalId && resolvedBranchId) {
       const defaultTerminal = await prisma.terminal.findFirst({
-        where: { branchId: BigInt(resolvedBranchId), isActive: true },
+        where: { branchId: Number(resolvedBranchId), isActive: true },
         orderBy: { id: 'asc' },
       });
       if (defaultTerminal) resolvedTerminalId = defaultTerminal.id.toString();
@@ -194,7 +194,7 @@ export class AuthService {
   private static async findManagerByPassword(email: string, password: string, branchId?: string) {
     const normalizedEmail = email.trim().toLowerCase();
     const user = await prisma.user.findFirst({
-      where: { email: { equals: normalizedEmail, mode: 'insensitive' }, isActive: true },
+      where: { email: { equals: normalizedEmail }, isActive: true },
       include: { roles: { where: { isActive: true }, include: { role: true } } },
     });
     if (!user || !user.passwordHash) return null;
@@ -221,11 +221,11 @@ export class AuthService {
 
   private static async pickManagerRole(
     user: {
-      id: bigint | string;
+      id: number | string;
       name: string;
-      orgId: bigint | string;
+      orgId: number | string;
       roles: Array<{
-        roleId?: bigint;
+        roleId?: number;
         scopeType: string;
         scopeId: string;
         isActive: boolean;
@@ -256,7 +256,7 @@ export class AuthService {
   }
 
   private static toTokenRole(assignment: {
-    roleId?: bigint;
+    roleId?: number;
     scopeType: string;
     scopeId: string;
     role: { tag: string };
@@ -286,9 +286,9 @@ export class AuthService {
     return 'cashier';
   }
 
-  private static parseBigInt(value: string, field: string): bigint {
+  private static parseBigInt(value: string, field: string): number {
     try {
-      return BigInt(value);
+      return Number(value);
     } catch {
       throw new Error(`INVALID_${field.toUpperCase()}`);
     }
@@ -296,13 +296,13 @@ export class AuthService {
 
   // ── Resolve permissions: defaults + org overrides ─────────────────────────
 
-  static async resolvePermissions(roleTag: string, orgId: string, roleId?: bigint, rawRoleTag?: string): Promise<string[]> {
+  static async resolvePermissions(roleTag: string, orgId: string, roleId?: number, rawRoleTag?: string): Promise<string[]> {
     const defaults = new Set<string>(DEFAULT_PERMISSIONS[roleTag as UserRole] ?? []);
 
     const whereByRole =
       roleId !== undefined
-        ? { orgId: BigInt(orgId), roleId, isActive: true }
-        : { orgId: BigInt(orgId), role: { tag: rawRoleTag ?? roleTag }, isActive: true };
+        ? { orgId: Number(orgId), roleId, isActive: true }
+        : { orgId: Number(orgId), role: { tag: rawRoleTag ?? roleTag }, isActive: true };
     const overrides = await prisma.orgRolePermission.findMany({ where: whereByRole });
     for (const o of overrides) {
       if (o.granted) defaults.add(o.permission);
@@ -314,13 +314,14 @@ export class AuthService {
   // ── Build JWT with permissions baked in ───────────────────────────────────
 
   private static async buildToken(
-    user: { id: bigint | string; name: string; email?: string | null; orgId: bigint | string },
-    role: { role: string; roleId?: bigint; roleTag?: string; scopeType: string; scopeId: string },
+    user: { id: number | string; name: string; email?: string | null; orgId: number | string },
+    role: { role: string; roleId?: number; roleTag?: string; scopeType: string; scopeId: string },
     terminalId: string | null = null,
     allBranchIds: string[] = [],
   ) {
-    const userId = typeof user.id === 'bigint' ? user.id.toString() : user.id;
-    const orgId = typeof user.orgId === 'bigint' ? user.orgId.toString() : user.orgId;
+    // Ids are numbers now; the token carries them as strings either way.
+    const userId = String(user.id);
+    const orgId = String(user.orgId);
 
     let branchId = '', branchName: string | null = null, cityId = '';
     if (role.scopeType === 'branch') {
@@ -334,7 +335,7 @@ export class AuthService {
 
     let terminalName: string | null = null;
     if (terminalId) {
-      const terminal = await prisma.terminal.findUnique({ where: { id: BigInt(terminalId) } });
+      const terminal = await prisma.terminal.findUnique({ where: { id: Number(terminalId) } });
       terminalName = terminal?.name ?? null;
     }
 

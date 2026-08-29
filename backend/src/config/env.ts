@@ -12,11 +12,15 @@ const customEnvName = process.env.ENV_FILE || process.env.CLIENT_ENV || '.env.cr
 const customEnvPath = path.resolve(__dirname, '../../', customEnvName);
 const defaultEnvPath = path.resolve(__dirname, '../../.env');
 
+// Load the client-specific file first — dotenv does not overwrite variables that
+// are already set, so whatever it defines wins — then always load `.env` as the
+// base layer. This used to be an if/else, which meant that once a client file
+// existed, `.env` was ignored entirely: a value present only in `.env` silently
+// did nothing, and switching database targets required editing every client file.
 if (fs.existsSync(customEnvPath)) {
   dotenv.config({ path: customEnvPath });
-} else {
-  dotenv.config({ path: defaultEnvPath });
 }
+dotenv.config({ path: defaultEnvPath });
 
 function required(key: string): string {
   const val = process.env[key];
@@ -29,6 +33,13 @@ function optional(key: string, fallback: string): string {
 }
 
 function buildDatabaseUrl(): string {
+  // 0. A local SQLite file wins outright.
+  //    `CLIENT_DATABASE_URL` used to be checked first, so a leftover Postgres
+  //    value there would silently win over an explicit SQLite `DATABASE_URL` —
+  //    the Prisma CLI would migrate the .db file while the running server talked
+  //    to Postgres. A `file:` URL is unambiguous; honour it before anything else.
+  if (process.env.DATABASE_URL?.startsWith('file:')) return process.env.DATABASE_URL;
+
   // 1. Direct explicit connection string override
   if (process.env.CLIENT_DATABASE_URL) return process.env.CLIENT_DATABASE_URL;
   if (process.env.DATABASE_URL) return process.env.DATABASE_URL;

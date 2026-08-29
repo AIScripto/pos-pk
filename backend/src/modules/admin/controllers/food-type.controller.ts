@@ -6,7 +6,7 @@ export class FoodTypeController {
 
   static async list(req: Request, res: Response) {
     try {
-      const orgId = BigInt(req.auth!.orgId);
+      const orgId = Number(req.auth!.orgId);
       const search = (req.query.search as string) || undefined;
 
       const foodTypes = await FoodTypeService.list(orgId, search);
@@ -25,8 +25,8 @@ export class FoodTypeController {
 
   static async get(req: Request, res: Response) {
     try {
-      const orgId = BigInt(req.auth!.orgId);
-      const foodType = await FoodTypeService.get(orgId, BigInt(req.params.id));
+      const orgId = Number(req.auth!.orgId);
+      const foodType = await FoodTypeService.get(orgId, Number(req.params.id));
 
       const resolved = {
         ...foodType,
@@ -45,7 +45,7 @@ export class FoodTypeController {
 
   static async create(req: Request, res: Response) {
     try {
-      const orgId = BigInt(req.auth!.orgId);
+      const orgId = Number(req.auth!.orgId);
       const { name, slug, sortOrder, isActive } = req.body;
 
       const foodType = await FoodTypeService.create(orgId, {
@@ -75,10 +75,10 @@ export class FoodTypeController {
 
   static async update(req: Request, res: Response) {
     try {
-      const orgId = BigInt(req.auth!.orgId);
+      const orgId = Number(req.auth!.orgId);
       const { name, slug, sortOrder, isActive } = req.body;
 
-      const foodType = await FoodTypeService.update(orgId, BigInt(req.params.id), {
+      const foodType = await FoodTypeService.update(orgId, Number(req.params.id), {
         name,
         slug,
         sortOrder,
@@ -108,8 +108,8 @@ export class FoodTypeController {
 
   static async remove(req: Request, res: Response) {
     try {
-      const orgId = BigInt(req.auth!.orgId);
-      await FoodTypeService.delete(orgId, BigInt(req.params.id));
+      const orgId = Number(req.auth!.orgId);
+      await FoodTypeService.delete(orgId, Number(req.params.id));
       R.noContent(res);
     } catch (err: any) {
       if (err.message === 'NOT_FOUND') {

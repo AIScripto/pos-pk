@@ -108,7 +108,7 @@ async function processSyncItem(tx: any, item: SyncQueueItem, auth: any): Promise
       if (!invoiceId) throw new Error('Invoice id required');
 
       return tx.invoice.update({
-        where: { id: BigInt(invoiceId) },
+        where: { id: Number(invoiceId) },
         data: {
           paymentStatus: 'voided',
           voidReason: typeof body.reason === 'string' ? body.reason : 'Offline sync void',

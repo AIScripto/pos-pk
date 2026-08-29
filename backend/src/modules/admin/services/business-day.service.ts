@@ -2,6 +2,7 @@ import { Prisma } from '@prisma/client';
 import prisma from '../../../shared/lib/prisma';
 import { toBigInt } from '../../../shared/utils/bigint';
 import { ShiftScheduleService } from '../../pos/services/shift-schedule.service';
+import { toJsonText } from '../../../shared/utils/json-column';
 
 const ACTIVE_TILL_STATUSES = ['open', 'pending_close_approval'];
 
@@ -125,12 +126,12 @@ async function dbSummarizeTills(tillSessions: TillSessionMeta[]) {
 
 export class BusinessDayService {
   private static async audit(input: {
-    orgId: bigint;
-    cityId?: bigint | null;
-    branchId: bigint;
-    businessDayId?: bigint | null;
-    shiftSessionId?: bigint | null;
-    tillSessionId?: bigint | null;
+    orgId: number;
+    cityId?: number | null;
+    branchId: number;
+    businessDayId?: number | null;
+    shiftSessionId?: number | null;
+    tillSessionId?: number | null;
     action: string;
     actorId: string;
     actorName: string;
@@ -149,14 +150,14 @@ export class BusinessDayService {
         actorId: input.actorId,
         actorName: input.actorName,
         notes: input.notes ?? undefined,
-        metadata: (input.metadata ?? {}) as Prisma.InputJsonValue,
+        metadata: toJsonText(input.metadata ?? {}),
       },
     });
   }
 
   /** Pass orgId when the caller already has it to skip the branch→orgId lookup
    *  inside ShiftScheduleService and save one extra roundtrip. */
-  static async current(branchId: string, orgId?: bigint) {
+  static async current(branchId: string, orgId?: number) {
     const branchBigInt = toBigInt(branchId);
     const [schedule, businessDay] = await Promise.all([
       ShiftScheduleService.resolveCurrent(branchBigInt, new Date(), orgId),
@@ -519,10 +520,10 @@ export class BusinessDayService {
         userName: input.approvedByName,
         action: 'CLOSE_APPROVED',
         notes: input.notes,
-        metadata: {
+        metadata: toJsonText({
           closingCashAmount: closed.closingCashPaisa,
           cashVarianceAmount: closed.variance,
-        } as Prisma.InputJsonValue,
+        }),
       },
     }).catch((err) => console.warn('[TillSessionLog] CLOSE_APPROVED write failed:', err));
 
@@ -558,7 +559,7 @@ export class BusinessDayService {
         closedBy: null,
         closedByName: null,
         closingCashPaisa: null,
-        closingDenom: Prisma.JsonNull,
+        closingDenom: null,
         variance: null,
         notes: input.notes ?? session.notes,
       },
@@ -572,10 +573,10 @@ export class BusinessDayService {
         userName: input.rejectedByName,
         action: 'CLOSE_REJECTED',
         notes: input.notes,
-        metadata: {
+        metadata: toJsonText({
           previousClosingCashAmount: session.closingCashPaisa,
           previousCashVarianceAmount: session.variance,
-        } as Prisma.InputJsonValue,
+        }),
       },
     }).catch((err) => console.warn('[TillSessionLog] CLOSE_REJECTED write failed:', err));
 
@@ -623,7 +624,7 @@ export class BusinessDayService {
         userName: input.closedByName,
         action: 'FORCE_CLOSED',
         notes: input.notes,
-        metadata: { previousStatus: session.status } as Prisma.InputJsonValue,
+        metadata: toJsonText({ previousStatus: session.status }),
       },
     }).catch((err) => console.warn('[TillSessionLog] FORCE_CLOSED write failed:', err));
 

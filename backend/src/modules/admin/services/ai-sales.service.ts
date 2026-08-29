@@ -23,7 +23,7 @@ function getClient(): OpenAI {
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
-const paisa = (p: number | bigint | null | undefined): number =>
+const paisa = (p: number | number | null | undefined): number =>
   Math.round(Number(p ?? 0)) / 100;
 
 function dateRange(start: string, end: string) {
@@ -34,7 +34,7 @@ function dateRange(start: string, end: string) {
 }
 
 function branchFilter(branchId?: string) {
-  return branchId ? { branchId: BigInt(branchId) } : {};
+  return branchId ? { branchId: Number(branchId) } : {};
 }
 
 // ── Analytics functions — each maps to one OpenAI tool ───────────────────────

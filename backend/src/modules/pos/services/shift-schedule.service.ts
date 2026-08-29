@@ -58,7 +58,7 @@ function isWithinShift(nowMinutes: number, startMinutes: number, endMinutes: num
 }
 
 export class ShiftScheduleService {
-  static async branchTimezone(branchId: string | bigint): Promise<string> {
+  static async branchTimezone(branchId: string | number): Promise<string> {
     const branch = await prisma.branch.findUnique({
       where: { id: toBigInt(branchId) },
       select: { orgId: true },
@@ -79,7 +79,7 @@ export class ShiftScheduleService {
    * to skip the duplicate branch→orgId lookup and save one roundtrip.
    * orgConfig and shiftTemplates are fetched in parallel.
    */
-  static async resolveCurrent(branchId: string | bigint, at = new Date(), orgId?: bigint) {
+  static async resolveCurrent(branchId: string | number, at = new Date(), orgId?: number) {
     const branchBigInt = toBigInt(branchId);
 
     // If orgId not supplied, fetch it first (single query); then run orgConfig +

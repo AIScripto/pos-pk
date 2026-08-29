@@ -9,13 +9,13 @@ function extractBranchId(roles: { scopeType: string; scopeId: string }[]): strin
 }
 
 function mapUser(user: {
-  id: bigint; orgId: bigint; username: string; name: string;
+  id: number; orgId: number; username: string; name: string;
   email: string | null; phone: string | null; isActive: boolean;
   createdAt: Date; updatedAt: Date;
   hasPin?: boolean;
   pinHash?: string | null;
-  role?: { id: bigint; name: string; tag: string } | null;
-  roles?: { scopeType: string; scopeId: string; role: { id: bigint; name: string; tag: string } }[];
+  role?: { id: number; name: string; tag: string } | null;
+  roles?: { scopeType: string; scopeId: string; role: { id: number; name: string; tag: string } }[];
 }) {
   return {
     id:        toStringId(user.id),

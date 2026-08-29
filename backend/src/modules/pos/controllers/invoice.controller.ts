@@ -30,7 +30,7 @@ export class InvoiceController {
       const isNumericTillId = tillId && /^\d+$/.test(tillId);
       if ((!branchId || !terminalId) && isNumericTillId) {
         const session = await prisma.tillSession.findUnique({
-          where:  { id: BigInt(tillId!) },
+          where:  { id: Number(tillId!) },
           select: { branchId: true, terminalId: true, cityId: true },
         });
         if (session) {
@@ -66,7 +66,7 @@ export class InvoiceController {
 
       // Resolve cityId from branch if still missing
       if (!cityId) {
-        const branch = await prisma.branch.findUnique({ where: { id: BigInt(branchId) }, select: { cityId: true } });
+        const branch = await prisma.branch.findUnique({ where: { id: Number(branchId) }, select: { cityId: true } });
         cityId = branch?.cityId.toString() ?? '';
       }
 
@@ -126,7 +126,7 @@ export class InvoiceController {
       if (!reason) return R.badRequest(res, 'Void reason required');
 
       const invoice = await prisma.invoice.update({
-        where: { id: BigInt(req.params.id) },
+        where: { id: Number(req.params.id) },
         data:  {
           paymentStatus: 'voided',
           voidReason:    reason,
