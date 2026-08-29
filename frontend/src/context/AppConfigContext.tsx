@@ -3,6 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 import { configureCurrency, getCurrencyConfig, type CurrencyConfig } from '@/config/currency';
 import { configureTaxRules } from '@/config/tax';
 import { adminConfigApi, type OrgConfig, type TaxConfig, type LoyaltyConfig } from '@/lib/api/admin-config.api';
+import { Loader2 } from 'lucide-react';
 
 interface AppConfigContextValue {
   orgConfig?: OrgConfig;
@@ -53,8 +54,11 @@ export function AppConfigProvider({ children }: { children: ReactNode }) {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-slate-950 text-slate-400">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-slate-400"></div>
+      /* Was a hard-coded `bg-muted` splash: the app flashed near-black on
+         every boot in light mode before the theme had a chance to apply. */
+      <div className="flex min-h-screen items-center justify-center bg-background text-muted-foreground" role="status" aria-live="polite">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" aria-hidden="true" />
+        <span className="sr-only">Loading</span>
       </div>
     );
   }

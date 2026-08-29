@@ -94,23 +94,23 @@ export default function AdminRoles() {
         action={
           <Button
             onClick={() => { setEditingRole(null); setFormDialogOpen(true); }}
-            className="bg-slate-800 text-white hover:bg-slate-900 dark:bg-blue-600 dark:hover:bg-blue-700 cursor-pointer"
+            className="bg-muted text-white hover:bg-muted dark:bg-primary dark:hover:bg-primary/90 cursor-pointer"
           >
             <Plus className="w-4 h-4 mr-2" />
             {t.common.addNew}
           </Button>
         }
       >
-        <Alert className="border-amber-200 bg-amber-50 text-amber-800 dark:border-amber-800 dark:bg-amber-950/30 dark:text-amber-300">
+        <Alert className="border-warning-border bg-warning-subtle text-warning-text dark:text-warning">
           <AlertCircle className="h-4 w-4" />
           <AlertDescription>
             {t.roles.admin}, {t.roles.manager}, {t.roles.cashier}, {t.roles.kitchen}
           </AlertDescription>
         </Alert>
 
-        <Card className="border-slate-200 bg-slate-50/90 shadow-sm dark:border-slate-700 dark:bg-slate-900">
+        <Card className="border-border bg-card shadow-sm">
           <CardHeader>
-            <CardTitle className="font-bold text-slate-900 dark:text-white">
+            <CardTitle className="font-bold text-foreground">
               {t.roles.rolesTitle} ({roles.length})
             </CardTitle>
           </CardHeader>
@@ -118,7 +118,7 @@ export default function AdminRoles() {
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
                 <thead>
-                  <tr className="bg-slate-800 dark:bg-slate-950">
+                  <tr className="bg-muted dark:bg-background">
                     <th className="px-4 py-3 text-left font-semibold text-white">{t.roles.roleName}</th>
                     <th className="px-4 py-3 text-left font-semibold text-white">{t.admin.slug}</th>
                     <th className="px-4 py-3 text-left font-semibold text-white">{t.roles.description}</th>
@@ -126,42 +126,42 @@ export default function AdminRoles() {
                     <th className="px-4 py-3 text-right font-semibold text-white">{t.common.actions}</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-200 dark:divide-slate-700">
+                <tbody className="divide-y divide-border">
                   {isLoading ? (
                     <tr>
-                      <td colSpan={5} className="py-10 text-center text-slate-500 dark:text-slate-400">
+                      <td colSpan={5} className="py-10 text-center text-muted-foreground">
                         {t.common.loading}
                       </td>
                     </tr>
                   ) : roles.length === 0 ? (
                     <tr>
                       <td colSpan={5} className="py-10 text-center">
-                        <Shield className="mx-auto mb-3 h-12 w-12 text-slate-400" />
-                        <p className="font-medium text-slate-600 dark:text-slate-300">{t.common.noData}</p>
+                        <Shield className="mx-auto mb-3 h-12 w-12 text-muted-foreground/70" />
+                        <p className="font-medium text-muted-foreground">{t.common.noData}</p>
                       </td>
                     </tr>
                   ) : (
                     roles.map((role) => (
-                      <tr key={role.id} className="hover:bg-slate-100/70 dark:hover:bg-slate-800">
-                        <td className="px-4 py-3 font-semibold text-slate-900 dark:text-white">
+                      <tr key={role.id} className="hover:bg-secondary/70">
+                        <td className="px-4 py-3 font-semibold text-foreground">
                           {role.name}
                           {isSystemRole(role.tag) && (
-                            <span className="ml-2 rounded-full bg-blue-100 px-2 py-0.5 text-xs font-medium text-blue-700 dark:bg-blue-900/40 dark:text-blue-300">
+                            <span className="ml-2 rounded-full bg-info-subtle px-2 py-0.5 text-xs font-medium text-primary">
                               System
                             </span>
                           )}
                         </td>
                         <td className="px-4 py-3">
-                          <span className="rounded bg-slate-200 px-2 py-0.5 font-mono text-xs text-slate-700 dark:bg-slate-700 dark:text-slate-300">
+                          <span className="rounded bg-secondary px-2 py-0.5 font-mono text-xs text-muted-foreground">
                             {role.tag}
                           </span>
                         </td>
-                        <td className="px-4 py-3 text-slate-600 dark:text-slate-300">{role.description || '—'}</td>
+                        <td className="px-4 py-3 text-muted-foreground">{role.description || '—'}</td>
                         <td className="px-4 py-3">
                           <span className={`rounded-full px-2.5 py-0.5 text-xs font-semibold ${
                             role.isActive
-                              ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300'
-                              : 'bg-slate-200 text-slate-600 dark:bg-slate-700 dark:text-slate-400'
+                              ? 'bg-success-subtle text-success-text'
+                              : 'bg-secondary text-muted-foreground'
                           }`}>
                             {role.isActive ? t.common.active : t.common.inactive}
                           </span>
@@ -171,7 +171,7 @@ export default function AdminRoles() {
                             variant="ghost" size="sm"
                             onClick={() => { setEditingRole(role); setFormDialogOpen(true); }}
                             disabled={isSystemRole(role.tag) || saveMutation.isPending}
-                            className="text-slate-600 hover:bg-slate-200 hover:text-slate-900 dark:text-slate-300 dark:hover:bg-slate-700 dark:hover:text-white cursor-pointer"
+                            className="text-muted-foreground hover:bg-secondary hover:text-foreground cursor-pointer"
                           >
                             <Edit2 className="w-4 h-4" />
                           </Button>
@@ -179,7 +179,7 @@ export default function AdminRoles() {
                             variant="ghost" size="sm"
                             onClick={() => { setRoleToDelete(role); setDeleteConfirmOpen(true); }}
                             disabled={isSystemRole(role.tag) || deleteMutation.isPending}
-                            className="text-rose-600 hover:bg-rose-100 hover:text-rose-700 dark:text-rose-400 dark:hover:bg-rose-900/30 cursor-pointer"
+                            className="text-danger-text hover:bg-danger-subtle hover:text-danger-text cursor-pointer"
                           >
                             <Trash2 className="w-4 h-4" />
                           </Button>
@@ -203,7 +203,7 @@ export default function AdminRoles() {
       />
 
       <AlertDialog open={deleteConfirmOpen} onOpenChange={setDeleteConfirmOpen}>
-        <AlertDialogContent className="border-slate-200 bg-slate-50 text-slate-900 dark:border-slate-600 dark:bg-slate-900 dark:text-white">
+        <AlertDialogContent className="border-border bg-muted/40 text-foreground">
           <AlertDialogTitle>{t.common.deleteConfirmTitle}</AlertDialogTitle>
           <AlertDialogDescription>
             {t.common.deleteConfirmDesc} ({roleToDelete?.name})
@@ -213,7 +213,7 @@ export default function AdminRoles() {
             <AlertDialogAction
               onClick={() => roleToDelete && deleteMutation.mutate(roleToDelete.id)}
               disabled={deleteMutation.isPending}
-              className="bg-red-600 hover:bg-red-700 cursor-pointer"
+              className="bg-danger hover:bg-danger/90 cursor-pointer"
             >
               {deleteMutation.isPending ? t.common.loading : t.common.delete}
             </AlertDialogAction>

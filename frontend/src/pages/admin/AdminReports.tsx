@@ -121,15 +121,15 @@ function ReportWorkspaceHeader({
   onPanelChange: (panel: 'performance' | 'assistant') => void;
 }) {
   return (
-    <div className="relative flex-shrink-0 border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm">
+    <div className="relative flex-shrink-0 border-b border-border bg-card shadow-sm">
       <div className="relative flex items-center justify-between px-6 py-3.5">
         <div className="flex items-center gap-3">
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-blue-600 to-indigo-600 shadow-md shadow-blue-500/20 text-white">
+          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary shadow-md shadow-primary/20 text-white">
             <BarChart3 className="h-5 w-5" />
           </div>
           <div>
-            <h1 className="text-base font-black tracking-tight text-slate-900 dark:text-slate-100">Reports & Sales Intelligence</h1>
-            <p className="text-[11px] font-medium text-slate-500 dark:text-slate-400">Date-range reporting · Products and deals · Cash and credit analysis</p>
+            <h1 className="text-base font-black tracking-tight text-foreground">Reports & Sales Intelligence</h1>
+            <p className="text-[11px] font-medium text-muted-foreground">Date-range reporting · Products and deals · Cash and credit analysis</p>
           </div>
         </div>
 
@@ -138,8 +138,8 @@ function ReportWorkspaceHeader({
             onClick={() => onPanelChange('performance')}
             className={`flex items-center gap-1.5 rounded-full border px-3.5 py-1.5 text-[11px] font-extrabold transition-all ${
               activePanel === 'performance'
-                ? 'border-blue-600 bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-sm shadow-blue-500/20'
-                : 'border-slate-200 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700'
+                ? 'border-primary bg-primary text-white shadow-sm shadow-primary/20'
+                : 'border-border bg-secondary text-muted-foreground hover:bg-secondary'
             }`}
           >
             <BarChart3 className="h-3.5 w-3.5" /> Sales report
@@ -148,8 +148,8 @@ function ReportWorkspaceHeader({
             onClick={() => onPanelChange('assistant')}
             className={`flex items-center gap-1.5 rounded-full border px-3.5 py-1.5 text-[11px] font-extrabold transition-all ${
               activePanel === 'assistant'
-                ? 'border-blue-600 bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-sm shadow-blue-500/20'
-                : 'border-slate-200 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700'
+                ? 'border-primary bg-primary text-white shadow-sm shadow-primary/20'
+                : 'border-border bg-secondary text-muted-foreground hover:bg-secondary'
             }`}
           >
             <MessageSquareText className="h-3.5 w-3.5" /> Insight assistant
@@ -216,7 +216,7 @@ function SalesPerformancePanel({
         <div className="rounded-lg border border-border/70 bg-card/90 p-3 shadow-sm">
           <div className="flex items-center justify-between gap-4">
             <div>
-              <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-primary/75">Comprehensive report</p>
+              <p className="text-2xs font-semibold uppercase tracking-[0.18em] text-primary/75">Comprehensive report</p>
               <h2 className="mt-1 text-lg font-bold text-foreground">Sales performance by selected date range</h2>
               <p className="mt-1 text-xs text-muted-foreground">
                 Tracks product and deal revenue, order value, tax, cash collection, credit/card collection, wallet, and pending COD.
@@ -225,7 +225,7 @@ function SalesPerformancePanel({
             {isLoading && <Loader2 className="h-5 w-5 animate-spin text-primary" />}
           </div>
           {error && (
-            <div className="mt-4 rounded-2xl border border-amber-500/30 bg-amber-500/10 px-4 py-3 text-sm text-amber-700 dark:text-amber-200">
+            <div className="mt-4 rounded-2xl border border-warning/30 bg-warning/10 px-4 py-3 text-sm text-warning-text">
               Live invoices could not be loaded. Switch the dataset filter to sample data to preview the report layout.
             </div>
           )}
@@ -295,7 +295,7 @@ export default function AdminReports() {
   };
 
   return (
-    <div className="flex-1 flex min-h-0 flex-col overflow-hidden bg-slate-50 dark:bg-slate-950 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm">
+    <div className="flex-1 flex min-h-0 flex-col overflow-hidden bg-muted/40 rounded-2xl border border-border shadow-sm">
       <ReportWorkspaceHeader activePanel={activePanel} onPanelChange={handlePanelChange} />
 
       {activePanel === 'performance' ? (

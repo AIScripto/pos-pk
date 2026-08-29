@@ -172,6 +172,9 @@ export function sanitizeString(input: unknown, maxLength = 255): string {
   if (typeof input !== 'string') return '';
   return input
     .trim()
-    .replace(/[\x00-\x1F\x7F]/g, '') // Remove control characters
+    // Stripping control characters is exactly what this function is for — they
+    // are the input it defends against, so the rule does not apply here.
+    // eslint-disable-next-line no-control-regex
+    .replace(/[\x00-\x1F\x7F]/g, '')
     .slice(0, maxLength);
 }

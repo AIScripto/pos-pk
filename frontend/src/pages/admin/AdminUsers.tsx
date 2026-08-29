@@ -106,9 +106,9 @@ export default function AdminUsers() {
           </Button>
         }
       >
-        <Card className="border-slate-200 bg-slate-50/90 shadow-sm dark:border-slate-700 dark:bg-slate-900">
+        <Card className="border-border bg-card shadow-sm">
           <CardHeader>
-            <CardTitle className="font-bold text-slate-900 dark:text-white">
+            <CardTitle className="font-bold text-foreground">
               {t.users.usersTitle} ({users.length})
             </CardTitle>
           </CardHeader>
@@ -116,24 +116,24 @@ export default function AdminUsers() {
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
                 <thead>
-                  <tr className="bg-slate-800 dark:bg-slate-950">
+                  <tr className="bg-muted dark:bg-background">
                     <th className="px-4 py-3 text-left font-semibold text-white">{t.users.name}</th>
                     <th className="px-4 py-3 text-left font-semibold text-white">{t.users.email}</th>
                     <th className="px-4 py-3 text-left font-semibold text-white">{t.users.role}</th>
                     <th className="px-4 py-3 text-left font-semibold text-white">
                       <span className="flex items-center gap-1">
-                        <MapPin className="h-3.5 w-3.5 text-orange-400" />
+                        <MapPin className="h-3.5 w-3.5 text-warning" />
                         {t.admin.branches}
                       </span>
                     </th>
                     <th className="px-4 py-3 text-left font-semibold text-white">
-                      <span className="flex items-center gap-1"><KeyRound className="h-3.5 w-3.5 text-orange-400" />{t.users.pinCode}</span>
+                      <span className="flex items-center gap-1"><KeyRound className="h-3.5 w-3.5 text-warning" />{t.users.pinCode}</span>
                     </th>
                     <th className="px-4 py-3 text-left font-semibold text-white">{t.common.status}</th>
                     <th className="px-4 py-3 text-right font-semibold text-white">{t.common.actions}</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-200 dark:divide-slate-700">
+                <tbody className="divide-y divide-border">
                   {isLoading ? (
                     <>
                       {Array(5).fill(0).map((_, i) => (
@@ -151,47 +151,47 @@ export default function AdminUsers() {
                   ) : users.length === 0 ? (
                     <tr>
                       <td colSpan={7} className="py-10 text-center">
-                        <Users className="mx-auto mb-3 h-10 w-10 text-slate-400" />
-                        <p className="font-medium text-slate-600 dark:text-slate-300">{t.common.noData}</p>
-                        <p className="mt-1 text-sm text-slate-500">{t.common.addNew}</p>
+                        <Users className="mx-auto mb-3 h-10 w-10 text-muted-foreground/70" />
+                        <p className="font-medium text-muted-foreground">{t.common.noData}</p>
+                        <p className="mt-1 text-sm text-muted-foreground">{t.common.addNew}</p>
                       </td>
                     </tr>
                   ) : users.map((user) => (
-                    <tr key={user.id} className="hover:bg-slate-100/70 dark:hover:bg-slate-800">
+                    <tr key={user.id} className="hover:bg-secondary/70">
                       <td className="px-4 py-3">
-                        <p className="font-semibold text-slate-900 dark:text-white">{user.name}</p>
-                        <p className="text-xs text-slate-500">{user.username}</p>
+                        <p className="font-semibold text-foreground">{user.name}</p>
+                        <p className="text-xs text-muted-foreground">{user.username}</p>
                       </td>
-                      <td className="px-4 py-3 text-slate-600 dark:text-slate-300">{user.email ?? '—'}</td>
+                      <td className="px-4 py-3 text-muted-foreground">{user.email ?? '—'}</td>
                       <td className="px-4 py-3">
-                        <span className="rounded-full bg-slate-200 px-2.5 py-0.5 text-xs font-semibold text-slate-700 dark:bg-slate-700 dark:text-slate-200">
+                        <span className="rounded-full bg-secondary px-2.5 py-0.5 text-xs font-semibold text-foreground">
                           {user.role ?? 'No Role'}
                         </span>
                       </td>
                       <td className="px-4 py-3">
                         {user.branchId ? (
-                          <span className="flex items-center gap-1 text-sm text-orange-700 dark:text-orange-300">
+                          <span className="flex items-center gap-1 text-sm text-warning-text">
                             <MapPin className="h-3.5 w-3.5 shrink-0" />
                             {branchMap.get(user.branchId) ?? `Branch #${user.branchId}`}
                           </span>
                         ) : (
-                          <span className="text-xs text-slate-400">Org-wide</span>
+                          <span className="text-xs text-muted-foreground/70">Org-wide</span>
                         )}
                       </td>
                       <td className="px-4 py-3">
                         {user.hasPin ? (
-                          <span className="flex items-center gap-1 text-xs font-semibold text-emerald-600 dark:text-emerald-400">
+                          <span className="flex items-center gap-1 text-xs font-semibold text-success-text">
                             <KeyRound className="h-3.5 w-3.5" /> {t.common.active}
                           </span>
                         ) : (
-                          <span className="text-xs text-slate-400">{t.common.inactive}</span>
+                          <span className="text-xs text-muted-foreground/70">{t.common.inactive}</span>
                         )}
                       </td>
                       <td className="px-4 py-3">
                         <span className={`rounded-full px-2.5 py-0.5 text-xs font-semibold ${
                           user.isActive
-                            ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300'
-                            : 'bg-slate-200 text-slate-600 dark:bg-slate-700 dark:text-slate-400'
+                            ? 'bg-success-subtle text-success-text'
+                            : 'bg-secondary text-muted-foreground'
                         }`}>
                           {user.isActive ? t.common.active : t.common.inactive}
                         </span>
@@ -232,7 +232,7 @@ export default function AdminUsers() {
       />
 
       <AlertDialog open={deleteOpen} onOpenChange={setDeleteOpen}>
-        <AlertDialogContent className="border-slate-200 bg-slate-50 text-slate-900 dark:border-slate-600 dark:bg-slate-900 dark:text-white">
+        <AlertDialogContent className="border-border bg-muted/40 text-foreground">
           <AlertDialogTitle>{t.common.deleteConfirmTitle}</AlertDialogTitle>
           <AlertDialogDescription>
             {t.common.deleteConfirmDesc} ({toDelete?.name})
@@ -242,7 +242,7 @@ export default function AdminUsers() {
             <AlertDialogAction
               onClick={() => toDelete && deleteMutation.mutate(toDelete.id)}
               disabled={deleteMutation.isPending}
-              className="bg-red-600 hover:bg-red-700 cursor-pointer"
+              className="bg-danger hover:bg-danger/90 cursor-pointer"
             >
               {deleteMutation.isPending ? t.common.loading : t.common.delete}
             </AlertDialogAction>

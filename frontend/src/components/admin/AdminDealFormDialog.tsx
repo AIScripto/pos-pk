@@ -333,14 +333,14 @@ export default function AdminDealFormDialog({
 
       <FormSection title="Deal Schedule & Timing (Tier 2)" columns={1}>
         <div className="space-y-3">
-          <div className="flex items-center gap-3 rounded-lg border border-slate-200 bg-slate-50 p-2.5 dark:border-slate-700 dark:bg-slate-800">
+          <div className="flex items-center gap-3 rounded-lg border border-border bg-muted/40 p-2.5">
             <button
               type="button"
               onClick={() => setFormData({ ...formData, availabilityType: 'all_time' })}
               className={`flex-1 flex items-center justify-center gap-2 py-1.5 px-3 rounded-md text-xs font-semibold transition-all ${
                 formData.availabilityType === 'all_time'
-                  ? 'bg-blue-600 text-white shadow-xs'
-                  : 'bg-white dark:bg-slate-700 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-600 hover:bg-slate-100'
+                  ? 'bg-primary text-white shadow-xs'
+                  : 'bg-white dark:bg-muted text-foreground border border-border hover:bg-secondary'
               }`}
             >
               <Clock className="w-3.5 h-3.5" />
@@ -351,8 +351,8 @@ export default function AdminDealFormDialog({
               onClick={() => setFormData({ ...formData, availabilityType: 'scheduled' })}
               className={`flex-1 flex items-center justify-center gap-2 py-1.5 px-3 rounded-md text-xs font-semibold transition-all ${
                 formData.availabilityType === 'scheduled'
-                  ? 'bg-amber-600 text-white shadow-xs'
-                  : 'bg-white dark:bg-slate-700 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-600 hover:bg-slate-100'
+                  ? 'bg-warning text-white shadow-xs'
+                  : 'bg-white dark:bg-muted text-foreground border border-border hover:bg-secondary'
               }`}
             >
               <Calendar className="w-3.5 h-3.5" />
@@ -361,7 +361,7 @@ export default function AdminDealFormDialog({
           </div>
 
           {formData.availabilityType === 'scheduled' && (
-            <div className="p-3 rounded-lg border border-amber-200 bg-amber-50/50 space-y-3 dark:border-amber-900/40 dark:bg-amber-950/20">
+            <div className="p-3 rounded-lg border border-warning-border bg-warning/50 space-y-3 dark:bg-warning/20">
               <FormField label="Available Days" error={errors.availableDays}>
                 <div className="flex flex-wrap gap-1.5 pt-1">
                   {ALL_DAYS.map((day) => {
@@ -373,8 +373,8 @@ export default function AdminDealFormDialog({
                         onClick={() => toggleDay(day.key)}
                         className={`px-2.5 py-1 rounded-md text-xs font-bold transition-all ${
                           isSelected
-                            ? 'bg-amber-600 text-white shadow-xs'
-                            : 'bg-slate-200 text-slate-600 hover:bg-slate-300 dark:bg-slate-700 dark:text-slate-300'
+                            ? 'bg-warning text-white shadow-xs'
+                            : 'bg-secondary text-muted-foreground hover:bg-secondary'
                         }`}
                       >
                         {day.label}
@@ -407,36 +407,36 @@ export default function AdminDealFormDialog({
 
       <FormSection title="Included Products" columns={1}>
         <div className="space-y-3">
-          <div className="flex flex-col gap-1.5 rounded-lg border border-slate-200 bg-slate-50/50 p-2.5 min-h-[3rem] dark:border-slate-700 dark:bg-slate-900/50">
+          <div className="flex flex-col gap-1.5 rounded-lg border border-border bg-muted/50 p-2.5 min-h-[3rem]">
             {Object.keys(selectedProducts).length === 0 && (
-              <span className="text-xs text-slate-500 dark:text-slate-400 self-center py-2">No products selected</span>
+              <span className="text-xs text-muted-foreground self-center py-2">No products selected</span>
             )}
             {Object.entries(selectedProducts).map(([id, qty]) => {
               const prod = products.find(p => p.id === id);
               if (!prod) return null;
               return (
-                <div key={id} className="flex items-center justify-between gap-2 p-1.5 rounded-md bg-white border border-slate-100 dark:bg-slate-800 dark:border-slate-700 shadow-sm">
-                  <span className="text-xs font-semibold text-slate-800 dark:text-slate-100">{prod.name}</span>
+                <div key={id} className="flex items-center justify-between gap-2 p-1.5 rounded-md bg-card border border-border shadow-sm">
+                  <span className="text-xs font-semibold text-foreground">{prod.name}</span>
                   <div className="flex items-center gap-2">
                     <button
                       type="button"
                       onClick={() => decrementProduct(id)}
-                      className="h-6 w-6 rounded-md bg-slate-100 dark:bg-slate-700 flex items-center justify-center font-bold text-xs text-slate-700 dark:text-slate-200 hover:bg-slate-200 dark:hover:bg-slate-600 active:scale-95"
+                      className="h-6 w-6 rounded-md bg-secondary flex items-center justify-center font-bold text-xs text-foreground hover:bg-secondary active:scale-95"
                     >
                       -
                     </button>
-                    <span className="text-xs font-bold text-slate-900 dark:text-white min-w-[12px] text-center">{qty}</span>
+                    <span className="text-xs font-bold text-foreground min-w-[12px] text-center">{qty}</span>
                     <button
                       type="button"
                       onClick={() => incrementProduct(id)}
-                      className="h-6 w-6 rounded-md bg-slate-100 dark:bg-slate-700 flex items-center justify-center font-bold text-xs text-slate-700 dark:text-slate-200 hover:bg-slate-200 dark:hover:bg-slate-600 active:scale-95"
+                      className="h-6 w-6 rounded-md bg-secondary flex items-center justify-center font-bold text-xs text-foreground hover:bg-secondary active:scale-95"
                     >
                       +
                     </button>
                     <button
                       type="button"
                       onClick={() => removeProduct(id)}
-                      className="ml-2 rounded p-1 hover:bg-red-50 dark:hover:bg-red-950/20 text-red-500"
+                      className="ml-2 rounded p-1 hover:bg-danger-subtle text-danger"
                     >
                       <X className="w-3.5 h-3.5" />
                     </button>
@@ -447,7 +447,7 @@ export default function AdminDealFormDialog({
           </div>
 
           <div className="relative">
-            <Search className="absolute left-3 top-3 w-4 h-4 text-slate-400 dark:text-slate-500" />
+            <Search className="absolute left-3 top-3 w-4 h-4 text-muted-foreground/70" />
             <FormInput
               placeholder="Search products by name or code to add..."
               value={productSearch}
@@ -456,7 +456,7 @@ export default function AdminDealFormDialog({
             />
           </div>
 
-          <div className="max-h-40 overflow-y-auto rounded-lg border border-slate-200 divide-y divide-slate-100 dark:border-slate-700 dark:divide-slate-800">
+          <div className="max-h-40 overflow-y-auto rounded-lg border border-border divide-y divide-border">
             {filteredProducts.map(prod => {
               const qty = selectedProducts[prod.id] || 0;
               return (
@@ -464,27 +464,27 @@ export default function AdminDealFormDialog({
                   key={prod.id}
                   type="button"
                   onClick={() => incrementProduct(prod.id)}
-                  className={`w-full flex items-center justify-between px-3 py-2 text-xs sm:text-sm text-left transition-colors hover:bg-slate-50 dark:hover:bg-slate-800 ${
+                  className={`w-full flex items-center justify-between px-3 py-2 text-xs sm:text-sm text-left transition-colors hover:bg-muted dark:hover:bg-muted ${
                     qty > 0
-                      ? 'bg-blue-50/50 text-blue-600 dark:bg-blue-950/20 dark:text-blue-400 font-semibold'
-                      : 'text-slate-700 dark:text-slate-200'
+                      ? 'bg-primary/50 text-primary dark:bg-primary/20 font-semibold'
+                      : 'text-foreground'
                   }`}
                 >
                   <span>
                     {prod.name}{' '}
-                    <span className="text-[10px] text-slate-400 dark:text-slate-500 font-mono">({prod.sku})</span>
+                    <span className="text-2xs text-muted-foreground/70 font-mono">({prod.sku})</span>
                     {qty > 0 && (
-                      <Badge variant="secondary" className="ml-2 bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300 py-0 text-[10px]">
+                      <Badge variant="secondary" className="ml-2 bg-info-subtle text-primary py-0 text-2xs">
                         {qty} selected
                       </Badge>
                     )}
                   </span>
-                  <span className="text-slate-500 dark:text-slate-400 tabular-nums">{getCurrencyConfig().currencySymbol} {(prod.basePricePaisa / 100).toFixed(2)}</span>
+                  <span className="text-muted-foreground tabular-nums">{getCurrencyConfig().currencySymbol} {(prod.basePricePaisa / 100).toFixed(2)}</span>
                 </button>
               );
             })}
             {filteredProducts.length === 0 && (
-              <div className="p-3 text-center text-xs text-slate-400 dark:text-slate-500">
+              <div className="p-3 text-center text-xs text-muted-foreground/70">
                 No matching products found
               </div>
             )}
@@ -506,10 +506,10 @@ export default function AdminDealFormDialog({
         </FormField>
 
         {deal && (
-          <div className="flex items-center justify-between rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 dark:border-slate-700 dark:bg-slate-800">
+          <div className="flex items-center justify-between rounded-lg border border-border bg-muted/40 px-3 py-2">
             <div>
-              <p className="text-xs font-semibold text-slate-700 dark:text-slate-100">Active</p>
-              <p className="text-xs text-slate-500 dark:text-slate-300">Show this deal as available.</p>
+              <p className="text-xs font-semibold text-foreground">Active</p>
+              <p className="text-xs text-muted-foreground">Show this deal as available.</p>
             </div>
             <Switch
               checked={formData.isActive}

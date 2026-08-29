@@ -70,7 +70,7 @@ export function ManagerApprovalDialog({
     <Dialog open={open} onOpenChange={(next) => { if (!next) reset(); onOpenChange(next); }}>
       <DialogContent className="max-w-md">
         <DialogHeader>
-          <div className="mb-2 flex h-10 w-10 items-center justify-center rounded-lg bg-orange-500/10 text-orange-600">
+          <div className="mb-2 flex h-10 w-10 items-center justify-center rounded-lg bg-warning/10 text-warning-text">
             <ShieldCheck className="h-5 w-5" />
           </div>
           <DialogTitle>Manager Approval Required</DialogTitle>
@@ -80,7 +80,7 @@ export function ManagerApprovalDialog({
         </DialogHeader>
 
         <div className="space-y-4">
-          <div className="rounded-md border border-orange-200 bg-orange-50 px-3 py-2 text-xs font-semibold text-orange-900">
+          <div className="rounded-md border border-warning-border bg-warning-subtle px-3 py-2 text-xs font-semibold text-warning-text">
             {reason}
           </div>
 

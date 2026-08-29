@@ -53,17 +53,33 @@ export interface ApiTillSummary {
   }[];
 }
 
+/**
+ * A counted denomination line as the till API accepts it.
+ *
+ * The server schema takes either `value` (what this client sends) or
+ * `denomination`, and passes extra keys through. This interface previously
+ * declared only `{ denomination, count }`, so every call site had to cast its
+ * real `DenominationEntry` through `any` to get past the compiler.
+ */
+export interface DenominationPayload {
+  value?:        number;
+  denomination?: number;
+  label?:        string;
+  count:         number;
+  total?:        number;
+}
+
 export interface OpenTillInput {
   terminalId:       string;
   openingCashAmount: number;
-  denominations?:   { denomination: number; count: number }[];
+  denominations?:   DenominationPayload[];
   notes?:           string;
 }
 
 export interface CloseTillInput {
   sessionId:        string;
   closingCashAmount: number;
-  denominations?:   { denomination: number; count: number }[];
+  denominations?:   DenominationPayload[];
   notes?:           string;
 }
 

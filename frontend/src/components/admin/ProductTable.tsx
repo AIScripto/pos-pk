@@ -4,7 +4,7 @@ import { categoryLabels } from '@/data/products';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { ProductFormDialog } from './ProductFormDialog';
-import { Pencil, Trash2, Plus, PackageSearch } from 'lucide-react';
+import { Pencil, Trash2, Plus, PackageSearch, Utensils } from 'lucide-react';
 import { useProducts } from '@/context/ProductContext';
 
 export function ProductTable() {
@@ -66,7 +66,7 @@ export function ProductTable() {
                       />
                     ) : (
                       <div className="w-10 h-10 rounded-lg bg-muted flex items-center justify-center text-lg">
-                        🍽️
+                        <Utensils className="h-5 w-5 text-muted-foreground/70" aria-hidden="true" />
                       </div>
                     )}
                   </td>
@@ -92,7 +92,7 @@ export function ProductTable() {
                         <span className="text-xs line-through text-muted-foreground tabular-nums">
                           ${product.originalPrice.toFixed(2)}
                         </span>
-                        <span className="font-semibold tabular-nums text-green-600 dark:text-green-400">
+                        <span className="font-semibold tabular-nums text-success-text">
                           ${product.price.toFixed(2)}
                         </span>
                       </div>
@@ -122,11 +122,13 @@ export function ProductTable() {
                       </div>
                     ) : (
                       <div className="flex items-center gap-1 justify-end">
-                        <Button size="icon" variant="ghost" className="h-7 w-7" onClick={() => openEdit(product)}>
+                        <Button size="icon"
+            aria-label="Edit" variant="ghost" className="h-7 w-7" onClick={() => openEdit(product)}>
                           <Pencil className="w-3.5 h-3.5" />
                         </Button>
                         <Button
                           size="icon"
+            aria-label="Delete"
                           variant="ghost"
                           className="h-7 w-7 text-destructive hover:text-destructive hover:bg-destructive/10"
                           onClick={() => setConfirmDeleteId(product.id)}

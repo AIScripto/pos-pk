@@ -15,13 +15,13 @@ export function ReportMetricCard({
   icon: LucideIcon;
 }) {
   return (
-    <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-850 dark:bg-slate-900/25 hover:dark:bg-slate-900/35 hover:border-slate-700/60 hover:shadow-lg transition-all duration-200 backdrop-blur-sm">
+    <div className="overflow-hidden rounded-2xl border border-border bg-white p-5 shadow-sm dark:bg-muted/25 hover:dark:bg-muted/35 hover:border-primary/40 hover:shadow-lg transition-all duration-200 backdrop-blur-sm">
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
-          <p className="text-xs font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">
+          <p className="text-xs font-bold uppercase tracking-wider text-muted-foreground/70">
             {title}
           </p>
-          <p className="mt-2.5 text-3.5xl font-black tracking-tight text-slate-950 dark:text-white font-display" style={{ fontWeight: 900 }}>
+          <p className="mt-2.5 text-4xl font-black tracking-tight text-foreground dark:text-white font-display" style={{ fontWeight: 900 }}>
             {value}
           </p>
         </div>
@@ -29,16 +29,16 @@ export function ReportMetricCard({
           className={cn(
             'flex h-10 w-10 shrink-0 items-center justify-center rounded-xl p-2.5',
             accent === 'positive'
-              ? 'bg-emerald-50 text-emerald-600 dark:bg-emerald-950/40 dark:text-emerald-400'
+              ? 'bg-success-subtle text-success-text'
               : accent === 'tax'
-                ? 'bg-blue-50 text-blue-600 dark:bg-blue-950/40 dark:text-blue-400'
-                : 'bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-400',
+                ? 'bg-info-subtle text-primary'
+                : 'bg-secondary text-muted-foreground',
           )}
         >
           <Icon className="h-5 w-5" />
         </div>
       </div>
-      <p className="mt-3 text-xs leading-5 text-slate-500 dark:text-slate-400">{hint}</p>
+      <p className="mt-3 text-xs leading-5 text-muted-foreground">{hint}</p>
     </div>
   );
 }

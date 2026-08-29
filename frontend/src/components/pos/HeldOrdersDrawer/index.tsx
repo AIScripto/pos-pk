@@ -59,7 +59,7 @@ function HeldOrderCard({
       {/* Header row */}
       <div className="flex items-start justify-between gap-3">
         <div className="flex items-center gap-3">
-          <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-amber-500/15 text-amber-500 shrink-0">
+          <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-warning/15 text-warning shrink-0">
             <PauseCircle className="h-5 w-5" />
           </div>
           <div>
@@ -107,7 +107,7 @@ function HeldOrderCard({
       <div className="mt-3 flex justify-between text-xs text-muted-foreground border-t border-border/50 pt-3">
         <span>Subtotal: {formatCurrency(totals.subtotal)}</span>
         {totals.totalDiscount > 0 && (
-          <span className="text-emerald-500">Discount: -{formatCurrency(totals.totalDiscount)}</span>
+          <span className="text-success">Discount: -{formatCurrency(totals.totalDiscount)}</span>
         )}
       </div>
 
@@ -160,7 +160,7 @@ export function HeldOrdersDrawer({ onClose }: HeldOrdersDrawerProps) {
         {/* Header */}
         <div className="flex items-center justify-between border-b border-border/70 bg-card/80 px-5 py-4 shrink-0">
           <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-amber-500/15 text-amber-500">
+            <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-warning/15 text-warning">
               <PauseCircle className="h-5 w-5" />
             </div>
             <div>

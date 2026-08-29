@@ -73,18 +73,18 @@ export function ManagerReportPanel({ invoices }: ManagerReportPanelProps) {
         type="button"
         onClick={() => setOpen(true)}
         data-manager-btn="true"
-        className="flex flex-col items-center justify-center min-w-[64px] sm:min-w-[72px] h-11 px-2.5 py-1 rounded-xl border border-purple-500/60 dark:border-purple-500/70 bg-purple-50 dark:bg-purple-950/70 hover:bg-purple-100 dark:hover:bg-purple-900/90 hover:border-purple-500 transition-all cursor-pointer shadow-md active:scale-[0.96] group shrink-0 relative"
+        className="flex flex-col items-center justify-center min-w-[64px] sm:min-w-[72px] h-11 px-2.5 py-1 rounded-xl border border-special/60 dark:border-special/70 bg-special-subtle hover:bg-special-subtle hover:border-special transition-all cursor-pointer shadow-md active:scale-[0.96] group shrink-0 relative"
       >
         {/* Top row: F12 + BarChart3 Icon */}
         <div className="flex items-center gap-1.5">
-          <span className="font-mono font-black text-xs sm:text-[13px] text-purple-600 dark:text-purple-300 group-hover:text-purple-500 transition-colors">
+          <span className="font-mono font-black text-xs sm:text-[13px] text-special-text group-hover:text-special transition-colors">
             F12
           </span>
-          <BarChart3 className="w-4 h-4 shrink-0 text-purple-600 dark:text-purple-300 transition-transform duration-150 group-hover:scale-110" />
+          <BarChart3 className="w-4 h-4 shrink-0 text-special-text transition-transform duration-150 group-hover:scale-110" />
         </div>
 
         {/* Bottom row: Manager label */}
-        <span className="font-display font-extrabold text-[11px] sm:text-xs text-purple-900 dark:text-purple-200 tracking-tight leading-tight mt-0.5">
+        <span className="font-display font-extrabold text-[11px] sm:text-xs text-special-text dark:text-special tracking-tight leading-tight mt-0.5">
           {t.common.manager}
         </span>
       </button>
@@ -101,7 +101,8 @@ export function ManagerReportPanel({ invoices }: ManagerReportPanelProps) {
                 {t.managerReport.panelDesc}
               </DialogDescription>
             </div>
-            <Button variant="ghost" size="icon" onClick={() => handleOpenChange(false)} className="rounded-2xl cursor-pointer">
+            <Button variant="ghost" size="icon"
+            aria-label="Close" onClick={() => handleOpenChange(false)} className="rounded-2xl cursor-pointer">
               <X className="h-5 w-5" />
             </Button>
           </div>

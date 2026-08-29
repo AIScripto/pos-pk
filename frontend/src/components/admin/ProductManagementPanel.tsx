@@ -56,6 +56,7 @@ export function ProductManagementPanel({ open, onOpenChange }: ProductManagement
           </div>
           <Button
             size="icon"
+            aria-label="Close"
             variant="ghost"
             className="rounded-full shrink-0"
             onClick={() => handleOpenChange(false)}

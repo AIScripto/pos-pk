@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { adminConfigApi } from '@/lib/api/admin-config.api';
+import { adminConfigApi, type OrgConfig } from '@/lib/api/admin-config.api';
 import { Switch } from '@/components/ui/switch';
 import {
   Field,
@@ -12,20 +12,21 @@ import {
 export function ReceiptSection() {
   const qc   = useQueryClient();
   const { data: cfg, isLoading } = useQuery({ queryKey: ['orgConfig'], queryFn: adminConfigApi.getOrgConfig });
-  const [form, setForm] = useState<any>({});
+  const [form, setForm] = useState<Partial<OrgConfig>>({});
   const [saved,  setSaved]  = useState(false);
   const [failed, setFailed] = useState(false);
 
   if (cfg && !Object.keys(form).length) setForm(cfg);
 
   const mut = useMutation({
-    mutationFn: (data: any) => adminConfigApi.upsertOrgConfig(data),
+    mutationFn: (data: Partial<OrgConfig>) => adminConfigApi.upsertOrgConfig(data),
     onSuccess: () => { qc.invalidateQueries({ queryKey: ['orgConfig'] }); setSaved(true); setTimeout(() => setSaved(false), 3000); },
     onError:   () => { setFailed(true); setTimeout(() => setFailed(false), 3000); },
   });
 
-  const set = (key: string, val: any) => setForm((f: any) => ({ ...f, [key]: val }));
-  if (isLoading) return <div className="py-10 text-center text-slate-400">Loading…</div>;
+  const set = <K extends keyof OrgConfig>(key: K, val: OrgConfig[K]) =>
+    setForm((f) => ({ ...f, [key]: val }));
+  if (isLoading) return <div className="py-10 text-center text-muted-foreground/70">Loading…</div>;
 
   return (
     <form onSubmit={(e) => { e.preventDefault(); mut.mutate(form); }} className="space-y-6">
@@ -37,9 +38,7 @@ export function ReceiptSection() {
               onChange={e => set('receiptHeader', e.target.value)}
               rows={3}
               placeholder="Welcome to Crip & Crumbs!"
-              className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 placeholder-slate-400
-                focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20
-                dark:border-slate-500 dark:bg-slate-950 dark:text-slate-50 resize-none"
+              className="w-full rounded-lg border border-border bg-card px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 resize-none"
             />
           </Field>
           <Field label="Receipt Footer" hint="Shown at the bottom of every receipt">
@@ -48,15 +47,13 @@ export function ReceiptSection() {
               onChange={e => set('receiptFooter', e.target.value)}
               rows={3}
               placeholder="Thank you! Please visit again."
-              className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 placeholder-slate-400
-                focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20
-                dark:border-slate-500 dark:bg-slate-950 dark:text-slate-50 resize-none"
+              className="w-full rounded-lg border border-border bg-card px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 resize-none"
             />
           </Field>
-          <div className="flex items-center justify-between rounded-lg border border-slate-200 p-4 dark:border-slate-700">
+          <div className="flex items-center justify-between rounded-lg border border-border p-4">
             <div>
-              <p className="text-sm font-medium text-slate-900 dark:text-white">Show Loyalty Points on Receipt</p>
-              <p className="text-xs text-slate-500 dark:text-slate-300">Display customer loyalty balance on printed receipt</p>
+              <p className="text-sm font-medium text-foreground">Show Loyalty Points on Receipt</p>
+              <p className="text-xs text-muted-foreground">Display customer loyalty balance on printed receipt</p>
             </div>
             <Switch
               checked={form.showLoyaltyOnReceipt ?? true}

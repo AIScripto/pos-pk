@@ -55,7 +55,7 @@ export function ManagerReportFilters({ filters, onChange, onExportCsv, onExportE
     <div className="rounded-lg border border-border/70 bg-card/80 p-3 shadow-sm backdrop-blur">
       <div className="grid gap-3 xl:grid-cols-[1fr_0.9fr_0.9fr_0.9fr_0.9fr_auto_auto]">
         <div className="grid gap-2">
-          <label className="text-[10px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">{t.managerReport.dataset}</label>
+          <label className="text-2xs font-semibold uppercase tracking-[0.16em] text-muted-foreground">{t.managerReport.dataset}</label>
           <Select value={filters.dataset} onValueChange={(value: Filters['dataset']) => onChange({ ...filters, dataset: value })}>
             <SelectTrigger className="h-9 rounded-md border-border/70 bg-background/80 text-xs">
               <SelectValue />
@@ -71,7 +71,7 @@ export function ManagerReportFilters({ filters, onChange, onExportCsv, onExportE
         </div>
 
         <div className="grid gap-2">
-          <label className="text-[10px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">{t.managerReport.range}</label>
+          <label className="text-2xs font-semibold uppercase tracking-[0.16em] text-muted-foreground">{t.managerReport.range}</label>
           <Select value={filters.range} onValueChange={(value: Filters['range']) => onChange({ ...filters, range: value })}>
             <SelectTrigger className="h-9 rounded-md border-border/70 bg-background/80 text-xs">
               <SelectValue />
@@ -87,7 +87,7 @@ export function ManagerReportFilters({ filters, onChange, onExportCsv, onExportE
         </div>
 
         <div className="grid gap-2">
-          <label className="text-[10px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">{t.managerReport.startDate}</label>
+          <label className="text-2xs font-semibold uppercase tracking-[0.16em] text-muted-foreground">{t.managerReport.startDate}</label>
           <Input
             type="date"
             value={filters.startDate}
@@ -97,7 +97,7 @@ export function ManagerReportFilters({ filters, onChange, onExportCsv, onExportE
         </div>
 
         <div className="grid gap-2">
-          <label className="text-[10px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">{t.managerReport.endDate}</label>
+          <label className="text-2xs font-semibold uppercase tracking-[0.16em] text-muted-foreground">{t.managerReport.endDate}</label>
           <Input
             type="date"
             value={filters.endDate}
@@ -107,7 +107,7 @@ export function ManagerReportFilters({ filters, onChange, onExportCsv, onExportE
         </div>
 
         <div className="grid gap-2">
-          <label className="text-[10px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">{t.managerReport.grouping}</label>
+          <label className="text-2xs font-semibold uppercase tracking-[0.16em] text-muted-foreground">{t.managerReport.grouping}</label>
           <Select
             value={filters.trendGrouping}
             onValueChange={(value: Filters['trendGrouping']) => onChange({ ...filters, trendGrouping: value })}
@@ -126,7 +126,7 @@ export function ManagerReportFilters({ filters, onChange, onExportCsv, onExportE
         </div>
 
         <div className="grid gap-2">
-          <label className="text-[10px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">{t.managerReport.ranking}</label>
+          <label className="text-2xs font-semibold uppercase tracking-[0.16em] text-muted-foreground">{t.managerReport.ranking}</label>
           <Select
             value={filters.rankingMetric}
             onValueChange={(value: Filters['rankingMetric']) => onChange({ ...filters, rankingMetric: value })}

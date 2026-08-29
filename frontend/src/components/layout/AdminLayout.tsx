@@ -121,7 +121,7 @@ export default function AdminLayout({ children }: Props) {
                 <Settings className="w-5 h-5" />
               </div>
               <div className="leading-none">
-                <p className="text-[10px] font-black uppercase tracking-[0.15em] opacity-60">Back Office</p>
+                <p className="text-2xs font-black uppercase tracking-[0.15em] opacity-60">Back Office</p>
                 <span className="font-black text-base">Admin</span>
               </div>
             </div>
@@ -190,7 +190,7 @@ export default function AdminLayout({ children }: Props) {
         </div>
 
         {/* User Info & Preferences */}
-        <div className="space-y-3 border-t border-slate-800 dark:border-zinc-900 p-4">
+        <div className="space-y-3 border-t border-border p-4">
           {sidebarOpen && (
             <div className="flex justify-center pb-1">
               <LanguageSelector />
@@ -201,30 +201,30 @@ export default function AdminLayout({ children }: Props) {
             variant="outline"
             size="sm"
             onClick={toggleTheme}
-            className="w-full border-slate-800 bg-transparent text-zinc-400 hover:bg-slate-800 hover:text-white dark:border-zinc-800 dark:hover:bg-zinc-900 border cursor-pointer"
+            className="w-full border-border bg-transparent text-muted-foreground hover:bg-muted hover:text-white border cursor-pointer"
           >
             {sidebarOpen ? (
               <>
-                {theme === 'dark' ? <Sun className="mr-2 h-4 w-4 text-amber-400" /> : <Moon className="mr-2 h-4 w-4" />}
+                {theme === 'dark' ? <Sun className="mr-2 h-4 w-4 text-warning" /> : <Moon className="mr-2 h-4 w-4" />}
                 {theme === 'dark' ? 'Light Mode' : 'Dark Mode'}
               </>
             ) : (
-              theme === 'dark' ? <Sun className="h-4 w-4 text-amber-400" /> : <Moon className="h-4 w-4" />
+              theme === 'dark' ? <Sun className="h-4 w-4 text-warning" /> : <Moon className="h-4 w-4" />
             )}
           </Button>
 
           {sidebarOpen && (
             <div className="text-xs">
-              <p className="text-zinc-500">{t.common.user}</p>
+              <p className="text-muted-foreground">{t.common.user}</p>
               <p className="truncate font-semibold text-white">{user?.name}</p>
-              <p className="text-xs capitalize text-zinc-400">{user?.role.replace('_', ' ')}</p>
+              <p className="text-xs capitalize text-muted-foreground/70">{user?.role.replace('_', ' ')}</p>
             </div>
           )}
           <Button
             variant="outline"
             size="sm"
             onClick={handleLogout}
-            className="w-full border-red-900/30 bg-red-950/10 text-red-400 hover:bg-red-950/30 hover:text-red-200 dark:border-rose-900/30 dark:bg-rose-950/10 dark:text-rose-400 dark:hover:bg-rose-950/30 border cursor-pointer"
+            className="w-full border-danger/30 bg-danger/10 text-danger hover:bg-danger/30 hover:text-danger border cursor-pointer"
           >
             {sidebarOpen ? (
               <>

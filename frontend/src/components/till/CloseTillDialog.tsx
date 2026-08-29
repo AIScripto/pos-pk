@@ -136,14 +136,14 @@ export function CloseTillDialog({ open, onOpenChange, invoices }: CloseTillDialo
     <>
       <div className="flex-1 overflow-y-auto pos-scrollbar px-6 py-4 space-y-4">
         {/* Session info banner */}
-        <div className="rounded-xl border border-slate-700 bg-slate-800/60 px-4 py-3">
+        <div className="rounded-xl border border-border bg-muted/60 px-4 py-3">
           <div className="flex items-center justify-between mb-1">
-            <span className="font-bold text-xs text-slate-400 uppercase tracking-wide">Active Session</span>
-            <span className="font-semibold text-xs text-slate-300">{sessionDuration}</span>
+            <span className="font-bold text-xs text-muted-foreground uppercase tracking-wide">Active Session</span>
+            <span className="font-semibold text-xs text-muted-foreground">{sessionDuration}</span>
           </div>
           <div className="flex items-center justify-between">
-            <span className="text-sm font-bold text-white">{session.openedBy}</span>
-            <span className="font-mono text-xs text-slate-400">
+            <span className="text-sm font-bold text-foreground">{session.openedBy}</span>
+            <span className="font-mono text-xs text-muted-foreground">
               {sessionStart?.toLocaleTimeString(currencyConfig.locale, { hour: '2-digit', minute: '2-digit', hour12: false })} — Now
             </span>
           </div>
@@ -151,33 +151,33 @@ export function CloseTillDialog({ open, onOpenChange, invoices }: CloseTillDialo
 
         {/* Live Sales & Expected Cash Summary */}
         {summaryLoading ? (
-          <div className="flex items-center justify-center gap-2 py-4 rounded-xl border border-slate-700 bg-slate-800/40">
-            <Loader2 className="h-4 w-4 animate-spin text-slate-400" />
-            <span className="text-xs text-slate-400 font-semibold">Loading till session data...</span>
+          <div className="flex items-center justify-center gap-2 py-4 rounded-xl border border-border bg-muted/40">
+            <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
+            <span className="text-xs text-muted-foreground font-semibold">Loading till session data...</span>
           </div>
         ) : serverSummary ? (
-          <div className="rounded-xl border border-amber-500/30 bg-amber-950/20 px-4 py-3.5 space-y-2.5">
-            <div className="flex items-center justify-between border-b border-slate-700/60 pb-2">
-              <span className="font-black text-xs uppercase tracking-wider text-amber-400">
+          <div className="rounded-xl border border-warning/30 bg-warning/20 px-4 py-3.5 space-y-2.5">
+            <div className="flex items-center justify-between border-b border-border/60 pb-2">
+              <span className="font-black text-xs uppercase tracking-wider text-warning">
                 Expected Cash in Drawer
               </span>
-              <span className="font-mono font-black text-lg text-amber-300 tabular-nums">
+              <span className="font-mono font-black text-lg text-warning tabular-nums">
                 {formatCurrency(expectedCash)}
               </span>
             </div>
             
             <div className="grid grid-cols-3 gap-3 text-center">
               <div>
-                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Total Sales</p>
-                <p className="font-mono text-xs font-semibold text-white mt-0.5 tabular-nums">{formatCurrency(netSales + totalTax)}</p>
+                <p className="text-2xs font-bold text-muted-foreground uppercase tracking-wider">Total Sales</p>
+                <p className="font-mono text-xs font-semibold text-foreground mt-0.5 tabular-nums">{formatCurrency(netSales + totalTax)}</p>
               </div>
-              <div className="border-x border-slate-700/60">
-                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Cash Sales</p>
-                <p className="font-mono text-xs font-semibold text-emerald-400 mt-0.5 tabular-nums">{formatCurrency(cashSales)}</p>
+              <div className="border-x border-border/60">
+                <p className="text-2xs font-bold text-muted-foreground uppercase tracking-wider">Cash Sales</p>
+                <p className="font-mono text-xs font-semibold text-success mt-0.5 tabular-nums">{formatCurrency(cashSales)}</p>
               </div>
               <div>
-                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Card Sales</p>
-                <p className="font-mono text-xs font-semibold text-blue-400 mt-0.5 tabular-nums">{formatCurrency(cardSales)}</p>
+                <p className="text-2xs font-bold text-muted-foreground uppercase tracking-wider">Card Sales</p>
+                <p className="font-mono text-xs font-semibold text-primary mt-0.5 tabular-nums">{formatCurrency(cardSales)}</p>
               </div>
             </div>
           </div>
@@ -186,15 +186,15 @@ export function CloseTillDialog({ open, onOpenChange, invoices }: CloseTillDialo
         {/* Counted Cash Entry with Quick Match */}
         <div className="space-y-2">
           <div className="flex items-center justify-between">
-            <label className="text-xs font-bold text-slate-300 uppercase tracking-wide flex items-center gap-1.5">
-              <Banknote className="w-3.5 h-3.5 text-emerald-400" />
+            <label className="text-xs font-bold text-muted-foreground uppercase tracking-wide flex items-center gap-1.5">
+              <Banknote className="w-3.5 h-3.5 text-success" />
               <span>Physical Cash Counted in Drawer</span>
             </label>
             {expectedCash > 0 && (
               <button
                 type="button"
                 onClick={() => setDirectClosingCash(expectedCash)}
-                className="rounded-lg bg-emerald-500/20 border border-emerald-500/40 px-2.5 py-1 text-[11px] font-black uppercase tracking-wide text-emerald-300 hover:bg-emerald-500/30 transition-colors cursor-pointer"
+                className="rounded-lg bg-success/20 border border-success/40 px-2.5 py-1 text-[11px] font-black uppercase tracking-wide text-success hover:bg-success/30 transition-colors cursor-pointer"
               >
                 Match Expected ({formatCurrency(expectedCash)})
               </button>
@@ -202,7 +202,7 @@ export function CloseTillDialog({ open, onOpenChange, invoices }: CloseTillDialo
           </div>
 
           <div className="relative">
-            <span className="absolute left-4 top-1/2 -translate-y-1/2 text-sm font-bold text-slate-400">Rs</span>
+            <span className="absolute left-4 top-1/2 -translate-y-1/2 text-sm font-bold text-muted-foreground">Rs</span>
             <input
               type="number"
               min="0"
@@ -211,7 +211,7 @@ export function CloseTillDialog({ open, onOpenChange, invoices }: CloseTillDialo
               placeholder="Enter counted physical cash..."
               value={closingTotal || ''}
               onChange={(e) => setDirectClosingCash(Number(e.target.value) || 0)}
-              className="w-full h-12 pl-12 pr-4 bg-slate-950 border-2 border-slate-700 rounded-xl focus:outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 text-right font-mono text-xl font-bold text-white transition-all tabular-nums"
+              className="w-full h-12 pl-12 pr-4 bg-background border-2 border-border rounded-xl focus:outline-none focus:border-success focus:ring-2 focus:ring-success/20 text-right font-mono text-xl font-bold text-foreground transition-all tabular-nums"
             />
           </div>
 
@@ -219,13 +219,15 @@ export function CloseTillDialog({ open, onOpenChange, invoices }: CloseTillDialo
           {closingTotal > 0 && (
             <div className={`p-2.5 rounded-xl border flex items-center justify-between ${
               isBalanced
-                ? 'border-emerald-500/40 bg-emerald-950/30 text-emerald-300'
+                ? 'border-success/40 bg-success/30 text-success'
                 : isShort
-                  ? 'border-rose-500/40 bg-rose-950/30 text-rose-300'
-                  : 'border-amber-500/40 bg-amber-950/30 text-amber-300'
+                  ? 'border-danger/40 bg-danger/30 text-danger'
+                  : 'border-warning/40 bg-warning/30 text-warning'
             }`}>
-              <span className="text-xs font-bold uppercase tracking-wider">
-                {isBalanced ? '✓ Perfect Balance' : isShort ? '⚠ Cash Shortage' : '⚠ Cash Overage'}
+              <span className="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider">
+                {isBalanced
+                  ? <><CheckCircle2 className="h-4 w-4 shrink-0" aria-hidden="true" />Perfect Balance</>
+                  : <><AlertTriangle className="h-4 w-4 shrink-0" aria-hidden="true" />{isShort ? 'Cash Shortage' : 'Cash Overage'}</>}
               </span>
               <span className="font-mono font-bold text-sm tabular-nums">
                 {isBalanced ? 'Rs 0' : `${variance > 0 ? '+' : ''}${formatCurrency(variance)}`}
@@ -239,12 +241,12 @@ export function CloseTillDialog({ open, onOpenChange, invoices }: CloseTillDialo
           <button
             type="button"
             onClick={() => setShowDenomDetail(!showDenomDetail)}
-            className="text-xs font-medium text-slate-400 hover:text-slate-200 transition-colors"
+            className="text-xs font-medium text-muted-foreground hover:text-foreground transition-colors"
           >
             {showDenomDetail ? '− Hide physical note breakdown' : '+ Count physical note denominations (Optional)'}
           </button>
           {showDenomDetail && (
-            <div className="mt-2.5 p-3 rounded-xl border border-slate-700 bg-slate-900/60">
+            <div className="mt-2.5 p-3 rounded-xl border border-border bg-muted/60">
               <DenominationTable
                 entries={denominations}
                 onChange={setDenominations}
@@ -257,7 +259,7 @@ export function CloseTillDialog({ open, onOpenChange, invoices }: CloseTillDialo
 
         {/* Notes */}
         <div>
-          <label className="text-xs font-semibold text-slate-400 mb-1.5 flex items-center gap-1.5">
+          <label className="text-xs font-semibold text-muted-foreground mb-1.5 flex items-center gap-1.5">
             <StickyNote className="w-3.5 h-3.5" />
             <span>Shift / Handover Notes (optional)</span>
           </label>
@@ -266,7 +268,7 @@ export function CloseTillDialog({ open, onOpenChange, invoices }: CloseTillDialo
             value={notes}
             onChange={(e) => setNotes(e.target.value)}
             placeholder="Any incidents, discrepancies or handover notes…"
-            className="w-full px-3 py-2 bg-slate-950 border border-slate-700 rounded-xl text-xs text-white placeholder-slate-500 focus:outline-none focus:border-emerald-500"
+            className="w-full px-3 py-2 bg-background border border-border rounded-xl text-xs text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-success"
           />
         </div>
       </div>
@@ -280,7 +282,7 @@ export function CloseTillDialog({ open, onOpenChange, invoices }: CloseTillDialo
         </button>
         <button
           onClick={() => setStep('summary')}
-          className="flex-1 flex items-center justify-center gap-2 rounded-xl py-3 font-display font-bold text-sm text-white transition-all active:scale-[0.98]"
+          className="flex-1 flex items-center justify-center gap-2 rounded-xl py-3 font-display font-bold text-sm text-foreground transition-all active:scale-[0.98]"
           style={{ background: 'linear-gradient(135deg, hsl(24 100% 50%), hsl(38 92% 50%))' }}
         >
           Review Summary →
@@ -293,7 +295,7 @@ export function CloseTillDialog({ open, onOpenChange, invoices }: CloseTillDialo
   const varianceColor = isShort
     ? 'text-destructive'
     : isOver
-      ? 'text-amber-400'
+      ? 'text-warning'
       : 'text-pos-success';
 
   const SummaryStep = (
@@ -380,7 +382,7 @@ export function CloseTillDialog({ open, onOpenChange, invoices }: CloseTillDialo
               {!isBalanced && (
                 isShort
                   ? <AlertTriangle className="w-3.5 h-3.5 text-destructive" />
-                  : <AlertTriangle className="w-3.5 h-3.5 text-amber-400" />
+                  : <AlertTriangle className="w-3.5 h-3.5 text-warning" />
               )}
               {isBalanced && <CheckCircle2 className="w-3.5 h-3.5 text-pos-success" />}
               <span className={cn('font-mono font-bold text-sm tabular-nums', varianceColor)}>
@@ -454,7 +456,7 @@ export function CloseTillDialog({ open, onOpenChange, invoices }: CloseTillDialo
         <button
           onClick={handleConfirmClose}
           disabled={!confirmed || loading}
-          className="flex-1 flex items-center justify-center gap-2 rounded-xl py-3 font-display font-bold text-sm text-white transition-all disabled:opacity-40 disabled:cursor-not-allowed active:scale-[0.98]"
+          className="flex-1 flex items-center justify-center gap-2 rounded-xl py-3 font-display font-bold text-sm text-foreground transition-all disabled:opacity-40 disabled:cursor-not-allowed active:scale-[0.98]"
           style={{ background: (confirmed && !loading) ? 'linear-gradient(135deg, hsl(0 70% 45%), hsl(0 70% 35%))' : undefined, backgroundColor: (confirmed && !loading) ? undefined : 'hsl(var(--secondary))' }}
         >
           {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Lock className="w-4 h-4" />}
@@ -490,17 +492,17 @@ export function CloseTillDialog({ open, onOpenChange, invoices }: CloseTillDialo
             {(['count', 'summary'] as Step[]).map((s, i) => (
               <div key={s} className="flex items-center gap-2">
                 <div className={cn(
-                  'flex h-5 w-5 items-center justify-center rounded-full text-[10px] font-display font-bold',
+                  'flex h-5 w-5 items-center justify-center rounded-full text-2xs font-display font-bold',
                   step === s
-                    ? 'bg-primary text-white'
+                    ? 'bg-primary text-foreground'
                     : i < (['count', 'summary'] as Step[]).indexOf(step)
-                      ? 'bg-pos-success text-white'
+                      ? 'bg-pos-success text-foreground'
                       : 'bg-secondary text-muted-foreground',
                 )}>
                   {i + 1}
                 </div>
                 <span className={cn(
-                  'font-display font-bold text-[10px] uppercase tracking-wide',
+                  'font-display font-bold text-2xs uppercase tracking-wide',
                   step === s ? 'text-foreground' : 'text-muted-foreground',
                 )}>
                   {s === 'count' ? 'Cash Count' : 'Summary'}

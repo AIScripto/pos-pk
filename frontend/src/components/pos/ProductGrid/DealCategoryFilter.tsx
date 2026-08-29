@@ -3,25 +3,13 @@ import { cn } from '@/lib/utils';
 import { useProducts } from '@/context/ProductContext';
 import { useTranslation } from '@/i18n';
 import { getLocalizedCategoryName } from '@/i18n/catalog';
+import { getIconForCategory, DEALS_ICON } from './categoryIcons';
 
 interface DealCategoryFilterProps {
   dealSubCategory: Category | 'all';
   onSubCategoryChange: (category: Category | 'all') => void;
   deals: Deal[];
 }
-
-const getIconForCategory = (name: string) => {
-  const lower = name.toLowerCase();
-  if (lower.includes('burger')) return '🍔';
-  if (lower.includes('wrap')) return '🌯';
-  if (lower.includes('chicken')) return '🍗';
-  if (lower.includes('fry') || lower.includes('fries')) return '🍟';
-  if (lower.includes('drink') || lower.includes('beverage')) return '🥤';
-  if (lower.includes('pizza')) return '🍕';
-  if (lower.includes('dessert') || lower.includes('sweet')) return '🍦';
-  if (lower.includes('salad')) return '🥗';
-  return '🍽️';
-};
 
 export function DealCategoryFilter({
   dealSubCategory,
@@ -37,7 +25,7 @@ export function DealCategoryFilter({
     .sort((a, b) => a.sortOrder - b.sortOrder);
 
   const filters = [
-    { key: 'all', label: language === 'ar' ? 'جميع العروض' : language === 'ur' ? 'تمام ڈیلز' : 'All Deals', icon: '⚡' },
+    { key: 'all', label: language === 'ar' ? 'جميع العروض' : language === 'ur' ? 'تمام ڈیلز' : 'All Deals', icon: DEALS_ICON },
     ...dealCategories.map(c => ({
       key: c.name,
       label: `${getLocalizedCategoryName(c.name, language)}`,
@@ -46,8 +34,8 @@ export function DealCategoryFilter({
   ];
 
   return (
-    <div className="border-b border-amber-500/30 bg-amber-500/10 dark:bg-amber-950/30 px-3 py-1.5 flex items-center gap-1.5 overflow-x-auto pos-scrollbar">
-      <span className="text-[10px] font-black uppercase tracking-wider text-amber-800 dark:text-amber-300 shrink-0 mr-1">
+    <div className="border-b border-warning/30 bg-warning/10 dark:bg-warning/30 px-3 py-1.5 flex items-center gap-1.5 overflow-x-auto pos-scrollbar">
+      <span className="text-2xs font-black uppercase tracking-wider text-warning-text shrink-0 mr-1">
         Filter Deals:
       </span>
       {filters.map((sub) => {
@@ -65,18 +53,18 @@ export function DealCategoryFilter({
             className={cn(
               'flex h-9 items-center gap-1.5 px-3 rounded-xl text-xs font-display font-extrabold transition-all shrink-0 cursor-pointer touch-manipulation shadow-2xs',
               isSel
-                ? 'bg-gradient-to-r from-amber-500 to-orange-500 text-slate-950 shadow-sm scale-[1.02] font-black border border-amber-400'
-                : 'bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-slate-100 hover:bg-amber-50 dark:hover:bg-amber-950/40 hover:border-amber-500/50'
+                ? 'bg-warning text-foreground shadow-sm scale-[1.02] font-black border border-warning'
+                : 'bg-card border border-border text-foreground hover:bg-warning-subtle hover:border-warning/50'
             )}
           >
-            <span className="text-sm">{sub.icon}</span>
+            <sub.icon aria-hidden="true" className="h-4 w-4 shrink-0" strokeWidth={1.75} />
             <span>{sub.label}</span>
             <span
               className={cn(
-                'text-[10px] px-1.5 py-0.2 rounded-full font-black tabular-nums border',
+                'text-2xs px-1.5 py-0.5 rounded-full font-black tabular-nums border',
                 isSel
-                  ? 'bg-slate-950/20 border-slate-950/30 text-slate-950'
-                  : 'bg-slate-200 dark:bg-slate-800 border-slate-300 dark:border-slate-700 text-slate-800 dark:text-slate-100'
+                  ? 'bg-muted/20 border-border/30 text-foreground'
+                  : 'bg-secondary border-border text-foreground'
               )}
             >
               {subCount}

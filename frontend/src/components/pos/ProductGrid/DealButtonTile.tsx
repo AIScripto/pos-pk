@@ -16,29 +16,29 @@ export function DealButtonTile({ deal, onAdd }: DealButtonTileProps) {
   return (
     <button
       onClick={() => onAdd(deal)}
-      className="group relative flex flex-col justify-between p-2 h-18 rounded-xl border border-amber-500/30 bg-amber-500/5 dark:bg-amber-950/20 hover:border-amber-500 hover:bg-amber-500/10 transition-all duration-150 text-left touch-manipulation shadow-xs active:scale-[0.98]"
+      className="group relative flex flex-col justify-between p-2 h-18 rounded-xl border border-warning/30 bg-warning/5 dark:bg-warning/20 hover:border-warning hover:bg-warning/10 transition-all duration-150 text-left touch-manipulation shadow-xs active:scale-[0.98]"
     >
       <div className="flex items-start justify-between gap-1 w-full">
-        <span className="font-extrabold text-[8px] uppercase tracking-wider text-amber-900 dark:text-amber-300 bg-amber-200/80 dark:bg-amber-500/30 px-1 py-0.2 rounded border border-amber-300 dark:border-amber-700/50">
+        <span className="font-extrabold text-2xs uppercase tracking-wider text-warning-text bg-warning/80 dark:bg-warning/30 px-1 py-0.5 rounded border border-warning-border dark:border-warning/50">
           Combo
         </span>
-        <span className="font-black text-[8px] uppercase tracking-wide bg-gradient-to-r from-amber-500 to-orange-500 text-slate-950 px-1 py-0.2 rounded shadow-xs">
+        <span className="font-black text-2xs uppercase tracking-wide bg-warning text-foreground px-1 py-0.5 rounded shadow-xs">
           Save {savingsPercent}%
         </span>
       </div>
 
-      <h4 className="font-body font-black text-xs text-slate-900 dark:text-slate-100 line-clamp-1 leading-tight group-hover:text-amber-500 transition-colors">
+      <h4 className="font-body font-black text-xs text-foreground line-clamp-1 leading-tight group-hover:text-warning transition-colors">
         {localizedName}
       </h4>
 
       <div className="flex items-baseline justify-between gap-1 w-full pt-0.5">
-        <div className="flex items-baseline gap-1 font-display font-black text-xs text-amber-600 dark:text-amber-400 leading-none">
+        <div className="flex items-baseline gap-1 font-display font-black text-xs text-warning-text leading-none">
           <span>{formatCurrency(deal.price)}</span>
-          <span className="text-[9px] font-extrabold line-through text-slate-400 dark:text-slate-500 leading-none">
+          <span className="text-2xs font-extrabold line-through text-muted-foreground/70 leading-none">
             {formatCurrency(deal.originalPrice)}
           </span>
         </div>
-        <span className="flex h-4 w-4 items-center justify-center rounded bg-amber-500 text-slate-950 text-xs font-black shadow-xs group-hover:bg-amber-600 shrink-0">
+        <span className="flex h-4 w-4 items-center justify-center rounded bg-warning text-foreground text-xs font-black shadow-xs group-hover:bg-warning shrink-0">
           +
         </span>
       </div>

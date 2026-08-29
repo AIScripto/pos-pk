@@ -6,6 +6,7 @@ import { TranslationKey } from './en';
 
 export const ar: TranslationKey = {
   common: {
+    added: 'أُضيف',
     appName: 'نقاط بيع كريب آند كرامبز',
     subTitle: 'مطعم خدمة سريعة',
     currency: 'ر.س',
@@ -92,6 +93,9 @@ export const ar: TranslationKey = {
     results: 'نتائج',
   },
   pos: {
+    processingOrder: 'جارٍ معالجة الطلب…',
+    sendToKitchen: 'تأكيد وإرسال إلى المطبخ',
+    addItemsToStart: 'أضف أصنافاً لبدء الطلب',
     collectPayment: 'تحصيل الدفع',
     tenderCheckout: 'إتمام عملية البيع',
     totalPayable: 'الإجمالي المستحق',
@@ -171,6 +175,7 @@ export const ar: TranslationKey = {
     invalidAmount: 'يرجى إدخال مبلغ صحيح',
   },
   discount: {
+    expandItemHint: 'وسّع صنفاً في السلة لتطبيق خصم على الصنف أو خصم إجمالي',
     discountTitle: 'تطبيق خصم على الطلب',
     typePercentage: 'نسبة مئوية (%)',
     typeFixed: 'مبلغ ثابت (ر.س)',

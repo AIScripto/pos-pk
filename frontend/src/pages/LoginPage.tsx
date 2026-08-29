@@ -113,11 +113,11 @@ export default function LoginPage() {
   // ── Render ──────────────────────────────────────────────────────────────────
 
   return (
-    <div className="fixed inset-0 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 overflow-hidden">
+    <div className="fixed inset-0 bg-gradient-to-br from-screen-raised via-screen-raised-2 to-screen-raised overflow-hidden">
       {/* Background Glow Overlay */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-0 right-0 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl -mr-48 -mt-48"></div>
-        <div className="absolute bottom-0 left-0 w-96 h-96 bg-orange-500/10 rounded-full blur-3xl -ml-48 -mb-48"></div>
+        <div className="absolute top-0 right-0 w-96 h-96 bg-primary/10 rounded-full blur-3xl -mr-48 -mt-48"></div>
+        <div className="absolute bottom-0 left-0 w-96 h-96 bg-warning/10 rounded-full blur-3xl -ml-48 -mb-48"></div>
       </div>
 
       <div className="relative w-full h-full flex flex-col lg:flex-row">
@@ -130,21 +130,21 @@ export default function LoginPage() {
           <div className="lg:hidden mb-4 sm:mb-6">
             <div className="flex items-center justify-center">
               <div className="relative">
-                <div className="absolute inset-0 bg-gradient-to-r from-orange-400 to-orange-600 rounded-xl blur-lg opacity-50"></div>
-                <div className="relative flex items-center justify-center w-16 h-16 bg-gradient-to-br from-orange-400 to-orange-600 rounded-xl shadow-xl">
-                  <Store className="w-9 h-9 text-white" />
+                <div className="absolute inset-0 bg-gradient-to-r from-brand to-brand-deep rounded-xl blur-lg opacity-50"></div>
+                <div className="relative flex items-center justify-center w-16 h-16 bg-gradient-to-br from-brand to-brand-deep rounded-xl shadow-xl">
+                  <Store className="w-9 h-9 text-screen-foreground" />
                 </div>
               </div>
             </div>
-            <h1 className="text-3xl font-black text-white text-center mt-3">Enterprise POS</h1>
+            <h1 className="text-3xl font-black text-screen-foreground text-center mt-3">Enterprise POS</h1>
           </div>
 
           {/* Main Form Card */}
           <div className="w-full max-w-sm lg:max-w-md">
-            <div className="bg-slate-800/50 backdrop-blur-xl rounded-2xl border border-slate-700/50 shadow-2xl overflow-hidden h-fit flex flex-col">
+            <div className="bg-screen-raised-2/50 backdrop-blur-xl rounded-2xl border border-screen-border/50 shadow-2xl overflow-hidden h-fit flex flex-col">
               
               {/* Auth Mode Toggle Tabs */}
-              <div className="flex border-b border-slate-700/60 p-1.5 bg-slate-900/60 shrink-0 gap-1.5">
+              <div className="flex border-b border-screen-border/60 p-1.5 bg-screen-raised/60 shrink-0 gap-1.5">
                 <button
                   type="button"
                   onClick={() => {
@@ -153,8 +153,8 @@ export default function LoginPage() {
                   }}
                   className={`flex-1 py-2.5 px-3 font-semibold text-xs sm:text-sm transition-all flex items-center justify-center gap-2 rounded-xl ${
                     mode === 'cashier'
-                      ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 shadow-sm'
-                      : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/40'
+                      ? 'bg-success/20 text-success border border-success/40 shadow-sm'
+                      : 'text-screen-muted hover:text-screen-foreground hover:bg-screen-border/40'
                   }`}
                 >
                   <LogIn className="w-4 h-4" />
@@ -168,8 +168,8 @@ export default function LoginPage() {
                   }}
                   className={`flex-1 py-2.5 px-3 font-semibold text-xs sm:text-sm transition-all flex items-center justify-center gap-2 rounded-xl ${
                     mode === 'admin'
-                      ? 'bg-blue-500/20 text-blue-300 border border-blue-500/40 shadow-sm'
-                      : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/40'
+                      ? 'bg-primary/20 text-primary border border-primary/40 shadow-sm'
+                      : 'text-screen-muted hover:text-screen-foreground hover:bg-screen-border/40'
                   }`}
                 >
                   <Store className="w-4 h-4" />
@@ -181,9 +181,9 @@ export default function LoginPage() {
               <div className="p-4 sm:p-6 overflow-y-auto max-h-[calc(100vh-200px)] sm:max-h-none">
                 {/* Global Error Banner */}
                 {error && (
-                  <div className="mb-4 flex gap-2 rounded-lg border border-red-500/30 bg-red-500/10 p-3">
-                    <AlertCircle className="w-4 h-4 text-red-400 shrink-0 mt-0.5" />
-                    <p className="text-xs sm:text-sm font-semibold text-red-300">{error}</p>
+                  <div className="mb-4 flex gap-2 rounded-lg border border-danger/30 bg-danger/10 p-3">
+                    <AlertCircle className="w-4 h-4 text-danger shrink-0 mt-0.5" />
+                    <p className="text-xs sm:text-sm font-semibold text-danger">{error}</p>
                   </div>
                 )}
 
@@ -219,8 +219,8 @@ export default function LoginPage() {
               </div>
 
               {/* Card Footer */}
-              <div className="px-6 py-3 bg-slate-900/30 border-t border-slate-700/50 text-center">
-                <p className="text-[11px] text-slate-400 font-medium">
+              <div className="px-6 py-3 bg-screen-raised/30 border-t border-screen-border/50 text-center">
+                <p className="text-[11px] text-screen-muted font-medium">
                   Enterprise POS v1.0 • Point of Sale
                 </p>
               </div>

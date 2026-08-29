@@ -23,19 +23,19 @@ export function CartActionButtons({
         onClick={onDirectCashCheckout || onCheckout}
         disabled={isConfirming}
         aria-label="Direct Cash Invoice & Print"
-        className="w-full h-14 flex items-center justify-between px-4 rounded-xl font-display font-black text-[16px] uppercase tracking-wider text-white transition-all bg-emerald-600 hover:bg-emerald-500 active:scale-[0.99] shadow-lg shadow-emerald-950/40 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+        className="w-full h-14 flex items-center justify-between px-4 rounded-xl font-display font-black text-[16px] uppercase tracking-wider text-white transition-all bg-success hover:bg-success active:scale-[0.99] shadow-lg shadow-success/40 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
       >
         <div className="flex items-center gap-2.5">
           {isConfirming ? (
-            <Loader2 className="w-5 h-5 animate-spin text-emerald-200" />
+            <Loader2 className="w-5 h-5 animate-spin text-success" />
           ) : (
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-emerald-700/80 text-white shadow-xs">
-              <Zap className="w-4 h-4 text-emerald-200 fill-emerald-200" />
+            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-success/80 text-white shadow-xs">
+              <Zap className="w-4 h-4 text-success fill-success" />
             </div>
           )}
-          <span>{isConfirming ? 'Invoicing & Printing…' : `⚡ ${t.common.cashAndPrint}`}</span>
+          <span>{isConfirming ? 'Invoicing & Printing…' : t.common.cashAndPrint}</span>
         </div>
-        <span className="font-mono text-xs font-black bg-emerald-950/60 text-emerald-200 px-2.5 py-1 rounded-md border border-emerald-400/30">
+        <span className="font-mono text-xs font-black bg-success/60 text-success px-2.5 py-1 rounded-md border border-success/30">
           Enter ↵
         </span>
       </button>

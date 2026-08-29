@@ -28,7 +28,7 @@ export function ReceiptPrintView({ invoice }: ReceiptPrintViewProps) {
       {businessPhone && <div className="text-center text-xs mb-1">Call: {businessPhone}</div>}
       <div className="text-center text-xs mb-1">Hello</div>
 
-      <div className="border-b border-dashed border-gray-400 my-2" />
+      <div className="border-b border-dashed border-border my-2" />
 
       <div className="flex justify-between text-xs font-bold uppercase mb-1">
         <span>TOKEN NO - {invoice.id.slice(-3)}</span>
@@ -37,7 +37,7 @@ export function ReceiptPrintView({ invoice }: ReceiptPrintViewProps) {
       <div className="text-center text-xs my-1 capitalize">Takeaway-Takeaway</div>
       <div className="text-center text-xs font-bold mb-2">Customer Copy</div>
 
-      <div className="border-b border-dashed border-gray-400 my-2" />
+      <div className="border-b border-dashed border-border my-2" />
 
       {/* Info */}
       <div className="text-xs space-y-1 mb-2">
@@ -50,7 +50,7 @@ export function ReceiptPrintView({ invoice }: ReceiptPrintViewProps) {
       </div>
 
       {/* Items */}
-      <div className="flex justify-between text-xs border-b border-gray-400 pb-1 mb-1 font-bold">
+      <div className="flex justify-between text-xs border-b border-border pb-1 mb-1 font-bold">
         <span>Qty Item</span>
         <span>T.Price</span>
       </div>
@@ -78,7 +78,7 @@ export function ReceiptPrintView({ invoice }: ReceiptPrintViewProps) {
         })}
       </div>
 
-      <div className="border-b border-dashed border-gray-400 my-2" />
+      <div className="border-b border-dashed border-border my-2" />
 
       {/* Totals */}
       <div className="text-xs space-y-1.5">
@@ -101,7 +101,7 @@ export function ReceiptPrintView({ invoice }: ReceiptPrintViewProps) {
           </div>
         )}
         
-        <div className="border-b border-dashed border-gray-400 my-1" />
+        <div className="border-b border-dashed border-border my-1" />
         
         <div className="flex justify-between text-sm font-bold mt-1">
           <span>Grand Total</span>
@@ -119,7 +119,7 @@ export function ReceiptPrintView({ invoice }: ReceiptPrintViewProps) {
         </div>
       </div>
 
-      <div className="border-b border-dashed border-gray-400 my-3" />
+      <div className="border-b border-dashed border-border my-3" />
 
       {/* Footer */}
       <div className="text-center text-xs space-y-1 mb-4">

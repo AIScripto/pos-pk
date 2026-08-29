@@ -1,24 +1,26 @@
+import type { ManagerPanelState } from '@/hooks/useManagerPanelState';
 import { Banknote, CalendarDays, Clock3, Lock, Play, StopCircle } from 'lucide-react';
 import { SectionHeader, formatDate } from './ManagerCommon';
 import { OperationsCard } from './OperationsCard';
 import { ClosingSummaryCard } from './ClosingSummaryCard';
 
-interface OperationsControlTabProps {
-  ops: any;
-  isLoading: boolean;
-  branchId: string;
-  openDay: any;
-  closeDay: any;
-  openShift: any;
-  closeShift: any;
-  openTills: number;
-  pendingTills: number;
-  canCloseDay: boolean;
-  canCloseShift: boolean;
-  shiftSummary: any;
-  daySummary: any;
-  openModalPrompt: (params: any) => void;
-}
+type OperationsControlTabProps = Pick<
+  ManagerPanelState,
+  | 'ops'
+  | 'isLoading'
+  | 'branchId'
+  | 'openDay'
+  | 'closeDay'
+  | 'openShift'
+  | 'closeShift'
+  | 'openTills'
+  | 'pendingTills'
+  | 'canCloseDay'
+  | 'canCloseShift'
+  | 'shiftSummary'
+  | 'daySummary'
+  | 'openModalPrompt'
+>;
 
 export function OperationsControlTab({
   ops,
@@ -118,7 +120,7 @@ export function OperationsControlTab({
             title="Business Day Review"
             subtitle={daySummary ? formatDate(daySummary.businessDay.businessDate) : 'Open the business day to start the review'}
             totals={daySummary?.totals}
-            lines={daySummary?.shifts.map((shift: any) => ({
+            lines={daySummary?.shifts.map((shift) => ({
               sessionId:         shift.shift.id,
               terminalName:      shift.shift.name,
               terminalCode:      `${shift.shift.startTime}–${shift.shift.endTime}`,

@@ -147,7 +147,7 @@ export function ProductGrid({
           </span>
 
           {!isEmpty && (
-            <span className="text-[10px] text-muted-foreground/60 tabular-nums">
+            <span className="text-2xs text-muted-foreground/60 tabular-nums">
               {toLocalizedDigits(visibleCount, language)} {visibleCount === 1 ? t.common.item : t.common.items}
             </span>
           )}
@@ -165,7 +165,7 @@ export function ProductGrid({
             </div>
           ) : viewMode === 'card' ? (
             /* 1. Rich Card View */
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-2">
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-2">
               {showDeals && filteredDeals.map((deal) => (
                 <DealCard key={deal.id} deal={deal} onAdd={onAddDeal} />
               ))}
@@ -175,7 +175,7 @@ export function ProductGrid({
             </div>
           ) : viewMode === 'button' ? (
             /* 2. Quick Touch Button Matrix View */
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-1.5">
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-1.5">
               {showDeals && filteredDeals.map((deal) => (
                 <DealButtonTile key={deal.id} deal={deal} onAdd={onAddDeal} />
               ))}

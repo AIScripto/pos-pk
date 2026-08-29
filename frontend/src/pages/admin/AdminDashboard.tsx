@@ -16,6 +16,7 @@ import {
   Terminal, ShoppingBag, ChevronRight, CheckCircle2
 } from 'lucide-react';
 import { formatCurrency } from '@/utils/pos';
+import { chartSeries } from '@/lib/chartTheme';
 
 export default function AdminDashboard() {
   const { user } = useAuth();
@@ -97,32 +98,32 @@ export default function AdminDashboard() {
       value: String(branches.length),
       change: `${activeBranchCount} active`,
       isPositive: true,
-      icon: <MapPin className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />,
-      iconBg: 'bg-indigo-50 dark:bg-indigo-950/40 border-indigo-100/50 dark:border-indigo-900/50',
+      icon: <MapPin className="w-5 h-5 text-primary" />,
+      iconBg: 'bg-info-subtle border-info-border/50',
     },
     {
       label: 'Total Products',
       value: String(products.length),
       change: `${products.filter(p => p.isActive).length} active`,
       isPositive: true,
-      icon: <Package className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />,
-      iconBg: 'bg-emerald-50 dark:bg-emerald-950/40 border-emerald-100/50 dark:border-emerald-900/50',
+      icon: <Package className="w-5 h-5 text-success-text" />,
+      iconBg: 'bg-success-subtle border-success/50',
     },
     {
       label: 'Active Users',
       value: String(users.length),
       change: `${activeUserCount} active`,
       isPositive: true,
-      icon: <Users className="w-5 h-5 text-violet-600 dark:text-violet-400" />,
-      iconBg: 'bg-violet-50 dark:bg-violet-950/40 border-violet-100/50 dark:border-violet-900/50',
+      icon: <Users className="w-5 h-5 text-special-text" />,
+      iconBg: 'bg-special-subtle dark:bg-special/40 border-special/50',
     },
     {
       label: "Today's Revenue",
       value: formatCurrency(todayRevenue),
       change: `${todayInvoices.length} orders today`,
       isPositive: true,
-      icon: <TrendingUp className="w-5 h-5 text-amber-600 dark:text-amber-400" />,
-      iconBg: 'bg-amber-50 dark:bg-amber-950/40 border-amber-100/50 dark:border-amber-900/50',
+      icon: <TrendingUp className="w-5 h-5 text-warning-text" />,
+      iconBg: 'bg-warning-subtle border-warning/50',
     },
   ];
 
@@ -171,28 +172,28 @@ export default function AdminDashboard() {
   return (
     <div className="space-y-8">
       {/* ─── Modern Premium Banner ────────────────────────────────────────────── */}
-      <div className="relative overflow-hidden rounded-xl border border-slate-200 bg-gradient-to-br from-slate-900 via-slate-950 to-zinc-950 p-6 text-white shadow-xl dark:border-zinc-800">
+      <div className="relative overflow-hidden rounded-xl border border-border bg-gradient-to-br from-muted via-muted to-muted p-6 text-white shadow-xl">
         {/* Decorative subtle glows */}
-        <div className="absolute -right-16 -top-16 h-40 w-40 rounded-full bg-indigo-500/10 blur-3xl" />
-        <div className="absolute -left-16 -bottom-16 h-40 w-40 rounded-full bg-emerald-500/5 blur-3xl" />
+        <div className="absolute -right-16 -top-16 h-40 w-40 rounded-full bg-primary/10 blur-3xl" />
+        <div className="absolute -left-16 -bottom-16 h-40 w-40 rounded-full bg-success/5 blur-3xl" />
 
         <div className="relative flex flex-col justify-between gap-6 md:flex-row md:items-center">
           <div className="space-y-1">
             <div className="flex items-center gap-2">
-              <Sparkles className="h-4 w-4 text-orange-400 animate-pulse" />
-              <span className="text-xs font-black uppercase tracking-widest text-slate-400">Back Office Control Panel</span>
+              <Sparkles className="h-4 w-4 text-warning animate-pulse" />
+              <span className="text-xs font-black uppercase tracking-widest text-muted-foreground/70">Back Office Control Panel</span>
             </div>
             <h1 className="text-3xl font-bold tracking-tight text-white md:text-4xl">Admin Dashboard</h1>
-            <p className="text-sm text-slate-400">
-              Welcome back, <span className="font-semibold text-slate-200">{user?.name}</span> 👋 · All local terminals are operational.
+            <p className="text-sm text-muted-foreground/70">
+              Welcome back, <span className="font-semibold text-foreground">{user?.name}</span> · All local terminals are operational.
             </p>
           </div>
           
-          <div className="flex items-center gap-3 self-start rounded-lg border border-slate-800 bg-slate-900/60 px-4 py-2 text-xs md:self-auto">
-            <Calendar className="h-4 w-4 text-indigo-400" />
+          <div className="flex items-center gap-3 self-start rounded-lg border border-border bg-muted/60 px-4 py-2 text-xs md:self-auto">
+            <Calendar className="h-4 w-4 text-primary" />
             <div className="text-right">
-              <p className="font-bold text-slate-100">{todayDate}</p>
-              <p className="text-[10px] text-slate-400">System Time: Online</p>
+              <p className="font-bold text-foreground">{todayDate}</p>
+              <p className="text-2xs text-muted-foreground/70">System Time: Online</p>
             </div>
           </div>
         </div>
@@ -203,12 +204,12 @@ export default function AdminDashboard() {
         {stats.map((stat) => (
           <div
             key={stat.label}
-            className="group rounded-xl border border-slate-200/80 bg-white p-5 shadow-sm dark:border-zinc-800 dark:bg-zinc-950/20 transition-all hover:scale-[1.02] hover:shadow-md"
+            className="group rounded-xl border border-border bg-white p-5 shadow-sm dark:bg-background/20 transition-all hover:scale-[1.02] hover:shadow-md"
           >
             <div className="flex items-start justify-between">
               <div className="space-y-2">
-                <p className="text-[11px] font-bold uppercase tracking-wider text-slate-400">{stat.label}</p>
-                <h3 className="text-3xl font-semibold tracking-tight text-slate-900 dark:text-white">{stat.value}</h3>
+                <p className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground/70">{stat.label}</p>
+                <h3 className="text-3xl font-semibold tracking-tight text-foreground">{stat.value}</h3>
               </div>
               <div className={`rounded-lg border p-2.5 shadow-sm ${stat.iconBg}`}>
                 {stat.icon}
@@ -216,12 +217,12 @@ export default function AdminDashboard() {
             </div>
             <div className="mt-4 flex items-center gap-1.5 text-xs">
               {stat.isPositive ? (
-                <span className="flex items-center font-semibold text-emerald-600 dark:text-emerald-400">
+                <span className="flex items-center font-semibold text-success-text">
                   <ArrowUpRight className="mr-0.5 h-3.5 w-3.5" />
                   {stat.change}
                 </span>
               ) : (
-                <span className="flex items-center font-semibold text-rose-600 dark:text-rose-400">
+                <span className="flex items-center font-semibold text-danger-text">
                   <ArrowDownRight className="mr-0.5 h-3.5 w-3.5" />
                   {stat.change}
                 </span>
@@ -234,13 +235,13 @@ export default function AdminDashboard() {
       {/* ─── Graph and Recent Activity Grid ────────────────────────────────────── */}
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-12">
         {/* Sales Overview Area Chart (8 Columns) */}
-        <Card className="lg:col-span-8 border-slate-200/80 dark:border-zinc-800 dark:bg-zinc-950/10 shadow-sm">
-          <CardHeader className="flex flex-row items-center justify-between border-b border-slate-100 dark:border-zinc-800/80 py-4">
-            <CardTitle className="flex items-center gap-2 text-base font-bold text-slate-900 dark:text-white">
-              <TrendingUp className="h-4.5 w-4.5 text-indigo-500" />
+        <Card className="lg:col-span-8 border-border dark:bg-background/10 shadow-sm">
+          <CardHeader className="flex flex-row items-center justify-between border-b border-border py-4">
+            <CardTitle className="flex items-center gap-2 text-base font-bold text-foreground">
+              <TrendingUp className="h-4.5 w-4.5 text-primary" />
               Sales Overview
             </CardTitle>
-            <span className="rounded-full bg-indigo-50 dark:bg-indigo-950/40 border border-indigo-100/50 dark:border-indigo-900/50 px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-indigo-600 dark:text-indigo-400">
+            <span className="rounded-full bg-info-subtle border border-info-border/50 px-2.5 py-0.5 text-2xs font-bold uppercase tracking-wider text-primary">
               Weekly sales graph
             </span>
           </CardHeader>
@@ -248,12 +249,12 @@ export default function AdminDashboard() {
             <div className="space-y-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-xs text-slate-400">Average Daily Revenue</p>
-                  <p className="text-xl font-semibold text-slate-900 dark:text-white">{formatCurrency(weeklySales.avgRevenue)}</p>
+                  <p className="text-xs text-muted-foreground/70">Average Daily Revenue</p>
+                  <p className="text-xl font-semibold text-foreground">{formatCurrency(weeklySales.avgRevenue)}</p>
                 </div>
                 <div className="flex gap-4 text-xs">
-                  <span className="flex items-center gap-1.5"><span className="h-2 w-2 rounded-full bg-indigo-500" />Sales</span>
-                  <span className="flex items-center gap-1.5"><span className="h-2 w-2 rounded-full bg-emerald-500" />Expected</span>
+                  <span className="flex items-center gap-1.5"><span className="h-2 w-2 rounded-full bg-primary" />Sales</span>
+                  <span className="flex items-center gap-1.5"><span className="h-2 w-2 rounded-full bg-success" />Expected</span>
                 </div>
               </div>
 
@@ -262,15 +263,15 @@ export default function AdminDashboard() {
                 <svg viewBox="0 0 500 180" className="w-full overflow-visible">
                   <defs>
                     <linearGradient id="salesGrad" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="0%" stopColor="#4f46e5" stopOpacity="0.25" />
-                      <stop offset="100%" stopColor="#4f46e5" stopOpacity="0" />
+                      <stop offset="0%" stopColor={chartSeries[0]} stopOpacity="0.25" />
+                      <stop offset="100%" stopColor={chartSeries[0]} stopOpacity="0" />
                     </linearGradient>
                   </defs>
 
                   {/* Horizontal Gridlines */}
-                  <line x1="0" y1="140" x2="500" y2="140" stroke="currentColor" strokeDasharray="3,3" className="text-slate-100 dark:text-slate-800" strokeWidth="1" />
-                  <line x1="0" y1="90" x2="500" y2="90" stroke="currentColor" strokeDasharray="3,3" className="text-slate-100 dark:text-slate-800" strokeWidth="1" />
-                  <line x1="0" y1="40" x2="500" y2="40" stroke="currentColor" strokeDasharray="3,3" className="text-slate-100 dark:text-slate-800" strokeWidth="1" />
+                  <line x1="0" y1="140" x2="500" y2="140" stroke="currentColor" strokeDasharray="3,3" className="text-foreground dark:text-foreground" strokeWidth="1" />
+                  <line x1="0" y1="90" x2="500" y2="90" stroke="currentColor" strokeDasharray="3,3" className="text-foreground dark:text-foreground" strokeWidth="1" />
+                  <line x1="0" y1="40" x2="500" y2="40" stroke="currentColor" strokeDasharray="3,3" className="text-foreground dark:text-foreground" strokeWidth="1" />
 
                   {/* The Gradient Area under curve */}
                   <path
@@ -282,7 +283,7 @@ export default function AdminDashboard() {
                   <path
                     d="M 10 135 Q 250 85 490 55"
                     fill="none"
-                    stroke="#10b981"
+                    stroke={chartSeries[1]}
                     strokeWidth="1.5"
                     strokeDasharray="4,4"
                   />
@@ -291,7 +292,7 @@ export default function AdminDashboard() {
                   <path
                     d={weeklySales.pathD}
                     fill="none"
-                    stroke="#4f46e5"
+                    stroke={chartSeries[0]}
                     strokeWidth="2.5"
                     strokeLinecap="round"
                     strokeLinejoin="round"
@@ -305,7 +306,7 @@ export default function AdminDashboard() {
                         cx={p.x}
                         cy={p.y}
                         r="4.5"
-                        fill="#4f46e5"
+                        fill={chartSeries[0]}
                         stroke="white"
                         strokeWidth="1.5"
                       />
@@ -314,7 +315,7 @@ export default function AdminDashboard() {
 
                   {/* Day Labels */}
                   {weeklySales.points.map((p, idx) => (
-                    <text key={idx} x={p.x - 10} y="160" fill="currentColor" className="text-[10px] fill-slate-400 font-medium">
+                    <text key={idx} x={p.x - 10} y="160" fill="currentColor" className="text-2xs fill-muted-foreground font-medium">
                       {p.day}
                     </text>
                   ))}
@@ -325,32 +326,32 @@ export default function AdminDashboard() {
         </Card>
 
         {/* Recent Orders (4 Columns) */}
-        <Card className="lg:col-span-4 border-slate-200/80 dark:border-zinc-800 dark:bg-zinc-950/10 shadow-sm">
-          <CardHeader className="flex flex-row items-center justify-between border-b border-slate-100 dark:border-zinc-800/80 py-4">
-            <CardTitle className="flex items-center gap-2 text-base font-bold text-slate-900 dark:text-white">
-              <ShoppingBag className="h-4.5 w-4.5 text-emerald-500" />
+        <Card className="lg:col-span-4 border-border dark:bg-background/10 shadow-sm">
+          <CardHeader className="flex flex-row items-center justify-between border-b border-border py-4">
+            <CardTitle className="flex items-center gap-2 text-base font-bold text-foreground">
+              <ShoppingBag className="h-4.5 w-4.5 text-success" />
               Recent Activity
             </CardTitle>
-            <Clock className="h-4 w-4 text-slate-400" />
+            <Clock className="h-4 w-4 text-muted-foreground/70" />
           </CardHeader>
           <CardContent className="p-0">
             {recentInvoices.length === 0 ? (
-              <div className="p-8 text-center text-slate-400 space-y-2">
-                <ShoppingBag className="w-8 h-8 mx-auto text-slate-300 dark:text-slate-700 stroke-[1.5]" />
+              <div className="p-8 text-center text-muted-foreground/70 space-y-2">
+                <ShoppingBag className="w-8 h-8 mx-auto text-muted-foreground stroke-[1.5]" />
                 <p className="text-sm font-medium">No sales recorded yet</p>
-                <p className="text-xs text-slate-500">Live order activity will appear here as transactions occur.</p>
+                <p className="text-xs text-muted-foreground">Live order activity will appear here as transactions occur.</p>
               </div>
             ) : (
-              <div className="divide-y divide-slate-100 dark:divide-zinc-800/80">
+              <div className="divide-y divide-border">
                 {recentInvoices.map((order) => (
-                  <div key={order.id} className="flex items-center justify-between p-4 hover:bg-slate-50/50 dark:hover:bg-zinc-900/30 transition-colors">
+                  <div key={order.id} className="flex items-center justify-between p-4 hover:bg-muted/50 transition-colors">
                     <div className="space-y-0.5">
-                      <p className="text-sm font-semibold text-slate-900 dark:text-white">Order #{order.id}</p>
-                      <p className="text-xs text-slate-400">{order.time} · {order.items}</p>
+                      <p className="text-sm font-semibold text-foreground">Order #{order.id}</p>
+                      <p className="text-xs text-muted-foreground/70">{order.time} · {order.items}</p>
                     </div>
                     <div className="text-right">
-                      <p className="text-sm font-bold text-slate-900 dark:text-white">{formatCurrency(order.amount)}</p>
-                      <p className="mt-0.5 inline-flex rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider bg-emerald-100 text-emerald-800 dark:bg-emerald-950/30 dark:text-emerald-400">
+                      <p className="text-sm font-bold text-foreground">{formatCurrency(order.amount)}</p>
+                      <p className="mt-0.5 inline-flex rounded-full px-2 py-0.5 text-2xs font-bold uppercase tracking-wider bg-success-subtle text-success-text">
                         Completed
                       </p>
                     </div>
@@ -358,8 +359,8 @@ export default function AdminDashboard() {
                 ))}
               </div>
             )}
-            <div className="border-t border-slate-100 dark:border-zinc-800/80 p-3 text-center">
-              <button className="inline-flex items-center gap-1.5 text-xs font-semibold text-indigo-600 dark:text-indigo-400 hover:text-indigo-700">
+            <div className="border-t border-border p-3 text-center">
+              <button className="inline-flex items-center gap-1.5 text-xs font-semibold text-primary hover:text-primary">
                 View all order records
                 <ChevronRight className="h-3 w-3" />
               </button>
@@ -369,43 +370,43 @@ export default function AdminDashboard() {
       </div>
 
       {/* ─── Premium Quick Actions Card ────────────────────────────────────────── */}
-      <Card className="border-slate-200/80 dark:border-zinc-800 dark:bg-zinc-950/10 shadow-sm">
-        <CardHeader className="border-b border-slate-100 dark:border-zinc-800/80 py-4">
-          <CardTitle className="text-base font-bold text-slate-900 dark:text-white">Quick Access Commands</CardTitle>
+      <Card className="border-border dark:bg-background/10 shadow-sm">
+        <CardHeader className="border-b border-border py-4">
+          <CardTitle className="text-base font-bold text-foreground">Quick Access Commands</CardTitle>
         </CardHeader>
         <CardContent className="p-6">
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
             {quickActions.map((action) => {
-              const borderHoverCls = 
-                action.theme === 'blue' ? 'hover:border-blue-500/50 dark:hover:border-blue-400/50 hover:bg-blue-50/20' :
-                action.theme === 'purple' ? 'hover:border-purple-500/50 dark:hover:border-purple-400/50 hover:bg-purple-50/20' :
-                action.theme === 'emerald' ? 'hover:border-emerald-500/50 dark:hover:border-emerald-400/50 hover:bg-emerald-50/20' :
-                'hover:border-amber-500/50 dark:hover:border-amber-400/50 hover:bg-amber-50/20';
+              const borderHoverCls =
+                action.theme === 'blue'    ? 'hover:border-primary/50 hover:bg-info-subtle/40' :
+                action.theme === 'purple'  ? 'hover:border-special/50 hover:bg-special-subtle/40' :
+                action.theme === 'emerald' ? 'hover:border-success/50 hover:bg-success-subtle/40' :
+                                             'hover:border-warning/50 hover:bg-warning-subtle/40';
 
-              const iconCls = 
-                action.theme === 'blue' ? 'text-blue-500 dark:text-blue-400' :
-                action.theme === 'purple' ? 'text-purple-500 dark:text-purple-400' :
-                action.theme === 'emerald' ? 'text-emerald-500 dark:text-emerald-400' :
-                'text-amber-500 dark:text-amber-400';
+              const iconCls =
+                action.theme === 'blue'    ? 'text-primary' :
+                action.theme === 'purple'  ? 'text-special' :
+                action.theme === 'emerald' ? 'text-success' :
+                                             'text-warning';
 
               return (
                 <a
                   key={action.label}
                   href={action.href}
-                  className={`group rounded-xl border border-slate-200 bg-white p-5 dark:border-zinc-800 dark:bg-zinc-950/20 transition-all hover:scale-[1.03] hover:shadow-md ${borderHoverCls}`}
+                  className={`group rounded-xl border border-border bg-white p-5 dark:bg-background/20 transition-all hover:scale-[1.03] hover:shadow-md ${borderHoverCls}`}
                 >
                   <div className="flex items-center justify-between mb-3">
-                    <div className={`rounded-lg p-2 bg-slate-50 dark:bg-slate-900 ${iconCls}`}>
+                    <div className={`rounded-lg p-2 bg-muted/40 ${iconCls}`}>
                       {action.icon}
                     </div>
-                    <span className="rounded-full bg-slate-100 dark:bg-slate-800 px-2 py-0.5 text-[9px] font-bold text-slate-500 dark:text-slate-400">
+                    <span className="rounded-full bg-secondary px-2 py-0.5 text-2xs font-bold text-muted-foreground">
                       {action.badge}
                     </span>
                   </div>
-                  <h4 className="text-sm font-bold text-slate-900 dark:text-white group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">
+                  <h4 className="text-sm font-bold text-foreground group-hover:text-primary transition-colors">
                     {action.label}
                   </h4>
-                  <p className="mt-1 text-xs text-slate-400 leading-normal">{action.desc}</p>
+                  <p className="mt-1 text-xs text-muted-foreground/70 leading-normal">{action.desc}</p>
                 </a>
               );
             })}

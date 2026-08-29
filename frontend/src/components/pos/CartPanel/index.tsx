@@ -134,8 +134,8 @@ export function CartPanel({ onCheckout, onDirectCashCheckout, isConfirming, onHo
     cn(
       'flex-1 rounded-xl py-2 font-display font-extrabold text-[11px] uppercase tracking-wider border transition-all duration-200',
       active
-        ? 'bg-gradient-to-r from-blue-600 to-indigo-600 border-blue-500 text-white shadow-sm shadow-blue-500/30 scale-[1.01]'
-        : 'bg-slate-100 dark:bg-slate-800/80 border-slate-300 dark:border-slate-700/60 text-slate-800 dark:text-slate-200 hover:bg-slate-200 dark:hover:bg-slate-700/80 hover:border-slate-400 hover:text-slate-950 shadow-sm'
+        ? 'bg-primary border-primary text-white shadow-sm shadow-primary/30 scale-[1.01]'
+        : 'bg-secondary border-border text-foreground hover:bg-secondary hover:border-primary/40 hover:text-foreground shadow-sm'
     );
 
   const orderTypes = [
@@ -145,19 +145,19 @@ export function CartPanel({ onCheckout, onDirectCashCheckout, isConfirming, onHo
   ];
 
   return (
-    <div className="flex h-full flex-col bg-white dark:bg-slate-900 overflow-hidden shadow-xl shadow-slate-900/5 border-l border-slate-200/80 dark:border-slate-800">
+    <div className="flex h-full flex-col bg-card overflow-hidden shadow-xl shadow-muted/5 border-l border-border">
 
       {/* ── Header ── */}
-      <div className="flex items-center justify-between border-b border-slate-200/80 dark:border-slate-800 px-4 py-3 shrink-0 bg-white dark:bg-slate-900">
+      <div className="flex items-center justify-between border-b border-border px-4 py-3 shrink-0 bg-card">
         <div className="flex items-center gap-2">
-          <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-blue-50 dark:bg-blue-950/50 text-blue-600 dark:text-blue-400">
+          <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-info-subtle text-primary">
             <ShoppingBag className="w-4 h-4" />
           </div>
-          <h2 className="font-display font-extrabold text-[17px] tracking-wide text-slate-900 dark:text-slate-100 leading-none">
+          <h2 className="font-display font-extrabold text-[17px] tracking-wide text-foreground leading-none">
             {t.common.currentOrder}
           </h2>
           {itemCount > 0 && (
-            <span className="flex h-5 min-w-[20px] items-center justify-center rounded-full bg-blue-600 px-1.5 font-display font-extrabold text-[10px] text-white shadow-sm">
+            <span className="flex h-5 min-w-[20px] items-center justify-center rounded-full bg-primary px-1.5 font-display font-extrabold text-2xs text-white shadow-sm">
               {itemCount}
             </span>
           )}
@@ -166,7 +166,7 @@ export function CartPanel({ onCheckout, onDirectCashCheckout, isConfirming, onHo
           <button
             onClick={() => setShowClearDialog(true)}
             aria-label="Clear all items from cart"
-            className="flex items-center gap-1 rounded-lg border border-rose-200 dark:border-rose-900/50 bg-rose-50 dark:bg-rose-950/30 px-2.5 py-1 font-display font-bold text-xs text-rose-600 dark:text-rose-400 hover:bg-rose-100 dark:hover:bg-rose-900/50 transition-all shadow-sm cursor-pointer"
+            className="flex items-center gap-1 rounded-lg border border-danger-border bg-danger-subtle px-2.5 py-1 font-display font-bold text-xs text-danger-text hover:bg-danger-subtle transition-all shadow-sm cursor-pointer"
           >
             <Trash2 className="w-3 h-3 inline" />
             {t.common.clear}
@@ -175,7 +175,7 @@ export function CartPanel({ onCheckout, onDirectCashCheckout, isConfirming, onHo
       </div>
 
       {/* ── Order type ── */}
-      <div className="flex gap-1.5 border-b border-slate-200/80 dark:border-slate-800 bg-slate-100/60 dark:bg-slate-900/60 px-3 py-2 shrink-0">
+      <div className="flex gap-1.5 border-b border-border bg-secondary/60 px-3 py-2 shrink-0">
         {orderTypes.map((typeOption) => {
           const Icon = typeOption.Icon;
           return (
@@ -199,17 +199,17 @@ export function CartPanel({ onCheckout, onDirectCashCheckout, isConfirming, onHo
 
       {/* ── Payment method — delivery only ── */}
       {orderType === 'delivery' && (
-        <div className="border-b border-slate-200/80 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/40 px-3 py-2.5 shrink-0">
-          <p className="font-display font-bold text-[9px] uppercase tracking-[0.18em] text-slate-500 dark:text-slate-400 mb-2">
+        <div className="border-b border-border bg-muted/40 px-3 py-2.5 shrink-0">
+          <p className="font-display font-bold text-2xs uppercase tracking-[0.18em] text-muted-foreground mb-2">
             How will the customer pay?
           </p>
           <div className="grid grid-cols-2 gap-1.5">
             {DELIVERY_PAYMENT_METHODS.map((m) => {
               const isActive = paymentMethod === m.key;
               const colorMap = {
-                green:  { active: 'bg-emerald-600 border-emerald-600 text-white shadow-sm shadow-emerald-600/30', inactive: 'border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:border-emerald-400 hover:bg-emerald-50/40 hover:text-emerald-700' },
-                blue:   { active: 'bg-blue-600 border-blue-600 text-white shadow-sm shadow-blue-600/30',          inactive: 'border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:border-blue-400 hover:bg-blue-50/40 hover:text-blue-700' },
-                purple: { active: 'bg-purple-600 border-purple-600 text-white shadow-sm shadow-purple-600/30',    inactive: 'border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:border-purple-400 hover:bg-purple-50/40 hover:text-purple-700' },
+                green:  { active: 'bg-success border-success text-white shadow-sm shadow-success/30', inactive: 'border-border bg-card text-muted-foreground hover:border-success hover:bg-success/40 hover:text-success-text' },
+                blue:   { active: 'bg-primary border-primary text-white shadow-sm shadow-primary/30',          inactive: 'border-border bg-card text-muted-foreground hover:border-primary hover:bg-primary/40 hover:text-primary' },
+                purple: { active: 'bg-special border-special text-white shadow-sm shadow-special/30',    inactive: 'border-border bg-card text-muted-foreground hover:border-special hover:bg-special/40 hover:text-special-text' },
               };
               const colors = colorMap[m.variant];
               return (
@@ -227,14 +227,14 @@ export function CartPanel({ onCheckout, onDirectCashCheckout, isConfirming, onHo
                     </span>
                   )}
                   <m.Icon className="h-4 w-4" />
-                  <span className="font-display font-black text-[9px] uppercase tracking-wider leading-none">{m.label}</span>
-                  <span className="font-display font-semibold text-[8px] uppercase tracking-wide opacity-80">{m.sublabel}</span>
+                  <span className="font-display font-black text-2xs uppercase tracking-wider leading-none">{m.label}</span>
+                  <span className="font-display font-semibold text-2xs uppercase tracking-wide opacity-80">{m.sublabel}</span>
                 </button>
               );
             })}
           </div>
           {isCod && (
-            <p className="mt-2 flex items-center gap-1 rounded-lg border border-purple-500/20 bg-purple-500/8 px-2 py-1.5 font-display font-semibold text-[9px] text-purple-500 uppercase tracking-wide">
+            <p className="mt-2 flex items-center gap-1 rounded-lg border border-special/20 bg-special/8 px-2 py-1.5 font-display font-semibold text-2xs text-special uppercase tracking-wide">
               <Truck className="h-3 w-3 shrink-0" />
               Payment collected at door — order goes to kitchen now
             </p>
@@ -243,14 +243,14 @@ export function CartPanel({ onCheckout, onDirectCashCheckout, isConfirming, onHo
       )}
 
       {/* ── Cart Items (Maximized View Area) ── */}
-      <div className="flex-1 overflow-y-auto pos-scrollbar bg-white dark:bg-slate-900">
+      <div className="flex-1 overflow-y-auto pos-scrollbar bg-card">
         {state.items.length === 0 ? (
           <div className="flex flex-col items-center justify-center h-full py-12 px-4 text-center">
-            <div className="mb-3 flex h-16 w-16 items-center justify-center rounded-2xl bg-blue-50 dark:bg-blue-950/40 border border-blue-100 dark:border-blue-900/50 shadow-inner">
-              <ShoppingBag className="w-7 h-7 text-blue-600 dark:text-blue-400" />
+            <div className="mb-3 flex h-16 w-16 items-center justify-center rounded-2xl bg-info-subtle border border-info-border shadow-inner">
+              <ShoppingBag className="w-7 h-7 text-primary" />
             </div>
-            <p className="font-body font-bold text-base text-slate-800 dark:text-slate-200">{t.pos.noItems}</p>
-            <p className="mt-1 text-xs font-medium text-slate-500 dark:text-slate-400">{t.pos.tapToAdd}</p>
+            <p className="font-body font-bold text-base text-foreground">{t.pos.noItems}</p>
+            <p className="mt-1 text-xs font-medium text-muted-foreground">{t.pos.tapToAdd}</p>
           </div>
         ) : (
           <div>
@@ -273,13 +273,13 @@ export function CartPanel({ onCheckout, onDirectCashCheckout, isConfirming, onHo
         <div className="border-t border-border/60 px-3 py-2 shrink-0">
           <button
             onClick={() => setShowNotes(!showNotes)}
-            className="flex items-center gap-1.5 font-display font-semibold text-[10px] uppercase tracking-wide text-muted-foreground hover:text-primary transition-colors w-full cursor-pointer"
+            className="flex items-center gap-1.5 font-display font-semibold text-2xs uppercase tracking-wide text-muted-foreground hover:text-primary transition-colors w-full cursor-pointer"
           >
             <StickyNote className="w-3 h-3" />
             {orderNotes ? `${t.notes.notesTitle} (${t.common.edit})` : t.common.addOrderNotes}
             {showNotes ? <ChevronUp className="w-3 h-3 ml-auto" /> : <ChevronDown className="w-3 h-3 ml-auto" />}
             {orderNotes && !showNotes && (
-              <span className="ml-auto rounded-full bg-primary/15 border border-primary/25 px-1.5 text-[9px] text-primary">{t.common.active}</span>
+              <span className="ml-auto rounded-full bg-primary/15 border border-primary/25 px-1.5 text-2xs text-primary">{t.common.active}</span>
             )}
           </button>
           {showNotes && (

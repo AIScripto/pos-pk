@@ -60,7 +60,7 @@ export function ManagerReportDashboard({ report }: ManagerReportDashboardProps) 
                 <p className="text-xs font-semibold uppercase tracking-[0.24em] text-primary/75">{t.managerReport.grouping}</p>
                 <h3 className="mt-2 text-xl font-bold text-foreground">{t.managerReport.hourlyMomentum}</h3>
               </div>
-              <div className="rounded-md bg-sky-500/10 p-3 text-sky-500">
+              <div className="rounded-md bg-info/10 p-3 text-info">
                 <Layers3 className="h-5 w-5" />
               </div>
             </div>
@@ -113,8 +113,8 @@ export function ManagerReportDashboard({ report }: ManagerReportDashboardProps) 
                 <p className="mt-2 text-lg font-semibold text-foreground">{meta.bestItemLabel}</p>
               </div>
               {TAX_CONFIG.enabled && (
-                <div className="rounded-lg border border-blue-500/20 bg-blue-500/5 p-4">
-                  <p className="text-xs uppercase tracking-[0.22em] text-blue-500/70">
+                <div className="rounded-lg border border-primary/20 bg-primary/5 p-4">
+                  <p className="text-xs uppercase tracking-[0.22em] text-primary/70">
                     {TAX_CONFIG.label} {t.managerReport.taxCollected} ({metrics.taxRate}%)
                   </p>
                   <p className="mt-2 text-lg font-semibold text-foreground">{formatCurrency(metrics.totalTax)}</p>
@@ -294,8 +294,8 @@ export function ManagerReportDashboard({ report }: ManagerReportDashboardProps) 
               </table>
             </div>
             {metrics.pendingTotal > 0 && (
-              <div className="mt-4 rounded-lg border border-amber-500/20 bg-amber-500/5 p-4">
-                <p className="text-xs uppercase tracking-[0.2em] text-amber-500/80">{t.pos.pending}</p>
+              <div className="mt-4 rounded-lg border border-warning/20 bg-warning/5 p-4">
+                <p className="text-xs uppercase tracking-[0.2em] text-warning/80">{t.pos.pending}</p>
                 <p className="mt-2 text-xs text-muted-foreground">
                   {formatCurrency(metrics.pendingTotal)} {t.pos.pending}
                 </p>
@@ -339,11 +339,11 @@ export function ManagerReportDashboard({ report }: ManagerReportDashboardProps) 
                       <td className="px-3 py-2 text-muted-foreground">{invoice.itemCount}</td>
                       <td className="px-3 py-2">
                         <p className="font-mono font-semibold text-foreground">{formatCurrency(invoice.revenue)}</p>
-                        <p className="text-xs text-emerald-600">{t.receipt.discount} {formatCurrency(invoice.discounts)}</p>
+                        <p className="text-xs text-success-text">{t.receipt.discount} {formatCurrency(invoice.discounts)}</p>
                       </td>
                       {TAX_CONFIG.enabled && (
                         <td className="px-3 py-2">
-                          <p className="font-mono text-xs font-semibold text-blue-500">
+                          <p className="font-mono text-xs font-semibold text-primary">
                             {formatCurrency(invoice.taxAmount)}
                           </p>
                         </td>
@@ -378,8 +378,8 @@ export function ManagerReportDashboard({ report }: ManagerReportDashboardProps) 
                 <p className="mt-2 text-xs text-muted-foreground">{t.managerReport.discountsGiven}</p>
               </div>
               {TAX_CONFIG.enabled ? (
-                <div className="rounded-lg border border-blue-500/20 bg-blue-500/5 p-4">
-                  <p className="text-xs uppercase tracking-[0.2em] text-blue-500/70">
+                <div className="rounded-lg border border-primary/20 bg-primary/5 p-4">
+                  <p className="text-xs uppercase tracking-[0.2em] text-primary/70">
                     {TAX_CONFIG.label} ({metrics.taxRate}%)
                   </p>
                   <p className="mt-2 text-xl font-semibold text-foreground">{formatCurrency(metrics.totalTax)}</p>

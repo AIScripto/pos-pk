@@ -18,6 +18,10 @@ import {
 import { Edit, Plus, Search, Trash2, Award } from 'lucide-react';
 import ImageUpload from '@/components/admin/ImageUpload';
 
+/** A brand's colour is stored data, not a theme token — this is only the value
+ *  a newly created brand starts from. */
+const DEFAULT_BRAND_COLOR = '#F97316';
+
 export default function AdminBrands() {
   const queryClient = useQueryClient();
   const { toast } = useToast();
@@ -32,7 +36,7 @@ export default function AdminBrands() {
     name: '',
     tag: '',
     tagline: '',
-    primaryColor: '#F97316',
+    primaryColor: DEFAULT_BRAND_COLOR,
     logo: '',
   });
 
@@ -75,7 +79,7 @@ export default function AdminBrands() {
         name: brand.name,
         tag: brand.tag,
         tagline: brand.tagline || '',
-        primaryColor: brand.primaryColor || '#F97316',
+        primaryColor: brand.primaryColor || DEFAULT_BRAND_COLOR,
         logo: brand.logo || '',
       });
     } else {
@@ -84,7 +88,7 @@ export default function AdminBrands() {
         name: '',
         tag: '',
         tagline: '',
-        primaryColor: '#F97316',
+        primaryColor: DEFAULT_BRAND_COLOR,
         logo: '',
       });
     }
@@ -134,12 +138,12 @@ export default function AdminBrands() {
       {/* Header */}
       <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900 dark:text-white">Brand Management</h1>
-          <p className="text-sm text-slate-500 dark:text-slate-400">
+          <h1 className="text-2xl font-bold text-foreground">Brand Management</h1>
+          <p className="text-sm text-muted-foreground">
             Define corporate brands, tags, colors, and logos for multi-brand POS setups.
           </p>
         </div>
-        <Button onClick={() => handleOpenForm()} className="bg-indigo-600 hover:bg-indigo-700 text-white">
+        <Button onClick={() => handleOpenForm()} className="bg-primary hover:bg-primary text-white">
           <Plus className="w-4 h-4 mr-2" />
           Add Brand
         </Button>
@@ -149,7 +153,7 @@ export default function AdminBrands() {
       <Card>
         <CardContent className="p-4">
           <div className="relative">
-            <Search className="absolute left-3 top-2.5 h-4 w-4 text-slate-400" />
+            <Search className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground/70" />
             <Input
               placeholder="Search brands by name or 3-letter tag..."
               value={search}
@@ -173,9 +177,9 @@ export default function AdminBrands() {
         </Alert>
       ) : filteredBrands.length === 0 ? (
         <Card className="p-12 text-center">
-          <Award className="w-12 h-12 mx-auto text-slate-300 dark:text-slate-600 mb-3" />
-          <h3 className="text-lg font-semibold text-slate-900 dark:text-white mb-1">No Brands Found</h3>
-          <p className="text-sm text-slate-500 dark:text-slate-400 mb-4">
+          <Award className="w-12 h-12 mx-auto text-muted-foreground/70 mb-3" />
+          <h3 className="text-lg font-semibold text-foreground mb-1">No Brands Found</h3>
+          <p className="text-sm text-muted-foreground mb-4">
             {search ? 'No brands match your search query.' : 'Create your first brand to link with branches.'}
           </p>
           <Button onClick={() => handleOpenForm()} variant="outline">
@@ -188,55 +192,57 @@ export default function AdminBrands() {
           {filteredBrands.map((brand) => (
             <Card
               key={brand.id}
-              className="group relative overflow-hidden border-slate-200 dark:border-slate-800 hover:shadow-md transition-all"
+              className="group relative overflow-hidden border-border hover:shadow-md transition-all"
             >
               {/* Brand Accent Bar */}
               <div
                 className="h-2 w-full"
-                style={{ backgroundColor: brand.primaryColor || '#F97316' }}
+                style={{ backgroundColor: brand.primaryColor || DEFAULT_BRAND_COLOR }}
               />
 
               <CardHeader className="flex flex-row items-center justify-between pb-2">
                 <div className="flex items-center gap-3">
                   {brand.logo ? (
-                    <img src={brand.logo} alt={brand.name} className="w-10 h-10 rounded-lg object-contain bg-slate-50 border" />
+                    <img src={brand.logo} alt={brand.name} className="w-10 h-10 rounded-lg object-contain bg-muted/40 border" />
                   ) : (
-                    <div className="w-10 h-10 rounded-lg bg-slate-100 dark:bg-slate-800 flex items-center justify-center font-bold text-slate-700 dark:text-slate-200">
+                    <div className="w-10 h-10 rounded-lg bg-secondary flex items-center justify-center font-bold text-foreground">
                       {brand.tag}
                     </div>
                   )}
                   <div>
-                    <CardTitle className="text-base font-bold text-slate-900 dark:text-white">
+                    <CardTitle className="text-base font-bold text-foreground">
                       {brand.name}
                     </CardTitle>
-                    <span className="inline-block mt-0.5 px-2 py-0.5 text-[10px] font-bold uppercase rounded bg-indigo-50 text-indigo-700 dark:bg-indigo-950 dark:text-indigo-300">
+                    <span className="inline-block mt-0.5 px-2 py-0.5 text-2xs font-bold uppercase rounded bg-info-subtle text-primary dark:bg-primary">
                       Tag: {brand.tag}
                     </span>
                   </div>
                 </div>
 
                 <div className="flex items-center gap-1">
-                  <Button variant="ghost" size="icon" onClick={() => handleOpenForm(brand)}>
-                    <Edit className="w-4 h-4 text-slate-500 hover:text-slate-900 dark:hover:text-white" />
+                  <Button variant="ghost" size="icon"
+            aria-label="Edit" onClick={() => handleOpenForm(brand)}>
+                    <Edit className="w-4 h-4 text-muted-foreground hover:text-foreground" />
                   </Button>
                   <Button
                     variant="ghost"
                     size="icon"
+            aria-label="Delete"
                     onClick={() => {
                       setSelectedBrand(brand);
                       setDeleteOpen(true);
                     }}
                   >
-                    <Trash2 className="w-4 h-4 text-red-500 hover:text-red-700" />
+                    <Trash2 className="w-4 h-4 text-danger hover:text-danger-text" />
                   </Button>
                 </div>
               </CardHeader>
 
-              <CardContent className="pt-2 text-xs text-slate-500 dark:text-slate-400 space-y-1">
+              <CardContent className="pt-2 text-xs text-muted-foreground space-y-1">
                 {brand.tagline && <p className="italic">"{brand.tagline}"</p>}
                 <div className="flex items-center gap-2 pt-2">
-                  <span className="w-3 h-3 rounded-full border border-slate-300" style={{ backgroundColor: brand.primaryColor || '#F97316' }} />
-                  <span className="font-mono text-[11px]">{brand.primaryColor || '#F97316'}</span>
+                  <span className="w-3 h-3 rounded-full border border-border" style={{ backgroundColor: brand.primaryColor || DEFAULT_BRAND_COLOR }} />
+                  <span className="font-mono text-[11px]">{brand.primaryColor || DEFAULT_BRAND_COLOR}</span>
                 </div>
               </CardContent>
             </Card>
@@ -260,7 +266,7 @@ export default function AdminBrands() {
 
             <div className="grid grid-cols-3 gap-3">
               <div className="col-span-2 space-y-1">
-                <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">Brand Name *</label>
+                <label className="text-xs font-semibold text-muted-foreground">Brand Name *</label>
                 <Input
                   placeholder="e.g. Crisp & Crumbs"
                   value={formData.name}
@@ -270,7 +276,7 @@ export default function AdminBrands() {
               </div>
 
               <div className="space-y-1">
-                <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">Tag (3-Letter Slug) *</label>
+                <label className="text-xs font-semibold text-muted-foreground">Tag (3-Letter Slug) *</label>
                 <Input
                   placeholder="e.g. CC"
                   value={formData.tag}
@@ -283,7 +289,7 @@ export default function AdminBrands() {
             </div>
 
             <div className="space-y-1">
-              <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">Tagline</label>
+              <label className="text-xs font-semibold text-muted-foreground">Tagline</label>
               <Input
                 placeholder="e.g. Crispy. Always."
                 value={formData.tagline}
@@ -292,18 +298,18 @@ export default function AdminBrands() {
             </div>
 
             <div className="space-y-1">
-              <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">Primary Theme Color</label>
+              <label className="text-xs font-semibold text-muted-foreground">Primary Theme Color</label>
               <div className="flex items-center gap-2">
                 <input
                   type="color"
                   value={formData.primaryColor}
                   onChange={(e) => setFormData({ ...formData, primaryColor: e.target.value })}
-                  className="h-9 w-12 cursor-pointer rounded border border-slate-300 p-1"
+                  className="h-9 w-12 cursor-pointer rounded border border-border p-1"
                 />
                 <Input
                   value={formData.primaryColor}
                   onChange={(e) => setFormData({ ...formData, primaryColor: e.target.value })}
-                  placeholder="#F97316"
+                  placeholder={DEFAULT_BRAND_COLOR}
                   className="font-mono text-sm"
                 />
               </div>
@@ -322,7 +328,7 @@ export default function AdminBrands() {
               <Button type="button" variant="outline" onClick={() => setFormOpen(false)}>
                 Cancel
               </Button>
-              <Button type="submit" disabled={isFormLoading} className="bg-indigo-600 text-white hover:bg-indigo-700">
+              <Button type="submit" disabled={isFormLoading} className="bg-primary text-white hover:bg-primary">
                 {isFormLoading ? 'Saving...' : selectedBrand ? 'Update Brand' : 'Create Brand'}
               </Button>
             </DialogFooter>
@@ -336,8 +342,8 @@ export default function AdminBrands() {
           <DialogHeader>
             <DialogTitle>Delete Brand</DialogTitle>
           </DialogHeader>
-          <p className="text-sm text-slate-600 dark:text-slate-400">
-            Are you sure you want to delete <strong className="text-slate-900 dark:text-white">{selectedBrand?.name}</strong>?
+          <p className="text-sm text-muted-foreground">
+            Are you sure you want to delete <strong className="text-foreground">{selectedBrand?.name}</strong>?
           </p>
           <DialogFooter>
             <Button variant="outline" onClick={() => setDeleteOpen(false)}>

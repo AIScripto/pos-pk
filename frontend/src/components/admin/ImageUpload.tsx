@@ -68,7 +68,7 @@ export default function ImageUpload({
 
   return (
     <div className="space-y-2">
-      <label className="text-sm font-medium text-slate-700 dark:text-slate-300">{label}</label>
+      <label className="text-sm font-medium text-muted-foreground">{label}</label>
 
       {/* Preview */}
       {value && (
@@ -76,13 +76,13 @@ export default function ImageUpload({
           <img
             src={resolveImageUrl(value)}
             alt="Preview"
-            className="h-32 w-32 rounded-lg object-cover border border-slate-200 dark:border-slate-700"
+            className="h-32 w-32 rounded-lg object-cover border border-border"
           />
           {!disabled && (
             <button
               type="button"
               onClick={() => onChange('')}
-              className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-0.5 hover:bg-red-600"
+              className="absolute -top-2 -right-2 bg-danger text-white rounded-full p-0.5 hover:bg-danger"
             >
               <X className="w-3 h-3" />
             </button>
@@ -129,12 +129,12 @@ export default function ImageUpload({
 
       {/* No-preview placeholder */}
       {!value && (
-        <div className="flex items-center justify-center h-20 w-32 rounded-lg border-2 border-dashed border-slate-300 dark:border-slate-600 text-slate-400">
+        <div className="flex items-center justify-center h-20 w-32 rounded-lg border-2 border-dashed border-border text-muted-foreground">
           <ImageIcon className="w-8 h-8" />
         </div>
       )}
 
-      {error && <p className="text-xs text-red-500">{error}</p>}
+      {error && <p className="text-xs text-danger">{error}</p>}
 
       {/* Hidden file input */}
       <input

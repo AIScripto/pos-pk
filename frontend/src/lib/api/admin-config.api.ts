@@ -54,6 +54,10 @@ export interface OrgConfig {
   showLoyaltyOnReceipt: boolean;
 }
 
+export type TaxMode = 'exclusive' | 'inclusive';
+export type TaxAppliesTo = 'all' | 'dine_in' | 'takeaway' | 'delivery';
+export type TaxPaymentMethod = 'all' | 'card' | 'cash' | 'wallet';
+
 export interface TaxConfig {
   id:        string;
   orgId:     string;
@@ -61,17 +65,23 @@ export interface TaxConfig {
   name:      string;
   label:     string;
   rate:      number;
-  mode:      string;   // "exclusive" | "inclusive"
-  appliesTo: string;   // "all" | "dine_in" | "takeaway" | "delivery"
+  mode:      TaxMode;
+  appliesTo: TaxAppliesTo;
+  /** Which payment method this rate applies to. The backend resolves an exact
+   *  match first and falls back to "all"; the tax section reads and writes it,
+   *  but it was missing from this interface. */
+  paymentMethod: TaxPaymentMethod;
   isDefault: boolean;
   isActive:  boolean;
 }
+
+export type DiscountType = 'percentage' | 'fixed';
 
 export interface DiscountPreset {
   id:        string;
   orgId:     string;
   name:      string;
-  type:      string;   // "percentage" | "fixed"
+  type:      DiscountType;
   value:     number;
   sortOrder: number;
   isActive:  boolean;

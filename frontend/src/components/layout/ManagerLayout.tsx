@@ -46,27 +46,27 @@ export default function ManagerLayout({ children }: Props) {
   const branchLabel = user?.branchName ?? (user?.branchId ? `Branch #${user.branchId}` : 'All Branches');
 
   return (
-    <div className="flex h-screen overflow-hidden bg-slate-50 dark:bg-slate-950">
+    <div className="flex h-screen overflow-hidden bg-muted/40">
 
       {/* ── Sidebar ─────────────────────────────────────────────────────────── */}
-      <aside className={`flex flex-col shrink-0 border-r border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 transition-[width] duration-200 ${open ? 'w-60' : 'w-16'}`}>
+      <aside className={`flex flex-col shrink-0 border-r border-border dark:border-border bg-white dark:bg-background transition-[width] duration-200 ${open ? 'w-60' : 'w-16'}`}>
 
         {/* Header */}
-        <div className="flex items-center justify-between px-4 py-4 border-b border-slate-200 dark:border-slate-800">
+        <div className="flex items-center justify-between px-4 py-4 border-b border-border">
           {open && (
             <div className="flex items-center gap-2">
-              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-orange-50 dark:bg-orange-950/40 border border-orange-200 dark:border-orange-900/50 text-orange-600 dark:text-orange-400 shadow-sm">
+              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-warning-subtle border border-warning-border text-warning-text shadow-sm">
                 <Zap className="h-4 w-4" />
               </div>
               <div className="leading-none">
-                <p className="text-[10px] font-extrabold uppercase tracking-[0.18em] text-slate-400 dark:text-slate-500">Manager</p>
-                <p className="text-sm font-black text-slate-900 dark:text-slate-100">Operations</p>
+                <p className="text-2xs font-extrabold uppercase tracking-[0.18em] text-muted-foreground/70">Manager</p>
+                <p className="text-sm font-black text-foreground">Operations</p>
               </div>
             </div>
           )}
           <button
             onClick={() => setOpen(!open)}
-            className="rounded-lg p-1.5 text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-slate-100 transition-colors"
+            className="rounded-lg p-1.5 text-muted-foreground hover:bg-secondary hover:text-foreground transition-colors"
           >
             {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
           </button>
@@ -74,9 +74,9 @@ export default function ManagerLayout({ children }: Props) {
 
         {/* Branch badge */}
         {open && (
-          <div className="mx-3 mt-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-100/80 dark:bg-slate-900/80 px-3 py-2 shadow-sm">
-            <p className="text-[10px] font-extrabold uppercase tracking-[0.15em] text-slate-400 dark:text-slate-500">Branch</p>
-            <p className="mt-0.5 truncate text-sm font-extrabold text-slate-900 dark:text-slate-100">{branchLabel}</p>
+          <div className="mx-3 mt-3 rounded-xl border border-border bg-secondary/80 px-3 py-2 shadow-sm">
+            <p className="text-2xs font-extrabold uppercase tracking-[0.15em] text-muted-foreground/70">Branch</p>
+            <p className="mt-0.5 truncate text-sm font-extrabold text-foreground">{branchLabel}</p>
           </div>
         )}
 
@@ -91,8 +91,8 @@ export default function ManagerLayout({ children }: Props) {
                 title={!open ? item.label : undefined}
                 className={`flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-extrabold transition-all ${
                   active
-                    ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-sm shadow-blue-500/20'
-                    : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/80 hover:text-slate-900 dark:hover:text-white'
+                    ? 'bg-primary text-white shadow-sm shadow-primary/20'
+                    : 'text-muted-foreground hover:bg-secondary hover:text-foreground'
                 }`}
               >
                 {item.icon}
@@ -103,13 +103,13 @@ export default function ManagerLayout({ children }: Props) {
           })}
 
           {/* Divider */}
-          <div className="my-2 border-t border-slate-200 dark:border-slate-800" />
+          <div className="my-2 border-t border-border" />
 
           {/* POS shortcut */}
           <Link
             to="/"
             title={!open ? 'Go to POS' : undefined}
-            className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-extrabold text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/80 hover:text-slate-900 dark:hover:text-white transition-all"
+            className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-extrabold text-muted-foreground hover:bg-secondary hover:text-foreground transition-all"
           >
             <Store className="h-5 w-5" />
             {open && <span>POS Screen</span>}
@@ -117,24 +117,24 @@ export default function ManagerLayout({ children }: Props) {
         </nav>
 
         {/* Footer */}
-        <div className="space-y-2 border-t border-slate-200 dark:border-slate-800 p-3">
+        <div className="space-y-2 border-t border-border p-3">
           <Button
             variant="ghost"
             size="sm"
             onClick={toggleTheme}
-            className="w-full justify-start text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white font-bold"
+            className="w-full justify-start text-muted-foreground hover:bg-secondary hover:text-foreground font-bold"
           >
             {theme === 'dark'
-              ? <Sun  className={`h-4 w-4 text-amber-400 ${open ? 'mr-2' : ''}`} />
-              : <Moon className={`h-4 w-4 text-slate-600 ${open ? 'mr-2' : ''}`} />}
+              ? <Sun  className={`h-4 w-4 text-warning ${open ? 'mr-2' : ''}`} />
+              : <Moon className={`h-4 w-4 text-muted-foreground ${open ? 'mr-2' : ''}`} />}
             {open && (theme === 'dark' ? 'Light Mode' : 'Dark Mode')}
           </Button>
 
           {open && (
-            <div className="rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-100/80 dark:bg-slate-900/80 px-3 py-2 text-xs">
-              <p className="text-slate-400 dark:text-slate-500 font-medium">Signed in as</p>
-              <p className="truncate font-extrabold text-slate-900 dark:text-slate-100">{user?.name}</p>
-              <p className="capitalize font-semibold text-slate-500 dark:text-slate-400">{user?.role?.replace(/_/g, ' ')}</p>
+            <div className="rounded-xl border border-border bg-secondary/80 px-3 py-2 text-xs">
+              <p className="text-muted-foreground/70 font-medium">Signed in as</p>
+              <p className="truncate font-extrabold text-foreground">{user?.name}</p>
+              <p className="capitalize font-semibold text-muted-foreground">{user?.role?.replace(/_/g, ' ')}</p>
             </div>
           )}
 
@@ -142,7 +142,7 @@ export default function ManagerLayout({ children }: Props) {
             variant="ghost"
             size="sm"
             onClick={handleLogout}
-            className="w-full justify-start text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/40 hover:text-rose-700 font-bold"
+            className="w-full justify-start text-danger-text hover:bg-danger-subtle hover:text-danger-text font-bold"
           >
             <LogOut className={`h-4 w-4 ${open ? 'mr-2' : ''}`} />
             {open && 'Logout'}

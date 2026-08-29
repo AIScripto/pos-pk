@@ -13,8 +13,7 @@ import {
   Truck,
   UserRoundCheck,
   Users,
-  Utensils,
-} from 'lucide-react';
+  Utensils, StickyNote } from 'lucide-react';
 import type { KitchenOrder, KitchenStatus } from '@/context/KitchenContext';
 import { cn } from '@/lib/utils';
 
@@ -41,22 +40,22 @@ function formatElapsed(s: number): string {
 
 function getCardClasses(seconds: number, status: KitchenStatus): string {
   if (status === 'ready') {
-    return 'border-emerald-500/30 bg-emerald-500/8';
+    return 'border-success/30 bg-success/8';
   }
   if (seconds < 180) {
-    return 'border-slate-700/50 bg-slate-900/40';
+    return 'border-screen-border/50 bg-screen-raised/40';
   }
   if (seconds < 420) {
-    return 'border-amber-500/30 bg-amber-500/8';
+    return 'border-warning/30 bg-warning/8';
   }
-  return 'border-red-500/40 bg-red-500/8 animate-pulse';
+  return 'border-danger/40 bg-danger/8 animate-pulse';
 }
 
 function getStatusColor(seconds: number, status: KitchenStatus): string {
-  if (status === 'ready') return 'text-emerald-400';
-  if (seconds < 180) return 'text-slate-400';
-  if (seconds < 420) return 'text-amber-400 font-bold';
-  return 'text-red-400 font-black animate-pulse';
+  if (status === 'ready') return 'text-success';
+  if (seconds < 180) return 'text-screen-muted';
+  if (seconds < 420) return 'text-warning font-bold';
+  return 'text-danger font-black animate-pulse';
 }
 
 function isLate(seconds: number, status: KitchenStatus): boolean {
@@ -72,11 +71,11 @@ const STATUS_LABEL: Record<KitchenStatus, string> = {
 };
 
 const STATUS_COLOR: Record<KitchenStatus, string> = {
-  new:          'text-blue-400',
-  acknowledged: 'text-indigo-400',
-  in_progress:  'text-amber-400',
-  ready:        'text-emerald-400',
-  served:       'text-slate-400',
+  new:          'text-primary',
+  acknowledged: 'text-primary',
+  in_progress:  'text-warning',
+  ready:        'text-success',
+  served:       'text-screen-muted',
 };
 
 const STATUS_ICON: Record<KitchenStatus, JSX.Element | null> = {
@@ -128,9 +127,9 @@ export function KitchenOrderCard({
   const badgeClass = density === 'compact' ? 'h-8 w-8 text-xs' : density === 'standard' ? 'h-10 w-10 text-sm' : 'h-12 w-12 text-base';
   const badgeFontSize = density === 'compact' ? '13px' : density === 'standard' ? '16px' : '19px';
   const itemTextClass = density === 'compact' ? 'text-[11px]' : density === 'standard' ? 'text-xs' : 'text-sm';
-  const itemQtyClass = density === 'compact' ? 'h-4.5 min-w-4.5 text-[9px]' : density === 'standard' ? 'h-5 min-w-5 text-[10px]' : 'h-6 min-w-6 text-xs';
-  const metaTextClass = density === 'compact' ? 'text-[9px]' : density === 'standard' ? 'text-[10px]' : 'text-xs';
-  const buttonClass = density === 'compact' ? 'h-7 text-[10px] rounded-md' : density === 'standard' ? 'h-8.5 text-xs rounded-lg' : 'h-10 text-sm rounded-xl';
+  const itemQtyClass = density === 'compact' ? 'h-4.5 min-w-4.5 text-2xs' : density === 'standard' ? 'h-5 min-w-5 text-2xs' : 'h-6 min-w-6 text-xs';
+  const metaTextClass = density === 'compact' ? 'text-2xs' : density === 'standard' ? 'text-2xs' : 'text-xs';
+  const buttonClass = density === 'compact' ? 'h-7 text-2xs rounded-md' : density === 'standard' ? 'h-8.5 text-xs rounded-lg' : 'h-10 text-sm rounded-xl';
   const headerMargin = density === 'compact' ? 'mb-1.5' : 'mb-2.5';
   const gapClass = density === 'compact' ? 'gap-1.5' : 'gap-2.5';
 
@@ -144,16 +143,16 @@ export function KitchenOrderCard({
       <div className={cn("flex items-start justify-between gap-3", headerMargin)}>
         <div className={cn("flex items-center", gapClass)}>
           {/* Order Number Badge */}
-          <div className={cn(
-            'flex items-center justify-center rounded-lg font-900 shrink-0',
+          <div className={cn('font-condensed font-black', 
+            'flex items-center justify-center rounded-lg font-black shrink-0',
             badgeClass,
             order.status === 'ready'
-              ? 'bg-emerald-500/20 text-emerald-400'
+              ? 'bg-success/20 text-success'
               : order.status === 'in_progress'
-                ? 'bg-amber-500/20 text-amber-400'
-                : 'bg-slate-700/50 text-slate-300'
+                ? 'bg-warning/20 text-warning'
+                : 'bg-screen-border/50 text-screen-subtle'
           )}
-            style={{ fontFamily: "'Barlow Condensed', sans-serif", fontWeight: 900, fontSize: badgeFontSize }}
+            style={{ fontSize: badgeFontSize }}
           >
             {order.orderNumber}
           </div>
@@ -164,50 +163,49 @@ export function KitchenOrderCard({
               {STATUS_ICON[order.status] && (
                 <span className={cn(
                   'flex-shrink-0',
-                  order.status === 'ready' ? 'text-emerald-400'
-                    : order.status === 'in_progress' ? 'text-amber-400'
-                    : 'text-slate-400'
+                  order.status === 'ready' ? 'text-success'
+                    : order.status === 'in_progress' ? 'text-warning'
+                    : 'text-screen-muted'
                 )}>
                   {STATUS_ICON[order.status]}
                 </span>
               )}
-              <span className={cn(
-                'font-700 uppercase tracking-wider',
+              <span className={cn('font-condensed font-bold', 
+                'font-bold uppercase tracking-wider',
                 metaTextClass,
                 STATUS_COLOR[order.status]
               )}
-                style={{ fontFamily: "'Barlow Condensed', sans-serif", fontWeight: 700 }}>
+                >
                 {STATUS_LABEL[order.status]}
               </span>
 
               {/* Total Items Count */}
-              <span className="text-[8px] font-600 text-slate-400">
+              <span className="text-2xs font-semibold text-screen-muted">
                 ({order.items.length})
               </span>
 
               {/* Notes Indicator */}
               {order.notes && (
-                <span className="text-[8px] font-700 uppercase tracking-wider rounded-full px-1 py-0.5 bg-amber-500/20 border border-amber-500/35 text-amber-300 flex items-center gap-1"
-                  style={{ fontFamily: "'Barlow Condensed', sans-serif", fontWeight: 700 }}
+                <span className="text-2xs font-bold uppercase tracking-wider rounded-full px-1 py-0.5 bg-warning/20 border border-warning/35 text-warning flex items-center gap-1 font-condensed"
                   title={order.notes}>
-                  📝 Notes
+                  <StickyNote className="mr-1 inline h-3.5 w-3.5" aria-hidden="true" />Notes
                 </span>
               )}
 
               {late && (
-                <span className="text-[8px] font-700 uppercase tracking-wider rounded-full px-1 py-0.5 bg-red-500/20 border border-red-500/35 text-red-300"
-                  style={{ fontFamily: "'Barlow Condensed', sans-serif", fontWeight: 700 }}>
+                <span className="text-2xs font-bold uppercase tracking-wider rounded-full px-1 py-0.5 bg-danger/20 border border-danger/35 text-danger font-condensed"
+                  >
                   Late
                 </span>
               )}
             </div>
 
             {/* Meta: Order Type, Table, Covers, Time */}
-            <div className={cn("flex items-center gap-1 flex-wrap text-slate-300", metaTextClass)}>
+            <div className={cn("flex items-center gap-1 flex-wrap text-screen-subtle", metaTextClass)}>
               <span className="uppercase tracking-wide font-semibold">{ORDER_TYPE_LABEL[order.orderType] ?? order.orderType}</span>
               {order.tableName && (
                 <>
-                  <span className="text-slate-500/60">·</span>
+                  <span className="text-screen-dim/60">·</span>
                   <span className="flex items-center gap-0.5">
                     <UserRoundCheck className="h-3 w-3" />
                     {order.tableName}
@@ -216,7 +214,7 @@ export function KitchenOrderCard({
               )}
               {order.covers != null && (
                 <>
-                  <span className="text-slate-500/60">·</span>
+                  <span className="text-screen-dim/60">·</span>
                   <span className="flex items-center gap-0.5">
                     <Users className="h-3 w-3" />
                     {order.covers}
@@ -246,8 +244,8 @@ export function KitchenOrderCard({
               'mt-0.5 inline-flex items-center justify-center rounded-sm font-bold shrink-0',
               itemQtyClass,
               item.status === 'done'
-                ? 'bg-emerald-500/80 text-white'
-                : 'bg-slate-700/60 text-slate-100'
+                ? 'bg-success/80 text-screen-foreground'
+                : 'bg-screen-border/60 text-screen-foreground'
             )}>
               {item.status === 'done' ? <Check className="h-3 w-3" /> : item.quantity}
             </span>
@@ -256,13 +254,13 @@ export function KitchenOrderCard({
                 'font-medium truncate',
                 itemTextClass,
                 item.status === 'done'
-                  ? 'text-slate-400 line-through'
-                  : 'text-slate-100'
+                  ? 'text-screen-muted line-through'
+                  : 'text-screen-foreground'
               )}>
                 {item.productName}
               </p>
               {item.notes && (
-                <p className="mt-0.5 text-[9px] text-amber-300 truncate">
+                <p className="mt-0.5 text-2xs text-warning truncate">
                   Note: {item.notes}
                 </p>
               )}
@@ -272,11 +270,11 @@ export function KitchenOrderCard({
       </div>
 
       {hiddenItems > 0 && (
-        <p className={cn("font-medium text-slate-400", headerMargin, metaTextClass)}>+{hiddenItems} more items</p>
+        <p className={cn("font-medium text-screen-muted", headerMargin, metaTextClass)}>+{hiddenItems} more items</p>
       )}
 
       {order.notes && (
-        <div className={cn("rounded-lg border border-amber-500/35 bg-amber-950/30 px-2 py-1 text-amber-200", headerMargin, metaTextClass)}>
+        <div className={cn("rounded-lg border border-warning/35 bg-warning/30 px-2 py-1 text-warning", headerMargin, metaTextClass)}>
           {order.notes}
         </div>
       )}
@@ -286,8 +284,7 @@ export function KitchenOrderCard({
         {order.status === 'new' && (
           <button
             onClick={() => onAcknowledge(String(order.id))}
-            className={cn("w-full flex items-center justify-center gap-1.5 bg-blue-600/15 border border-blue-500/30 font-700 text-blue-400 hover:bg-blue-600/25 transition-all", buttonClass)}
-            style={{ fontFamily: "'Barlow Condensed', sans-serif", fontWeight: 700 }}
+            className={cn('font-condensed font-bold', "w-full flex items-center justify-center gap-1.5 bg-primary/15 border border-primary/30 font-bold text-primary hover:bg-primary/25 transition-all", buttonClass)}
           >
             <Check className="h-3.5 w-3.5" />
             Acknowledge
@@ -296,8 +293,7 @@ export function KitchenOrderCard({
         {order.status === 'acknowledged' && (
           <button
             onClick={() => onStart(String(order.id))}
-            className={cn("w-full flex items-center justify-center gap-1.5 bg-amber-500/15 border border-amber-500/30 font-700 text-amber-400 hover:bg-amber-500/25 transition-all", buttonClass)}
-            style={{ fontFamily: "'Barlow Condensed', sans-serif", fontWeight: 700 }}
+            className={cn('font-condensed font-bold', "w-full flex items-center justify-center gap-1.5 bg-warning/15 border border-warning/30 font-bold text-warning hover:bg-warning/25 transition-all", buttonClass)}
           >
             <CookingPot className="h-3.5 w-3.5" />
             Start Cooking
@@ -306,8 +302,7 @@ export function KitchenOrderCard({
         {order.status === 'in_progress' && (
           <button
             onClick={() => onReady(String(order.id))}
-            className={cn("w-full flex items-center justify-center gap-1.5 bg-emerald-500/15 border border-emerald-500/30 font-700 text-emerald-400 hover:bg-emerald-500/25 transition-all", buttonClass)}
-            style={{ fontFamily: "'Barlow Condensed', sans-serif", fontWeight: 700 }}
+            className={cn('font-condensed font-bold', "w-full flex items-center justify-center gap-1.5 bg-success/15 border border-success/30 font-bold text-success hover:bg-success/25 transition-all", buttonClass)}
           >
             <CheckCircle2 className="h-3.5 w-3.5" />
             Mark Ready
@@ -316,8 +311,7 @@ export function KitchenOrderCard({
         {order.status === 'ready' && (
           <button
             onClick={() => onServed(String(order.id))}
-            className={cn("w-full flex items-center justify-center gap-1.5 bg-slate-700/40 border border-slate-600/30 font-700 text-slate-300 hover:bg-slate-700/60 transition-all", buttonClass)}
-            style={{ fontFamily: "'Barlow Condensed', sans-serif", fontWeight: 700 }}
+            className={cn('font-condensed font-bold', "w-full flex items-center justify-center gap-1.5 bg-screen-border/40 border border-screen-dim/30 font-bold text-screen-subtle hover:bg-screen-border/60 transition-all", buttonClass)}
           >
             <CheckCircle2 className="h-3.5 w-3.5" />
             Served

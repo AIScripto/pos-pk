@@ -23,6 +23,7 @@ export function ProductGridHeader({
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground pointer-events-none" />
         <input
           type="text"
+          data-pos-search="true"
           placeholder={t.common.searchPlaceholder}
           value={searchQuery}
           onChange={(e) => onSearchChange(e.target.value)}
@@ -56,11 +57,11 @@ export function ProductGridHeader({
               className={cn(
                 'flex flex-col items-center justify-center min-w-[60px] sm:min-w-[68px] h-11 px-2.5 py-1 rounded-xl border transition-all cursor-pointer shadow-xs active:scale-[0.96] group shrink-0',
                 isActive
-                  ? 'bg-blue-600 dark:bg-blue-600 border-blue-500 text-white font-black shadow-md scale-[1.02]'
-                  : 'bg-slate-200/80 dark:bg-slate-900/90 border-slate-300 dark:border-slate-700/90 text-slate-800 dark:text-slate-100 hover:bg-slate-300/80 dark:hover:bg-slate-800 hover:border-blue-500/80'
+                  ? 'bg-primary border-primary text-white font-black shadow-md scale-[1.02]'
+                  : 'bg-secondary border-border text-foreground hover:bg-secondary/80 dark:hover:bg-muted hover:border-primary/80'
               )}
             >
-              <Icon className={cn('w-4 h-4 shrink-0 transition-transform duration-150 group-hover:scale-110', isActive ? 'text-white' : 'text-slate-700 dark:text-slate-200')} />
+              <Icon className={cn('w-4 h-4 shrink-0 transition-transform duration-150 group-hover:scale-110', isActive ? 'text-white' : 'text-foreground')} />
               <span className="font-display font-extrabold text-[11px] sm:text-xs tracking-tight leading-tight mt-0.5">
                 {vm.label}
               </span>

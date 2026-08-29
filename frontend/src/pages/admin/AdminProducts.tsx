@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useCallback } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { adminProductApi, Product, CreateProductInput, UpdateProductInput } from '@/lib/api/admin-product.api';
 import { adminCategoryApi, Category } from '@/lib/api/admin-category.api';
@@ -44,12 +44,13 @@ export default function AdminProducts() {
     queryFn: () => adminCategoryApi.list(),
   });
 
-  // Helper function to get category name by ID
-  const getCategoryName = (categoryId: string | null | undefined) => {
+  // Memoised so the filter below can depend on it honestly rather than reaching
+  // past its own dependency list.
+  const getCategoryName = useCallback((categoryId: string | null | undefined) => {
     if (!categoryId) return '—';
     const category = categories.find((cat: Category) => cat.id === categoryId);
     return category?.name || '—';
-  };
+  }, [categories]);
 
   // Filter products based on search
   const filteredProducts = useMemo(() => {
@@ -64,7 +65,7 @@ export default function AdminProducts() {
         categoryName.toLowerCase().includes(searchLower)
       );
     });
-  }, [products, search, categories, language]);
+  }, [products, search, getCategoryName, language]);
 
   // Create/Update mutation
   const saveMutation = useMutation({
@@ -139,11 +140,11 @@ export default function AdminProducts() {
 
   return (
     <>
-      <div className="min-h-screen space-y-6 rounded-2xl bg-gradient-to-b from-slate-100 via-slate-50 to-blue-50/30 p-6 dark:from-slate-950 dark:via-slate-950 dark:to-slate-900">
+      <div className="min-h-screen space-y-6 rounded-2xl bg-gradient-to-b from-muted/40 via-muted/40 to-primary/30 p-6">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white">{t.admin.products}</h1>
-            <p className="mt-1 text-slate-600 dark:text-slate-200">{t.admin.catalog}</p>
+            <h1 className="text-3xl font-extrabold tracking-tight text-foreground">{t.admin.products}</h1>
+            <p className="mt-1 text-foreground">{t.admin.catalog}</p>
           </div>
           <Button
             onClick={handleAddProduct}
@@ -156,24 +157,24 @@ export default function AdminProducts() {
         </div>
 
         {/* Search */}
-        <Card className="border-slate-200 bg-slate-50/90 shadow-sm dark:border-slate-700 dark:bg-slate-900">
+        <Card className="border-border bg-card shadow-sm">
           <CardContent className="pt-6">
             <div className="relative">
-              <Search className="absolute left-3 top-3 w-4 h-4 text-slate-500 dark:text-slate-300" />
+              <Search className="absolute left-3 top-3 w-4 h-4 text-muted-foreground" />
               <Input
                 placeholder={t.common.searchPlaceholder}
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                className="border-slate-300 bg-slate-100 pl-10 text-slate-900 placeholder:text-slate-500 dark:border-slate-600 dark:bg-slate-800 dark:text-white dark:placeholder:text-slate-300"
+                className="border-border bg-secondary pl-10 text-foreground placeholder:text-muted-foreground"
               />
             </div>
           </CardContent>
         </Card>
 
         {/* Products Table */}
-        <Card className="border-slate-200 bg-slate-50/90 shadow-sm dark:border-slate-700 dark:bg-slate-900">
+        <Card className="border-border bg-card shadow-sm">
           <CardHeader>
-            <CardTitle className="font-bold text-slate-900 dark:text-white">
+            <CardTitle className="font-bold text-foreground">
               {t.admin.products} ({filteredProducts.length})
             </CardTitle>
           </CardHeader>
@@ -198,11 +199,11 @@ export default function AdminProducts() {
               </Alert>
             ) : filteredProducts.length === 0 ? (
               <div className="text-center py-8">
-                <Package className="mx-auto mb-3 h-12 w-12 text-slate-400 dark:text-slate-300" />
-                <p className="font-medium text-slate-600 dark:text-slate-100">
+                <Package className="mx-auto mb-3 h-12 w-12 text-muted-foreground" />
+                <p className="font-medium text-muted-foreground">
                   {search ? t.common.noItemsFound : t.common.noData}
                 </p>
-                <p className="mt-1 text-sm text-slate-500 dark:text-slate-300">
+                <p className="mt-1 text-sm text-muted-foreground">
                   {t.common.tryDifferentSearch}
                 </p>
               </div>
@@ -210,7 +211,7 @@ export default function AdminProducts() {
               <div className="overflow-x-auto">
                 <table className="w-full text-sm">
                   <thead>
-                    <tr className="bg-slate-800 dark:bg-slate-950">
+                    <tr className="bg-muted dark:bg-background">
                       <th className="text-left py-3 px-4 font-semibold text-white">{t.admin.nameEn}</th>
                       <th className="text-left py-3 px-4 font-semibold text-white">{t.admin.sku}</th>
                       <th className="text-left py-3 px-4 font-semibold text-white">{t.admin.category}</th>
@@ -220,32 +221,32 @@ export default function AdminProducts() {
                       <th className="text-right py-3 px-4 font-semibold text-white">{t.common.actions}</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-slate-200 dark:divide-slate-700">
+                  <tbody className="divide-y divide-border">
                     {filteredProducts.map((product) => {
                       const displayName = getLocalized(product.name, language);
                       return (
-                        <tr key={product.id} className="hover:bg-slate-100/70 dark:hover:bg-slate-800">
-                          <td className="py-3 px-4 font-semibold text-slate-900 dark:text-white">{displayName}</td>
+                        <tr key={product.id} className="hover:bg-secondary/70">
+                          <td className="py-3 px-4 font-semibold text-foreground">{displayName}</td>
                           <td className="py-3 px-4">
-                            <span className="rounded-full bg-slate-200 px-2.5 py-0.5 text-xs font-semibold text-slate-700 dark:bg-slate-700 dark:text-white">
+                            <span className="rounded-full bg-secondary px-2.5 py-0.5 text-xs font-semibold text-foreground/80 dark:text-white">
                               {product.sku}
                             </span>
                           </td>
-                          <td className="py-3 px-4 text-slate-700 dark:text-slate-200">
+                          <td className="py-3 px-4 text-foreground">
                             {getCategoryName(product.categoryId)}
                           </td>
-                          <td className="py-3 px-4 text-right font-semibold text-slate-900 dark:text-white">
+                          <td className="py-3 px-4 text-right font-semibold text-foreground">
                             {formatCurrency(product.basePricePaisa / 100)}
                           </td>
-                          <td className="py-3 px-4 text-right font-semibold text-slate-900 dark:text-white">
+                          <td className="py-3 px-4 text-right font-semibold text-foreground">
                             {product.salePricePaisa ? formatCurrency(product.salePricePaisa / 100) : '—'}
                           </td>
                           <td className="py-3 px-4">
                             <span
                               className={`rounded-full px-2.5 py-0.5 text-xs font-semibold ${
                                 product.isActive
-                                  ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-200'
-                                  : 'bg-slate-200 text-slate-700 dark:bg-slate-700 dark:text-slate-100'
+                                  ? 'bg-success-subtle text-success-text'
+                                  : 'bg-secondary text-foreground'
                               }`}
                             >
                               {product.isActive ? t.common.active : t.common.inactive}
@@ -293,7 +294,7 @@ export default function AdminProducts() {
 
       {/* Delete Confirmation Dialog */}
       <AlertDialog open={deleteConfirmOpen} onOpenChange={setDeleteConfirmOpen}>
-        <AlertDialogContent className="border-slate-200 bg-slate-50 text-slate-900 dark:border-slate-600 dark:bg-slate-900 dark:text-white">
+        <AlertDialogContent className="border-border bg-muted/40 text-foreground">
           <AlertDialogTitle>{t.common.deleteConfirmTitle}</AlertDialogTitle>
           <AlertDialogDescription>
             {t.common.deleteConfirmDesc} ({productToDelete?.name})
@@ -303,7 +304,7 @@ export default function AdminProducts() {
             <AlertDialogAction
               onClick={confirmDelete}
               disabled={deleteMutation.isPending}
-              className="bg-red-600 hover:bg-red-700 cursor-pointer"
+              className="bg-danger hover:bg-danger/90 cursor-pointer"
             >
               {deleteMutation.isPending ? t.common.loading : t.common.delete}
             </AlertDialogAction>

@@ -22,91 +22,78 @@ export function ProductCard({ product, onAdd }: ProductCardProps) {
   const hasDiscount  = !!product.originalPrice && product.originalPrice > product.price;
 
   return (
-    <div
-      onClick={() => !isOutOfStock && onAdd(product)}
-      role="button"
-      aria-label={`Add ${localizedName} to order${isOutOfStock ? ' — out of stock' : ''}`}
-      aria-disabled={isOutOfStock}
-      tabIndex={isOutOfStock ? -1 : 0}
-      onKeyDown={(e) => e.key === 'Enter' && !isOutOfStock && onAdd(product)}
+    <button
+      type="button"
+      disabled={isOutOfStock}
+      onClick={() => onAdd(product)}
+      aria-label={`${t.common.add} ${localizedName}${isOutOfStock ? ` — ${t.common.outOfStock}` : ''}`}
       className={cn(
-        'group relative flex flex-col overflow-hidden rounded-xl border bg-white dark:bg-slate-900 shadow-xs transition-all duration-200 animate-fade-in touch-manipulation',
-        isOutOfStock
-          ? 'border-slate-200/50 dark:border-slate-800/50 cursor-not-allowed opacity-60'
-          : 'border-slate-200/80 dark:border-slate-800 cursor-pointer hover:border-blue-500/50 hover:-translate-y-0.5 hover:shadow-md active:scale-[0.98]'
+        'group pos-tile animate-fade-in',
+        isOutOfStock ? 'pos-tile-unavailable' : 'pos-tile-available'
       )}
     >
-      {/* Image */}
-      <div className="relative overflow-hidden shrink-0">
+      {/* Image — the aspect ratio is fixed rather than the height, so the tile keeps
+          its proportions as the grid reflows from 3 to 8 columns. */}
+      <div className="relative aspect-[5/3] w-full overflow-hidden shrink-0 bg-muted">
         <img
           src={product.image}
-          alt={localizedName}
-          className="w-full h-20 object-cover transition-transform duration-500 group-hover:scale-105"
+          alt=""
+          loading="lazy"
+          decoding="async"
+          className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
         />
-        <div className="absolute inset-x-0 bottom-0 h-8 bg-gradient-to-t from-slate-950/70 to-transparent" />
+        <div className="absolute inset-x-0 bottom-0 h-8 bg-gradient-to-t from-black/60 to-transparent" />
 
-        {/* SKU badge */}
-        <div className="absolute left-1.5 top-1.5 rounded bg-slate-950/75 px-1.5 py-0.5 text-[8px] font-display font-extrabold uppercase tracking-widest text-white/90 backdrop-blur-xs shadow-xs">
+        {/* SKU */}
+        <div className="absolute left-1.5 top-1.5 rounded bg-black/70 px-1.5 py-0.5 text-[11px] font-display font-bold uppercase tracking-wide text-white/95 backdrop-blur-xs">
           {product.code}
         </div>
 
-        {/* Stock status overlays */}
         {isOutOfStock && (
-          <div className="absolute inset-0 flex items-center justify-center bg-slate-950/60 backdrop-blur-[1px]">
-            <div className="flex items-center gap-1 rounded-md bg-rose-600/90 px-2 py-1 shadow-md">
-              <AlertTriangle className="w-3 h-3 text-white" />
-              <span className="text-[9px] font-display font-bold uppercase tracking-wide text-white">{t.common.outOfStock}</span>
-            </div>
-          </div>
-        )}
-
-        {/* Add button overlay (only when in stock) */}
-        {!isOutOfStock && (
-          <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-150 bg-slate-950/20 backdrop-blur-[1px]">
-            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-blue-600 text-white shadow-md shadow-blue-500/30 transform group-hover:scale-110 transition-transform">
-              <Plus className="w-4 h-4" />
+          <div className="absolute inset-0 flex items-center justify-center bg-black/55 backdrop-blur-xs">
+            <div className="flex items-center gap-1.5 rounded-md bg-destructive px-2.5 py-1.5 shadow-xs">
+              <AlertTriangle className="h-3.5 w-3.5 text-destructive-foreground" />
+              <span className="text-[11px] font-display font-bold uppercase tracking-wide text-destructive-foreground">
+                {t.common.outOfStock}
+              </span>
             </div>
           </div>
         )}
       </div>
 
       {/* Info */}
-      <div className="flex flex-1 flex-col p-2 gap-1 justify-between">
-        <h3 className="font-body font-bold text-xs text-slate-900 dark:text-slate-100 leading-tight line-clamp-1 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+      <div className="flex flex-1 flex-col justify-between gap-1.5 p-2.5">
+        <h3 className="line-clamp-2 font-body text-sm font-bold leading-tight text-card-foreground transition-colors group-hover:text-primary">
           {localizedName}
         </h3>
 
-        <div className="flex items-end justify-between gap-1 pt-0.5">
-          {/* Price */}
-          <div className="flex items-baseline gap-1.5 leading-none flex-wrap">
-            <span className="font-display font-black text-sm sm:text-base text-blue-600 dark:text-blue-400 leading-none">
-              {formatCurrency(product.price)}
-            </span>
+        <div className="flex items-end justify-between gap-2">
+          <div className="flex flex-wrap items-baseline gap-1.5 leading-none">
+            <span className="pos-price text-base leading-none">{formatCurrency(product.price)}</span>
             {hasDiscount && (
-              <span className="font-display font-extrabold text-[11px] line-through text-slate-400 dark:text-slate-500 leading-none">
+              <span className="font-display text-xs font-bold leading-none text-muted-foreground line-through">
                 {formatCurrency(product.originalPrice!)}
               </span>
             )}
           </div>
 
-          {/* Badges + add button */}
-          <div className="flex items-center gap-1 shrink-0">
-            {isLowStock && !isOutOfStock && (
-              <span className="stock-badge-low text-[8px] px-1 py-0.2">{t.common.low}</span>
-            )}
-            {hasDiscount && (
-              <span className="rounded bg-emerald-500/15 border border-emerald-500/25 text-emerald-700 dark:text-emerald-400 px-1 py-0.5 text-[8px] font-extrabold leading-none">
-                {t.common.sale}
-              </span>
-            )}
-            {!isOutOfStock && (
-              <span className="flex h-5.5 w-5.5 items-center justify-center rounded-lg bg-blue-600 text-white text-sm font-extrabold leading-none shrink-0 shadow-xs group-hover:bg-blue-700 transition-colors">
-                +
-              </span>
-            )}
+          <div className="flex shrink-0 items-center gap-1">
+            {isLowStock && !isOutOfStock && <span className="stock-badge-low">{t.common.low}</span>}
+            {hasDiscount && <span className="stock-badge-sale">{t.common.sale}</span>}
           </div>
         </div>
       </div>
-    </div>
+
+      {/* Add affordance. Persistent, not hover-revealed — on the touch terminal this
+          app runs on, hover never fires and a hover-only signal is simply absent. */}
+      {!isOutOfStock && (
+        <span
+          aria-hidden="true"
+          className="pointer-events-none absolute right-2 top-2 flex h-8 w-8 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-xs transition-transform duration-150 group-hover:scale-110"
+        >
+          <Plus className="h-4 w-4" />
+        </span>
+      )}
+    </button>
   );
 }

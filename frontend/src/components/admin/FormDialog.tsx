@@ -56,7 +56,7 @@ export default function FormDialog({
           {children}
         </form>
 
-        <div className="px-6 py-4 border-t border-slate-200 dark:border-slate-700">
+        <div className="px-6 py-4 border-t border-border">
           <DialogFooter>
             <Button
               type="button"

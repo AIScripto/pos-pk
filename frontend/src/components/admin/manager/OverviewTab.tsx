@@ -1,26 +1,28 @@
+import type { ManagerPanelState } from '@/hooks/useManagerPanelState';
 import { AlertTriangle, ArrowRight, CalendarDays, Clock3, Lock, Monitor, Play, StopCircle, TrendingUp, UtensilsCrossed } from 'lucide-react';
 import { SectionHeader, KITCHEN_STATES, formatDate } from './ManagerCommon';
 import { OperationsCard } from './OperationsCard';
 import { formatCurrency } from '@/utils/pos';
 
-interface OverviewTabProps {
-  pendingTills: number;
-  openTills: number;
-  totalKitchenOrders: number;
-  activeTillsList: any[];
-  kitchenByState: Map<string, any[]>;
-  ops: any;
-  isLoading: boolean;
-  branchId: string;
-  openDay: any;
-  closeDay: any;
-  openShift: any;
-  closeShift: any;
-  canCloseDay: boolean;
-  canCloseShift: boolean;
-  openModalPrompt: (params: any) => void;
-  setActiveTab: (tab: 'overview' | 'openclosing' | 'tills' | 'kitchen') => void;
-}
+type OverviewTabProps = Pick<
+  ManagerPanelState,
+  | 'pendingTills'
+  | 'openTills'
+  | 'totalKitchenOrders'
+  | 'activeTillsList'
+  | 'kitchenByState'
+  | 'ops'
+  | 'isLoading'
+  | 'branchId'
+  | 'openDay'
+  | 'closeDay'
+  | 'openShift'
+  | 'closeShift'
+  | 'canCloseDay'
+  | 'canCloseShift'
+  | 'openModalPrompt'
+  | 'setActiveTab'
+>;
 
 export function OverviewTab({
   pendingTills,
@@ -45,21 +47,21 @@ export function OverviewTab({
 
       {/* Pending Till Approvals Callout Banner */}
       {pendingTills > 0 && (
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 rounded-2xl border border-amber-300 bg-amber-50/80 p-4 dark:border-amber-800/80 dark:bg-amber-950/40 shadow-sm">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 rounded-2xl border border-warning-border bg-warning/80 p-4 dark:border-warning/80 dark:bg-warning/40 shadow-sm">
           <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-amber-500/20 text-amber-700 dark:text-amber-400">
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-warning/20 text-warning-text">
               <AlertTriangle className="h-5 w-5" />
             </div>
             <div>
-              <p className="font-bold text-amber-950 dark:text-amber-200">Action Required: Till Closings Waiting Approval</p>
-              <p className="text-xs text-amber-700 dark:text-amber-400">
+              <p className="font-bold text-warning-text dark:text-warning">Action Required: Till Closings Waiting Approval</p>
+              <p className="text-xs text-warning-text">
                 {pendingTills} terminal till {pendingTills === 1 ? 'session has' : 'sessions have'} been submitted for closing and {pendingTills === 1 ? 'requires' : 'require'} manager approval.
               </p>
             </div>
           </div>
           <button
             onClick={() => setActiveTab('tills')}
-            className="inline-flex h-9 shrink-0 items-center gap-2 rounded-xl bg-amber-600 px-4 text-xs font-black text-white hover:bg-amber-700 transition"
+            className="inline-flex h-9 shrink-0 items-center gap-2 rounded-xl bg-warning px-4 text-xs font-black text-white hover:bg-warning transition"
           >
             Review Approvals <ArrowRight className="h-3.5 w-3.5" />
           </button>
@@ -129,47 +131,47 @@ export function OverviewTab({
       {/* Quick Summary Grid */}
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
         {/* Till Quick Summary */}
-        <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-850 dark:bg-slate-900/25 backdrop-blur-sm">
-          <div className="flex items-center justify-between border-b border-slate-100 pb-3 dark:border-slate-800">
+        <div className="overflow-hidden rounded-2xl border border-border bg-white p-5 shadow-sm dark:bg-muted/25 backdrop-blur-sm">
+          <div className="flex items-center justify-between border-b border-border pb-3">
             <div className="flex items-center gap-2">
-              <Monitor className="h-4 w-4 text-emerald-500" />
-              <h3 className="font-bold text-slate-900 dark:text-white text-sm">Active Tills Summary</h3>
+              <Monitor className="h-4 w-4 text-success" />
+              <h3 className="font-bold text-foreground text-sm">Active Tills Summary</h3>
             </div>
             <button
               onClick={() => setActiveTab('tills')}
-              className="text-xs font-bold text-emerald-600 hover:text-emerald-700 dark:text-emerald-400"
+              className="text-xs font-bold text-success-text hover:text-success-text"
             >
               View All ({openTills}) →
             </button>
           </div>
           <div className="mt-4 space-y-2">
             {activeTillsList.slice(0, 3).map((till) => (
-              <div key={till.sessionId} className="flex items-center justify-between text-xs py-1.5 border-b border-slate-50 dark:border-slate-800/40">
+              <div key={till.sessionId} className="flex items-center justify-between text-xs py-1.5 border-b border-border dark:border-border/40">
                 <div>
-                  <span className="font-bold text-slate-900 dark:text-white">{till.terminalName}</span>
-                  <span className="ml-2 text-slate-400">({till.openedBy || 'Cashier'})</span>
+                  <span className="font-bold text-foreground">{till.terminalName}</span>
+                  <span className="ml-2 text-muted-foreground/70">({till.openedBy || 'Cashier'})</span>
                 </div>
-                <span className="font-black text-emerald-600" style={{ fontFamily: "'Roboto', sans-serif" }}>
+                <span className="font-black text-success-text" >
                   {formatCurrency(till.currentSale)}
                 </span>
               </div>
             ))}
             {openTills === 0 && (
-              <p className="py-4 text-center text-xs text-slate-400">No open tills currently active.</p>
+              <p className="py-4 text-center text-xs text-muted-foreground/70">No open tills currently active.</p>
             )}
           </div>
         </div>
 
         {/* Kitchen Quick Summary */}
-        <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-850 dark:bg-slate-900/25 backdrop-blur-sm">
-          <div className="flex items-center justify-between border-b border-slate-100 pb-3 dark:border-slate-800">
+        <div className="overflow-hidden rounded-2xl border border-border bg-white p-5 shadow-sm dark:bg-muted/25 backdrop-blur-sm">
+          <div className="flex items-center justify-between border-b border-border pb-3">
             <div className="flex items-center gap-2">
-              <UtensilsCrossed className="h-4 w-4 text-rose-500" />
-              <h3 className="font-bold text-slate-900 dark:text-white text-sm">Kitchen Pipeline Summary</h3>
+              <UtensilsCrossed className="h-4 w-4 text-danger" />
+              <h3 className="font-bold text-foreground text-sm">Kitchen Pipeline Summary</h3>
             </div>
             <button
               onClick={() => setActiveTab('kitchen')}
-              className="text-xs font-bold text-rose-600 hover:text-rose-700 dark:text-rose-400"
+              className="text-xs font-bold text-danger-text hover:text-danger-text"
             >
               Live Board ({totalKitchenOrders}) →
             </button>
@@ -178,9 +180,9 @@ export function OverviewTab({
             {KITCHEN_STATES.map((s) => {
               const count = (kitchenByState.get(s.key) ?? []).length;
               return (
-                <div key={s.key} className="rounded-xl bg-slate-50 p-2.5 dark:bg-slate-900/50">
-                  <p className="text-[10px] font-bold text-slate-400 uppercase">{s.label}</p>
-                  <p className="mt-1 text-lg font-black text-slate-900 dark:text-white">{count}</p>
+                <div key={s.key} className="rounded-xl bg-muted/40 p-2.5">
+                  <p className="text-2xs font-bold text-muted-foreground/70 uppercase">{s.label}</p>
+                  <p className="mt-1 text-lg font-black text-foreground">{count}</p>
                 </div>
               );
             })}

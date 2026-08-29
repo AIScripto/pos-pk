@@ -44,14 +44,14 @@ export default function AdminConfig() {
     <div className="space-y-6">
       {/* Page header */}
       <div>
-        <h1 className="text-2xl font-bold text-slate-900 dark:text-white">{t.config.configTitle}</h1>
-        <p className="text-sm text-slate-500 dark:text-slate-300 mt-1">{t.config.businessProfile}</p>
+        <h1 className="text-2xl font-bold text-foreground">{t.config.configTitle}</h1>
+        <p className="text-sm text-muted-foreground mt-1">{t.config.businessProfile}</p>
       </div>
 
       <div className="flex gap-6">
         {/* Sidebar nav */}
         <aside className="w-60 shrink-0">
-          <nav className="space-y-1 rounded-xl border border-slate-200 bg-white p-2 shadow-sm dark:border-slate-600 dark:bg-slate-900">
+          <nav className="space-y-1 rounded-xl border border-border bg-card p-2 shadow-sm">
             {SECTIONS.map(section => {
               const Icon = section.icon;
               const isActive = section.id === activeSection;
@@ -61,8 +61,8 @@ export default function AdminConfig() {
                   onClick={() => setActiveSection(section.id)}
                   className={`w-full flex items-center gap-3 rounded-lg px-3 py-2.5 text-left transition-colors cursor-pointer ${
                     isActive
-                      ? 'bg-blue-600 text-white'
-                      : 'text-slate-700 hover:bg-slate-100 dark:text-slate-200 dark:hover:bg-slate-800'
+                      ? 'bg-primary text-white'
+                      : 'text-foreground hover:bg-secondary'
                   }`}
                 >
                   <Icon className="w-4 h-4 shrink-0" />
@@ -79,10 +79,10 @@ export default function AdminConfig() {
 
         {/* Section content */}
         <div className="flex-1 min-w-0">
-          <div className="mb-4 flex items-center gap-2 text-sm text-slate-500 dark:text-slate-300">
+          <div className="mb-4 flex items-center gap-2 text-sm text-muted-foreground">
             <span>{t.config.configTitle}</span>
             <ChevronRight className="w-3 h-3" />
-            <span className="font-medium text-slate-900 dark:text-white">{active.label}</span>
+            <span className="font-medium text-foreground">{active.label}</span>
           </div>
           {renderSection()}
         </div>

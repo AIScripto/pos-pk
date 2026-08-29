@@ -11,7 +11,7 @@ import {
 } from '@/utils/order';
 import { formatCurrency } from '@/utils/pos';
 import { useEffect, useState } from 'react';
-import { CheckCircle2, ChefHat, Clock, Package, Trash2, X, Truck, BadgeDollarSign } from 'lucide-react';
+import { CheckCircle2, ChefHat, Clock, Package, Trash2, X, Truck, BadgeDollarSign, Sparkles } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 interface ActiveOrdersPanelProps {
@@ -33,15 +33,15 @@ const STATUS_ICON: Record<OrderStatus, typeof ChefHat> = {
 };
 
 const STATUS_BG: Record<string, string> = {
-  new:        'border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-900/60 shadow-sm',
-  confirmed:  'border-blue-300 dark:border-blue-900/60 bg-blue-50/70 dark:bg-blue-950/30 text-slate-900 dark:text-slate-100 shadow-sm',
-  preparing:  'border-amber-300 dark:border-amber-900/60 bg-amber-50/70 dark:bg-amber-950/30 text-slate-900 dark:text-slate-100 shadow-sm',
-  ready:      'border-emerald-300 dark:border-emerald-900/60 bg-emerald-50/70 dark:bg-emerald-950/30 text-slate-900 dark:text-slate-100 shadow-sm',
-  collected:  'border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-900/40 shadow-sm',
-  dispatched: 'border-purple-300 dark:border-purple-900/60 bg-purple-50/70 dark:bg-purple-950/30 text-slate-900 dark:text-slate-100 shadow-sm',
-  delivered:  'border-emerald-300 dark:border-emerald-900/60 bg-emerald-50/70 dark:bg-emerald-950/30 text-slate-900 dark:text-slate-100 shadow-sm',
-  closed:     'border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-900/40 shadow-sm',
-  voided:     'border-rose-300 dark:border-rose-900/60 bg-rose-50/70 dark:bg-rose-950/30 text-slate-900 dark:text-slate-100 shadow-sm',
+  new:        'border-border bg-muted/40 shadow-sm',
+  confirmed:  'border-primary-border dark:border-primary/60 bg-primary/70 dark:bg-primary/30 text-foreground shadow-sm',
+  preparing:  'border-warning-border dark:border-warning/60 bg-warning/70 dark:bg-warning/30 text-foreground shadow-sm',
+  ready:      'border-success-border dark:border-success/60 bg-success/70 dark:bg-success/30 text-foreground shadow-sm',
+  collected:  'border-border bg-muted/40 shadow-sm',
+  dispatched: 'border-special-border dark:border-special/60 bg-special/70 dark:bg-special/30 text-foreground shadow-sm',
+  delivered:  'border-success-border dark:border-success/60 bg-success/70 dark:bg-success/30 text-foreground shadow-sm',
+  closed:     'border-border bg-muted/40 shadow-sm',
+  voided:     'border-danger-border dark:border-danger/60 bg-danger/70 dark:bg-danger/30 text-foreground shadow-sm',
 };
 
 function OrderCard({
@@ -74,52 +74,52 @@ function OrderCard({
   return (
     <div className={cn(
       'rounded-2xl border p-4 transition-all',
-      STATUS_BG[order.status] ?? 'border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-900',
-      isWarning && 'border-rose-400 dark:border-rose-800 bg-rose-50/80 dark:bg-rose-950/40 ring-1 ring-rose-400/40'
+      STATUS_BG[order.status] ?? 'border-border bg-muted/40',
+      isWarning && 'border-danger dark:border-danger bg-danger/80 dark:bg-danger/40 ring-1 ring-danger/40'
     )}>
       {/* Header */}
       <div className="flex items-start justify-between gap-3 mb-3">
         <div className="flex items-center gap-3">
-          <div className={cn(
+          <div className={cn('font-condensed font-black', 
             'flex h-10 w-10 items-center justify-center rounded-xl font-black shrink-0 shadow-sm',
-            order.status === 'ready'     ? 'bg-emerald-600 text-white'
-            : order.status === 'preparing' ? 'bg-amber-500 text-slate-950'
-            : order.status === 'dispatched' ? 'bg-purple-600 text-white'
-            : 'bg-slate-800 text-white'
+            order.status === 'ready'     ? 'bg-success text-white'
+            : order.status === 'preparing' ? 'bg-warning text-foreground'
+            : order.status === 'dispatched' ? 'bg-special text-white'
+            : 'bg-muted text-white'
           )}
-            style={{ fontFamily: "'Barlow Condensed', sans-serif", fontWeight: 900, fontSize: '18px' }}
+            style={{ fontSize: '18px' }}
           >
             {order.token}
           </div>
           <div>
             <div className="flex items-center gap-2">
               <StatusIcon className={cn('w-4 h-4 shrink-0', ORDER_STATUS_COLOR[order.status])} />
-              <span className={cn('text-xs font-black uppercase tracking-wider', ORDER_STATUS_COLOR[order.status])}
-                style={{ fontFamily: "'Barlow Condensed', sans-serif", fontWeight: 900 }}>
+              <span className={cn('font-condensed font-black', 'text-xs font-black uppercase tracking-wider', ORDER_STATUS_COLOR[order.status])}
+                >
                 {ORDER_STATUS_LABEL[order.status]}
               </span>
             </div>
             <div className="flex items-center gap-2 mt-1 flex-wrap">
-              <span className="text-[10px] font-extrabold text-slate-700 dark:text-slate-300 uppercase tracking-wide bg-slate-200/80 dark:bg-slate-800 px-2 py-0.5 rounded-md border border-slate-300 dark:border-slate-700">
+              <span className="text-2xs font-extrabold text-muted-foreground uppercase tracking-wide bg-secondary/80 px-2 py-0.5 rounded-md border border-border">
                 {ORDER_TYPE_LABEL[order.orderType]}
               </span>
-              <span className="text-slate-400">·</span>
+              <span className="text-muted-foreground/70">·</span>
               {/* Payment method badge */}
-              <span className={cn(
-                'text-[10px] uppercase tracking-wide rounded-md px-2 py-0.5 font-black border',
+              <span className={cn('font-condensed font-black', 
+                'text-2xs uppercase tracking-wide rounded-md px-2 py-0.5 font-black border',
                 isCod
-                  ? 'bg-purple-100 dark:bg-purple-950/60 border-purple-300 dark:border-purple-800 text-purple-900 dark:text-purple-300'
-                  : 'bg-slate-200/80 dark:bg-slate-800 border-slate-300 dark:border-slate-700 text-slate-800 dark:text-slate-200'
+                  ? 'bg-special-subtle border-special-border dark:border-special text-special-text dark:text-special'
+                  : 'bg-secondary/80 border-border text-foreground'
               )}
-                style={{ fontFamily: "'Barlow Condensed', sans-serif", fontWeight: 900 }}>
+                >
                 {PAYMENT_METHOD_SHORT[order.paymentMethod] ?? order.paymentMethod}
               </span>
-              <span className="text-slate-400">·</span>
+              <span className="text-muted-foreground/70">·</span>
               <span className={cn(
                 'text-[11px] tabular-nums font-extrabold px-2 py-0.5 rounded-full border',
                 isWarning
-                  ? 'bg-rose-100 dark:bg-rose-950/60 border-rose-300 dark:border-rose-800 text-rose-800 dark:text-rose-300'
-                  : 'bg-slate-200/60 dark:bg-slate-800 border-slate-300/80 dark:border-slate-700 text-slate-800 dark:text-slate-200'
+                  ? 'bg-danger-subtle border-danger-border dark:border-danger text-danger-text dark:text-danger'
+                  : 'bg-secondary/60 border-border/80 text-foreground'
               )}>
                 {formatElapsedTime(elapsed)}
               </span>
@@ -127,13 +127,13 @@ function OrderCard({
           </div>
         </div>
         <div className="text-right shrink-0">
-          <span className="text-base font-black text-slate-950 dark:text-white tabular-nums"
-            style={{ fontFamily: "'Barlow Condensed', sans-serif", fontWeight: 900 }}>
+          <span className="text-base font-black text-foreground dark:text-white tabular-nums font-condensed"
+            >
             {formatCurrency(order.grandTotal)}
           </span>
           {isCod && (
-            <p className="text-[10px] text-purple-700 dark:text-purple-400 font-extrabold mt-0.5 uppercase tracking-wide"
-              style={{ fontFamily: "'Barlow Condensed', sans-serif", fontWeight: 800 }}>
+            <p className="text-2xs text-special-text font-extrabold mt-0.5 uppercase tracking-wide font-condensed"
+              >
               Unpaid
             </p>
           )}
@@ -144,17 +144,17 @@ function OrderCard({
       <div className="space-y-1.5 mb-3.5">
         {order.items.slice(0, 4).map((item) => (
           <div key={item.id} className="flex items-center justify-between text-xs">
-            <span className="text-slate-900 dark:text-slate-100 font-bold truncate flex-1">
-              {item.isDeal && <span className="text-amber-500 mr-1 font-extrabold">★</span>}
+            <span className="text-foreground font-bold truncate flex-1">
+              {item.isDeal && <Sparkles className="mr-1 inline h-3 w-3 text-warning" aria-hidden="true" />}
               {item.quantity}× {item.name}
             </span>
-            <span className="text-slate-800 dark:text-slate-200 font-extrabold tabular-nums ml-2 shrink-0">
+            <span className="text-foreground font-extrabold tabular-nums ml-2 shrink-0">
               {formatCurrency(item.lineTotal)}
             </span>
           </div>
         ))}
         {order.items.length > 4 && (
-          <p className="text-[10px] font-extrabold text-slate-600 dark:text-slate-400">
+          <p className="text-2xs font-extrabold text-muted-foreground">
             +{order.items.length - 4} more items
           </p>
         )}
@@ -162,9 +162,9 @@ function OrderCard({
 
       {/* Customer */}
       {order.customerName && (
-        <div className="text-xs text-slate-700 dark:text-slate-300 mb-3 flex items-center gap-1 font-semibold">
+        <div className="text-xs text-muted-foreground mb-3 flex items-center gap-1 font-semibold">
           <span className="opacity-75">Customer:</span>
-          <span className="text-slate-900 dark:text-slate-100 font-bold">{order.customerName}</span>
+          <span className="text-foreground font-bold">{order.customerName}</span>
           {order.customerPhone && (
             <span className="opacity-75">· {order.customerPhone}</span>
           )}
@@ -178,8 +178,7 @@ function OrderCard({
         {order.status === 'preparing' && (
           <button
             onClick={() => markReady(order.id)}
-            className="flex-1 flex items-center justify-center gap-1.5 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 py-2.5 text-xs font-black text-white shadow-sm active:scale-[0.98] transition-all"
-            style={{ fontFamily: "'Barlow Condensed', sans-serif", fontWeight: 900 }}
+            className="flex-1 flex items-center justify-center gap-1.5 rounded-xl bg-success hover:bg-success/90 py-2.5 text-xs font-black text-white shadow-sm active:scale-[0.98] transition-all font-condensed"
           >
             <CheckCircle2 className="w-4 h-4 text-white" />
             Mark Ready
@@ -196,8 +195,7 @@ function OrderCard({
                 if (order.invoiceId) onShowReceipt(order.invoiceId);
               }, 300);
             }}
-            className="flex-1 flex items-center justify-center gap-1.5 rounded-xl bg-gradient-to-r from-teal-600 to-cyan-600 hover:from-teal-700 hover:to-cyan-700 py-2.5 text-xs font-black text-white shadow-sm active:scale-[0.98] transition-all"
-            style={{ fontFamily: "'Barlow Condensed', sans-serif", fontWeight: 900 }}
+            className="flex-1 flex items-center justify-center gap-1.5 rounded-xl bg-success hover:bg-success/90 py-2.5 text-xs font-black text-white shadow-sm active:scale-[0.98] transition-all font-condensed"
           >
             <Package className="w-4 h-4 text-white" />
             Collected
@@ -208,8 +206,7 @@ function OrderCard({
         {order.status === 'ready' && isDelivery && (
           <button
             onClick={() => markDispatched(order.id)}
-            className="flex-1 flex items-center justify-center gap-1.5 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 py-2.5 text-xs font-black text-white shadow-sm active:scale-[0.98] transition-all"
-            style={{ fontFamily: "'Barlow Condensed', sans-serif", fontWeight: 900 }}
+            className="flex-1 flex items-center justify-center gap-1.5 rounded-xl bg-special hover:bg-special/90 py-2.5 text-xs font-black text-white shadow-sm active:scale-[0.98] transition-all font-condensed"
           >
             <Truck className="w-4 h-4 text-white" />
             Dispatch Rider
@@ -223,8 +220,7 @@ function OrderCard({
               closeOrder(order.id, order.invoiceId ?? '');
               if (order.invoiceId) onShowReceipt(order.invoiceId);
             }}
-            className="flex-1 flex items-center justify-center gap-1.5 rounded-xl bg-gradient-to-r from-teal-600 to-cyan-600 hover:from-teal-700 hover:to-cyan-700 py-2.5 text-xs font-black text-white shadow-sm active:scale-[0.98] transition-all"
-            style={{ fontFamily: "'Barlow Condensed', sans-serif", fontWeight: 900 }}
+            className="flex-1 flex items-center justify-center gap-1.5 rounded-xl bg-success hover:bg-success/90 py-2.5 text-xs font-black text-white shadow-sm active:scale-[0.98] transition-all font-condensed"
           >
             <CheckCircle2 className="w-4 h-4 text-white" />
             Mark Delivered
@@ -242,8 +238,7 @@ function OrderCard({
                 if (order.invoiceId) onShowReceipt(order.invoiceId);
               }, 300);
             }}
-            className="flex-1 flex items-center justify-center gap-1.5 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 py-2.5 text-xs font-black text-white shadow-sm active:scale-[0.98] transition-all"
-            style={{ fontFamily: "'Barlow Condensed', sans-serif", fontWeight: 900 }}
+            className="flex-1 flex items-center justify-center gap-1.5 rounded-xl bg-success hover:bg-success/90 py-2.5 text-xs font-black text-white shadow-sm active:scale-[0.98] transition-all font-condensed"
           >
             <BadgeDollarSign className="w-4 h-4 text-white" />
             Cash Received
@@ -254,7 +249,7 @@ function OrderCard({
         {['new', 'confirmed', 'preparing', 'ready'].includes(order.status) && (
           <button
             onClick={() => voidOrder(order.id)}
-            className="flex items-center justify-center gap-1 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 px-3 py-2 text-xs text-slate-700 dark:text-slate-300 hover:bg-rose-50 dark:hover:bg-rose-950/40 hover:border-rose-300 hover:text-rose-600 transition-all shadow-sm"
+            className="flex items-center justify-center gap-1 rounded-xl border border-border bg-secondary px-3 py-2 text-xs text-muted-foreground hover:bg-danger-subtle hover:border-danger-border hover:text-danger-text transition-all shadow-sm"
           >
             <Trash2 className="w-3.5 h-3.5" />
           </button>
@@ -295,12 +290,12 @@ export function ActiveOrdersPanel({ onClose, onShowReceipt, onPaymentReceived }:
         {/* Header */}
         <div className="flex items-center justify-between border-b border-border px-5 py-4 shrink-0">
           <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-amber-500/15 text-amber-500">
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-warning/15 text-warning">
               <ChefHat className="h-5 w-5" />
             </div>
             <div>
-              <h2 className="text-foreground"
-                style={{ fontFamily: "'Barlow Condensed', sans-serif", fontWeight: 800, fontSize: '20px' }}>
+              <h2 className="text-foreground font-condensed font-extrabold"
+                style={{ fontSize: '20px' }}>
                 Active Orders
               </h2>
               <p className="text-xs text-muted-foreground">
@@ -323,8 +318,8 @@ export function ActiveOrdersPanel({ onClose, onShowReceipt, onPaymentReceived }:
               <div className="w-16 h-16 rounded-full bg-secondary flex items-center justify-center">
                 <ChefHat className="w-7 h-7 text-muted-foreground" />
               </div>
-              <p className="font-700 text-foreground"
-                style={{ fontFamily: "'Barlow', sans-serif", fontWeight: 700 }}>
+              <p className="font-bold text-foreground font-condensed"
+                >
                 No active orders
               </p>
               <p className="text-sm text-muted-foreground max-w-[200px]">
@@ -335,8 +330,8 @@ export function ActiveOrdersPanel({ onClose, onShowReceipt, onPaymentReceived }:
             <>
               {ready.length > 0 && (
                 <section>
-                  <p className="text-[11px] font-black uppercase tracking-[0.18em] text-emerald-800 dark:text-emerald-400 mb-2"
-                    style={{ fontFamily: "'Barlow Condensed', sans-serif", fontWeight: 900 }}>
+                  <p className="text-[11px] font-black uppercase tracking-[0.18em] text-success-text mb-2 font-condensed"
+                    >
                     Ready for collection ({ready.length})
                   </p>
                   <div className="space-y-3">
@@ -347,8 +342,8 @@ export function ActiveOrdersPanel({ onClose, onShowReceipt, onPaymentReceived }:
 
               {dispatched.length > 0 && (
                 <section>
-                  <p className="text-[11px] font-black uppercase tracking-[0.18em] text-purple-800 dark:text-purple-400 mb-2"
-                    style={{ fontFamily: "'Barlow Condensed', sans-serif", fontWeight: 900 }}>
+                  <p className="text-[11px] font-black uppercase tracking-[0.18em] text-special-text mb-2 font-condensed"
+                    >
                     Out for delivery ({dispatched.length})
                   </p>
                   <div className="space-y-3">
@@ -359,8 +354,8 @@ export function ActiveOrdersPanel({ onClose, onShowReceipt, onPaymentReceived }:
 
               {preparing.length > 0 && (
                 <section>
-                  <p className="text-[11px] font-black uppercase tracking-[0.18em] text-amber-800 dark:text-amber-400 mb-2"
-                    style={{ fontFamily: "'Barlow Condensed', sans-serif", fontWeight: 900 }}>
+                  <p className="text-[11px] font-black uppercase tracking-[0.18em] text-warning-text mb-2 font-condensed"
+                    >
                     Preparing ({preparing.length})
                   </p>
                   <div className="space-y-3">
@@ -371,8 +366,8 @@ export function ActiveOrdersPanel({ onClose, onShowReceipt, onPaymentReceived }:
 
               {other.length > 0 && (
                 <section>
-                  <p className="text-[10px] font-700 uppercase tracking-[0.18em] text-muted-foreground mb-2"
-                    style={{ fontFamily: "'Barlow Condensed', sans-serif", fontWeight: 700 }}>
+                  <p className="text-2xs font-bold uppercase tracking-[0.18em] text-muted-foreground mb-2 font-condensed"
+                    >
                     Queued ({other.length})
                   </p>
                   <div className="space-y-3">

@@ -27,13 +27,13 @@ function StatusBadge({ entry }: { entry: StockEntry }) {
   }
   if (status === 'low_stock') {
     return (
-      <Badge className="gap-1 text-xs bg-yellow-500/15 text-yellow-600 dark:text-yellow-400 border-yellow-500/30 border">
+      <Badge className="gap-1 text-xs bg-warning/15 text-warning-text dark:text-warning border-warning/30 border">
         <AlertTriangle className="w-3 h-3" /> Low Stock
       </Badge>
     );
   }
   return (
-    <Badge className="gap-1 text-xs bg-green-500/15 text-green-600 dark:text-green-400 border-green-500/30 border">
+    <Badge className="gap-1 text-xs bg-success/15 text-success-text border-success/30 border">
       <CheckCircle2 className="w-3 h-3" /> In Stock
     </Badge>
   );
@@ -70,7 +70,7 @@ export function InventoryTable() {
           </Badge>
         )}
         {totalLow > 0 && (
-          <Badge className="gap-1 bg-yellow-500/15 text-yellow-600 dark:text-yellow-400 border-yellow-500/30 border">
+          <Badge className="gap-1 bg-warning/15 text-warning-text dark:text-warning border-warning/30 border">
             <AlertTriangle className="w-3 h-3" /> {totalLow} low stock
           </Badge>
         )}
@@ -101,7 +101,7 @@ export function InventoryTable() {
                     status === 'out_of_stock'
                       ? 'bg-destructive/5 hover:bg-destructive/10'
                       : status === 'low_stock'
-                      ? 'bg-yellow-500/5 hover:bg-yellow-500/10'
+                      ? 'bg-warning/5 hover:bg-warning/10'
                       : 'hover:bg-muted/30'
                   }`}
                 >

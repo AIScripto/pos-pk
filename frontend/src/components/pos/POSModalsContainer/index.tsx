@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Suspense } from 'react';
 import { createPortal } from 'react-dom';
 import { X } from 'lucide-react';
 import { Invoice } from '@/types/pos';
@@ -8,12 +8,16 @@ import { InvoiceHistory } from '@/components/pos/InvoiceHistory';
 import { ReceiptPrintView } from '@/components/pos/ReceiptPrintView';
 import { HeldOrdersDrawer } from '@/components/pos/HeldOrdersDrawer';
 import { ActiveOrdersPanel } from '@/components/pos/ActiveOrdersPanel';
-import { ProductManagementPanel } from '@/components/admin/ProductManagementPanel';
 import { OpenTillDialog } from '@/components/till/OpenTillDialog';
 import { CloseTillDialog } from '@/components/till/CloseTillDialog';
-import { PaymentModal } from '@/components/pos/PaymentModal';
-import { ThermalReceiptModal } from '@/components/pos/ThermalReceiptModal';
-import { TillCloseoutModal } from '@/components/pos/TillCloseoutModal';
+
+/* Card payment pulls in the Stripe SDK, product management pulls in the admin
+   forms, and the till closeout and thermal receipt views are each opened a handful
+   of times a shift — none of them belong in the chunk a cashier waits on at open. */
+const PaymentModal = React.lazy(() => import("@/components/pos/PaymentModal").then((m) => ({ default: m.PaymentModal })));
+const ProductManagementPanel = React.lazy(() => import("@/components/admin/ProductManagementPanel").then((m) => ({ default: m.ProductManagementPanel })));
+const TillCloseoutModal = React.lazy(() => import("@/components/pos/TillCloseoutModal").then((m) => ({ default: m.TillCloseoutModal })));
+const ThermalReceiptModal = React.lazy(() => import("@/components/pos/ThermalReceiptModal").then((m) => ({ default: m.ThermalReceiptModal })));
 
 interface POSModalsContainerProps {
   showCart: boolean;
@@ -95,7 +99,7 @@ export function POSModalsContainer({
   onHoldToast,
 }: POSModalsContainerProps) {
   return (
-    <>
+    <Suspense fallback={null}>
       {/* ── Mobile cart overlay ── */}
       {showCart && (
         <div className="lg:hidden fixed inset-0 z-40 flex">
@@ -222,6 +226,6 @@ export function POSModalsContainer({
         </div>,
         document.body
       )}
-    </>
+    </Suspense>
   );
 }

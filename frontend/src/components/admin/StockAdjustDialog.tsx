@@ -65,6 +65,7 @@ export function StockAdjustDialog({
               <Button
                 type="button"
                 size="icon"
+            aria-label="Decrease"
                 variant="outline"
                 className="shrink-0"
                 onClick={() => nudge(-1)}
@@ -81,6 +82,7 @@ export function StockAdjustDialog({
               <Button
                 type="button"
                 size="icon"
+            aria-label="Increase"
                 variant="outline"
                 className="shrink-0"
                 onClick={() => nudge(1)}

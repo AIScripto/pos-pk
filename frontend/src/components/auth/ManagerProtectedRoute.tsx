@@ -18,8 +18,8 @@ export default function ManagerProtectedRoute({ children }: Props) {
 
   if (isLoading) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-slate-50">
-        <Loader2 className="h-8 w-8 animate-spin text-orange-500" />
+      <div className="flex min-h-screen items-center justify-center bg-muted/40">
+        <Loader2 className="h-8 w-8 animate-spin text-warning" />
       </div>
     );
   }
@@ -37,13 +37,13 @@ export default function ManagerProtectedRoute({ children }: Props) {
 
 function AccessDenied() {
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center gap-4 bg-slate-50 p-8 text-center">
-      <ShieldX className="h-16 w-16 text-red-400" />
-      <h1 className="text-2xl font-bold text-slate-800">Access Denied</h1>
-      <p className="max-w-sm text-slate-500">
+    <div className="flex min-h-screen flex-col items-center justify-center gap-4 bg-muted/40 p-8 text-center">
+      <ShieldX className="h-16 w-16 text-danger" />
+      <h1 className="text-2xl font-bold text-foreground">Access Denied</h1>
+      <p className="max-w-sm text-muted-foreground">
         The Manager Operations panel requires a manager role or above.
       </p>
-      <a href="/" className="text-sm text-orange-500 underline">← Go to POS</a>
+      <a href="/" className="text-sm text-warning underline">← Go to POS</a>
     </div>
   );
 }

@@ -192,7 +192,7 @@ export default function AdminProductFormDialog({
           <FormInput
             value={skuLoading ? 'Generating...' : (skuPreview || '—')}
             disabled
-            className="bg-slate-100 dark:bg-slate-800 font-mono text-slate-600 dark:text-slate-400"
+            className="bg-secondary font-mono text-muted-foreground"
           />
         </FormField>
 

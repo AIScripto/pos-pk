@@ -3,6 +3,7 @@ import { formatCurrency, formatDate, calculateLineTotal } from '@/utils/pos';
 import { TAX_CONFIG } from '@/config/tax';
 import { useAppConfig } from '@/context/AppConfigContext';
 import { X, Printer, Sparkles, Loader2 } from 'lucide-react';
+import { useTranslation } from '@/i18n';
 
 interface InvoicePreviewProps {
   invoice: Invoice;
@@ -14,6 +15,7 @@ interface InvoicePreviewProps {
 }
 
 export function InvoicePreview({ invoice, onClose, onPrint, onConfirm, isConfirming = false }: InvoicePreviewProps) {
+  const { t } = useTranslation();
   const { orgConfig } = useAppConfig();
   const branch = orgConfig?.defaultBranch;
   const businessName = orgConfig?.businessName || 'Crisp&Crumbs Restaurant';
@@ -44,7 +46,7 @@ export function InvoicePreview({ invoice, onClose, onPrint, onConfirm, isConfirm
         <div className="flex-1 overflow-y-auto p-4 pos-scrollbar">
           {/* Store Info */}
           <div className="text-center mb-6">
-            <h3 className="font-bold text-xl text-card-foreground">🍔 {businessName}</h3>
+            <h3 className="font-bold text-xl text-card-foreground">{businessName}</h3>
             {address && <p className="text-sm text-muted-foreground">{address}</p>}
             {businessPhone && <p className="text-sm text-muted-foreground">Tel: {businessPhone}</p>}
           </div>
@@ -56,14 +58,14 @@ export function InvoicePreview({ invoice, onClose, onPrint, onConfirm, isConfirm
               <p className="font-mono font-medium text-card-foreground">{invoice.id}</p>
               {/* Payment status badge */}
               <div className="mt-2 flex items-center gap-2">
-                <span className={`inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide border ${
+                <span className={`inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-2xs font-bold uppercase tracking-wide border ${
                   invoice.paymentStatus === 'pending'
-                    ? 'bg-purple-500/10 border-purple-500/30 text-purple-400'
-                    : 'bg-green-500/10 border-green-500/30 text-green-400'
+                    ? 'bg-special/10 border-special/30 text-special'
+                    : 'bg-success/10 border-success/30 text-success'
                 }`}>
-                  {invoice.paymentStatus === 'pending' ? '⏳ Payment Pending' : '✓ Paid'}
+                  {invoice.paymentStatus === 'pending' ? 'Payment Pending' : 'Paid'}
                 </span>
-                <span className="text-[10px] text-muted-foreground uppercase tracking-wide">
+                <span className="text-2xs text-muted-foreground uppercase tracking-wide">
                   {invoice.paymentMethod === 'cash' ? 'Cash'
                     : invoice.paymentMethod === 'card' ? 'Card'
                     : invoice.paymentMethod === 'cash-on-delivery' ? 'COD — Cash'
@@ -72,7 +74,7 @@ export function InvoicePreview({ invoice, onClose, onPrint, onConfirm, isConfirm
                 </span>
               </div>
               {invoice.paymentStatus === 'paid' && invoice.paidAt && invoice.paymentMethod?.includes('on-delivery') && (
-                <p className="mt-1 text-[10px] text-muted-foreground">
+                <p className="mt-1 text-2xs text-muted-foreground">
                   Paid: {formatDate(invoice.paidAt)}
                 </p>
               )}
@@ -199,32 +201,26 @@ export function InvoicePreview({ invoice, onClose, onPrint, onConfirm, isConfirm
           <button
             onClick={onClose}
             disabled={isConfirming}
-            className="pos-btn-secondary py-3 px-4"
+            className="pos-btn-secondary px-4"
           >
-            Close
+            {t.common.close}
           </button>
           <button
             onClick={onPrint}
             disabled={isConfirming}
-            className="flex-1 pos-btn-secondary py-3 flex items-center justify-center gap-2"
+            className="flex-1 pos-btn-secondary"
           >
             <Printer className="w-4 h-4" />
-            Print
+            {t.receipt.print}
           </button>
           {onConfirm && (
             <button
               onClick={onConfirm}
               disabled={isConfirming}
-              className="flex-1 py-3 flex items-center justify-center gap-2 rounded-xl text-white font-800 transition-all hover:opacity-90 active:scale-[0.97] disabled:cursor-not-allowed disabled:opacity-70 disabled:active:scale-100"
-              style={{
-                background: 'linear-gradient(135deg, hsl(24 100% 50%), hsl(38 92% 50%))',
-                fontFamily: "'Barlow Condensed', sans-serif",
-                fontWeight: 800,
-                fontSize: '16px',
-              }}
+              className="pos-btn-success flex-1 text-base"
             >
               {isConfirming && <Loader2 className="h-4 w-4 animate-spin" />}
-              {isConfirming ? 'Processing Order...' : 'Confirm & Send to Kitchen'}
+              {isConfirming ? t.pos.processingOrder : t.pos.sendToKitchen}
             </button>
           )}
         </div>

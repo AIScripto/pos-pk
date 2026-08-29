@@ -20,8 +20,8 @@ export default function AdminProtectedRoute({ children }: Props) {
 
   if (isLoading) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-gray-50">
-        <Loader2 className="h-8 w-8 animate-spin text-orange-500" />
+      <div className="flex min-h-screen items-center justify-center bg-muted/40">
+        <Loader2 className="h-8 w-8 animate-spin text-warning" />
       </div>
     );
   }
@@ -46,11 +46,11 @@ export default function AdminProtectedRoute({ children }: Props) {
 
 function AccessDenied({ reason }: { reason: string }) {
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center gap-4 bg-gray-50 p-8 text-center">
-      <ShieldX className="h-16 w-16 text-red-400" />
-      <h1 className="text-2xl font-bold text-gray-800">Access Denied</h1>
-      <p className="max-w-sm text-gray-500">{reason}</p>
-      <a href="/" className="text-sm text-orange-500 underline">← Go back</a>
+    <div className="flex min-h-screen flex-col items-center justify-center gap-4 bg-muted/40 p-8 text-center">
+      <ShieldX className="h-16 w-16 text-danger" />
+      <h1 className="text-2xl font-bold text-foreground">Access Denied</h1>
+      <p className="max-w-sm text-muted-foreground">{reason}</p>
+      <a href="/" className="text-sm text-warning underline">← Go back</a>
     </div>
   );
 }

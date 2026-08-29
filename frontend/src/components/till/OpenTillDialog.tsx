@@ -67,12 +67,12 @@ function WaitingForManager({
   return (
     <div className="flex flex-col items-center gap-5 px-6 py-8 text-center">
       {allGood ? (
-        <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-emerald-50 border border-emerald-200">
-          <CheckCircle2 className="h-8 w-8 text-emerald-600" />
+        <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-success-subtle border border-success-border">
+          <CheckCircle2 className="h-8 w-8 text-success-text" />
         </div>
       ) : (
-        <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-amber-50 border border-amber-200">
-          <AlertTriangle className="h-8 w-8 text-amber-500" />
+        <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-warning-subtle border border-warning-border">
+          <AlertTriangle className="h-8 w-8 text-warning" />
         </div>
       )}
 
@@ -93,12 +93,12 @@ function WaitingForManager({
             key={item.label}
             className={`flex items-center gap-3 rounded-xl border px-4 py-3 text-left ${
               item.open
-                ? 'border-emerald-200 bg-emerald-50'
-                : 'border-amber-200 bg-amber-50'
+                ? 'border-success-border bg-success-subtle'
+                : 'border-warning-border bg-warning-subtle'
             }`}
           >
             <div className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-lg ${
-              item.open ? 'bg-emerald-100 text-emerald-600' : 'bg-amber-100 text-amber-600'
+              item.open ? 'bg-success-subtle text-success-text' : 'bg-warning-subtle text-warning-text'
             }`}>
               {item.label === 'Business Day'
                 ? <CalendarDays className="h-4 w-4" />
@@ -106,15 +106,15 @@ function WaitingForManager({
             </div>
             <div className="min-w-0 flex-1">
               <p className={`text-xs font-black uppercase tracking-wide ${
-                item.open ? 'text-emerald-700' : 'text-amber-700'
+                item.open ? 'text-success-text' : 'text-warning-text'
               }`}>{item.label}</p>
               <p className={`truncate text-sm font-semibold ${
-                item.open ? 'text-emerald-900' : 'text-amber-900'
+                item.open ? 'text-success-text' : 'text-warning-text'
               }`}>{item.detail}</p>
             </div>
             {item.open
-              ? <CheckCircle2 className="h-5 w-5 shrink-0 text-emerald-500" />
-              : <div className="h-5 w-5 shrink-0 rounded-full border-2 border-amber-300" />}
+              ? <CheckCircle2 className="h-5 w-5 shrink-0 text-success" />
+              : <div className="h-5 w-5 shrink-0 rounded-full border-2 border-warning-border" />}
           </div>
         ))}
       </div>
@@ -205,7 +205,7 @@ export function OpenTillDialog({ open, onOpenChange }: OpenTillDialogProps) {
       .then(setBranches)
       .catch(() => toast({ title: 'Could not load branches', variant: 'destructive' }))
       .finally(() => setBranchesLoading(false));
-  }, [open, needsTerminalSelect]);
+  }, [open, needsTerminalSelect, toast]);
 
   // Fetch shift info
   useEffect(() => {
@@ -215,7 +215,7 @@ export function OpenTillDialog({ open, onOpenChange }: OpenTillDialogProps) {
     tillConfigApi.currentShift(bid)
       .then(setCurrentShift)
       .catch(() => setCurrentShift(null));
-  }, [open, selectedBranch?.id, user?.branchId]);
+  }, [open, selectedBranch?.id, user?.branchId, rememberedSelection.branchId]);
 
   const handleSelectBranch = async (branch: BranchOption) => {
     setSelectedBranch(branch);
@@ -318,11 +318,11 @@ export function OpenTillDialog({ open, onOpenChange }: OpenTillDialogProps) {
             <div className={`flex h-9 w-9 items-center justify-center rounded-xl border ${
               opsReady
                 ? 'bg-pos-success/15 border-pos-success/25'
-                : 'bg-amber-50 border-amber-200'
+                : 'bg-warning-subtle border-warning-border'
             }`}>
               {opsReady
                 ? <Unlock className="w-5 h-5 text-pos-success" />
-                : <AlertTriangle className="w-5 h-5 text-amber-500" />}
+                : <AlertTriangle className="w-5 h-5 text-warning" />}
             </div>
             <div>
               <DialogTitle className="font-display font-extrabold text-[17px] text-foreground leading-tight">
@@ -355,7 +355,7 @@ export function OpenTillDialog({ open, onOpenChange }: OpenTillDialogProps) {
               {/* Branch + Terminal selector (admin / email-login users only) */}
               {needsTerminalSelect && (
                 <div className="space-y-3">
-                  <label className="font-display font-bold text-[10px] uppercase tracking-[0.15em] text-muted-foreground flex items-center gap-1.5">
+                  <label className="font-display font-bold text-2xs uppercase tracking-[0.15em] text-muted-foreground flex items-center gap-1.5">
                     <Store className="w-3 h-3" />
                     Select Branch
                   </label>
@@ -388,7 +388,7 @@ export function OpenTillDialog({ open, onOpenChange }: OpenTillDialogProps) {
 
                   {selectedBranch && (
                     <>
-                      <label className="font-display font-bold text-[10px] uppercase tracking-[0.15em] text-muted-foreground flex items-center gap-1.5">
+                      <label className="font-display font-bold text-2xs uppercase tracking-[0.15em] text-muted-foreground flex items-center gap-1.5">
                         <Monitor className="w-3 h-3" />
                         Select Terminal
                       </label>
@@ -408,16 +408,16 @@ export function OpenTillDialog({ open, onOpenChange }: OpenTillDialogProps) {
                                 selectedTerminal?.id === t.id
                                   ? 'border-primary bg-primary/10'
                                   : t.hasOpenSession
-                                    ? 'border-amber-300 bg-amber-50/60 dark:border-amber-700 dark:bg-amber-950/20'
+                                    ? 'border-warning-border bg-warning/60 dark:bg-warning/20'
                                     : 'border-border bg-secondary text-muted-foreground hover:border-primary/50'
                               }`}
                             >
-                              <Monitor className={`h-4 w-4 shrink-0 ${t.hasOpenSession ? 'text-amber-500' : 'text-primary'}`} />
+                              <Monitor className={`h-4 w-4 shrink-0 ${t.hasOpenSession ? 'text-warning' : 'text-primary'}`} />
                               <span className="min-w-0 flex-1">
                                 <span className="block truncate font-semibold text-foreground">{t.name}</span>
-                                {t.code && <span className="block truncate text-[10px] text-muted-foreground">{t.code}</span>}
+                                {t.code && <span className="block truncate text-2xs text-muted-foreground">{t.code}</span>}
                                 {t.hasOpenSession && (
-                                  <span className="block text-[10px] font-black text-amber-600">
+                                  <span className="block text-2xs font-black text-warning-text">
                                     In use{t.openedBy ? ` · ${t.openedBy}` : ''}
                                   </span>
                                 )}
@@ -434,11 +434,11 @@ export function OpenTillDialog({ open, onOpenChange }: OpenTillDialogProps) {
               {/* Quick Starting Float Selection (Layman Presets) */}
               <div className="space-y-2.5">
                 <div className="flex items-center justify-between">
-                  <label className="text-xs font-bold uppercase tracking-wider text-slate-300 flex items-center gap-1.5">
-                    <Banknote className="w-4 h-4 text-emerald-400" />
+                  <label className="text-xs font-bold uppercase tracking-wider text-muted-foreground flex items-center gap-1.5">
+                    <Banknote className="w-4 h-4 text-success" />
                     <span>Starting Cash in Drawer (Float)</span>
                   </label>
-                  <span className="text-[11px] font-semibold text-emerald-400 bg-emerald-950/60 border border-emerald-500/20 px-2 py-0.5 rounded">
+                  <span className="text-[11px] font-semibold text-success bg-success/60 border border-success/20 px-2 py-0.5 rounded">
                     PKR Float
                   </span>
                 </div>
@@ -457,8 +457,8 @@ export function OpenTillDialog({ open, onOpenChange }: OpenTillDialogProps) {
                       onClick={() => setDirectFloat(preset.val)}
                       className={`h-11 rounded-xl border text-xs font-bold transition-all cursor-pointer flex items-center justify-center ${
                         floatAmount === preset.val
-                          ? 'border-emerald-500 bg-emerald-950/80 text-emerald-300 ring-2 ring-emerald-500/30'
-                          : 'border-slate-700 bg-slate-800/80 text-slate-300 hover:border-slate-600 hover:text-white'
+                          ? 'border-success bg-success/80 text-success ring-2 ring-success/30'
+                          : 'border-border bg-muted/80 text-muted-foreground hover:border-border hover:text-foreground'
                       }`}
                     >
                       {preset.label}
@@ -468,7 +468,7 @@ export function OpenTillDialog({ open, onOpenChange }: OpenTillDialogProps) {
 
                 {/* Direct Float Input Field */}
                 <div className="relative pt-1">
-                  <span className="absolute left-4 top-1/2 -translate-y-1/2 text-sm font-bold text-slate-400">
+                  <span className="absolute left-4 top-1/2 -translate-y-1/2 text-sm font-bold text-muted-foreground/70">
                     Rs
                   </span>
                   <input
@@ -481,7 +481,7 @@ export function OpenTillDialog({ open, onOpenChange }: OpenTillDialogProps) {
                       const val = e.target.value === '' ? 0 : Number(e.target.value);
                       setDirectFloat(val);
                     }}
-                    className="w-full h-12 pl-12 pr-4 bg-slate-950 border-2 border-slate-700 rounded-xl focus:outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 text-right font-mono text-xl font-bold text-white transition-all tabular-nums"
+                    className="w-full h-12 pl-12 pr-4 bg-background border-2 border-border rounded-xl focus:outline-none focus:border-success focus:ring-2 focus:ring-success/20 text-right font-mono text-xl font-bold text-foreground transition-all tabular-nums"
                   />
                 </div>
               </div>
@@ -491,13 +491,13 @@ export function OpenTillDialog({ open, onOpenChange }: OpenTillDialogProps) {
                 <button
                   type="button"
                   onClick={() => setCashReviewed(!cashReviewed)}
-                  className="text-xs font-medium text-slate-400 hover:text-slate-200 transition-colors flex items-center gap-1.5 cursor-pointer"
+                  className="text-xs font-medium text-muted-foreground/70 hover:text-foreground transition-colors flex items-center gap-1.5 cursor-pointer"
                 >
                   <span>{cashReviewed ? '− Hide physical note breakdown' : '+ Count physical note denominations (Optional)'}</span>
                 </button>
 
                 {cashReviewed && (
-                  <div className="mt-2.5 p-3 rounded-xl border border-slate-700 bg-slate-900/60">
+                  <div className="mt-2.5 p-3 rounded-xl border border-border bg-muted/60">
                     <DenominationTable
                       entries={denominations}
                       onChange={handleDenominationChange}
@@ -510,12 +510,12 @@ export function OpenTillDialog({ open, onOpenChange }: OpenTillDialogProps) {
               </div>
 
               {/* Summary Banner */}
-              <div className="rounded-xl border border-emerald-500/40 bg-emerald-950/30 p-3 flex items-center justify-between">
+              <div className="rounded-xl border border-success/40 bg-success/30 p-3 flex items-center justify-between">
                 <div>
-                  <span className="text-xs font-bold uppercase tracking-wider text-emerald-400">Opening Register Balance</span>
-                  <p className="text-[11px] text-slate-400 mt-0.5">Recorded as starting float for this trading session</p>
+                  <span className="text-xs font-bold uppercase tracking-wider text-success">Opening Register Balance</span>
+                  <p className="text-[11px] text-muted-foreground/70 mt-0.5">Recorded as starting float for this trading session</p>
                 </div>
-                <span className="font-mono font-black text-2xl text-emerald-300 tabular-nums">
+                <span className="font-mono font-black text-2xl text-success tabular-nums">
                   {formatCurrency(totalCash)}
                 </span>
               </div>
@@ -528,17 +528,17 @@ export function OpenTillDialog({ open, onOpenChange }: OpenTillDialogProps) {
             )}
 
             {/* Footer */}
-            <div className="flex gap-2.5 px-5 py-3 border-t border-border shrink-0 bg-slate-900">
+            <div className="flex gap-2.5 px-5 py-3 border-t border-border shrink-0 bg-muted/60">
               <button
                 type="button" onClick={handleClose}
-                className="h-12 flex-1 rounded-xl border border-slate-700 bg-slate-800 py-2.5 font-bold text-sm text-slate-300 hover:bg-slate-700 hover:text-white transition-all cursor-pointer"
+                className="h-12 flex-1 rounded-xl border border-border bg-muted py-2.5 font-bold text-sm text-muted-foreground hover:bg-secondary hover:text-foreground transition-all cursor-pointer"
               >
                 Cancel
               </button>
               <button
                 type="submit"
                 disabled={!selectedTerminalId || loading}
-                className="h-12 flex-[2] flex items-center justify-center gap-2 rounded-xl py-2.5 font-black text-sm uppercase tracking-wider text-white transition-all bg-emerald-600 hover:bg-emerald-500 active:scale-[0.99] shadow-lg shadow-emerald-950/60 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+                className="h-12 flex-[2] flex items-center justify-center gap-2 rounded-xl py-2.5 font-black text-sm uppercase tracking-wider text-foreground transition-all bg-success hover:bg-success active:scale-[0.99] shadow-lg shadow-success/60 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
               >
                 {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Unlock className="w-4 h-4" />}
                 {loading ? 'Opening Register…' : `Start Selling — ${formatCurrency(totalCash)} (↵)`}

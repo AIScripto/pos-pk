@@ -15,13 +15,17 @@ export interface LanguageOption {
   label: string;
   nativeLabel: string;
   dir: 'ltr' | 'rtl';
-  flag: string;
+  /** The language's own two-letter tag, shown as the compact marker in the
+   *  switcher. Flags used to sit here, but a flag names a country, not a
+   *  language — Arabic is not Saudi, and flag emoji render differently on every
+   *  terminal OS this runs on. */
+  tag: string;
 }
 
 export const SUPPORTED_LANGUAGES: LanguageOption[] = [
-  { code: 'en', label: 'English', nativeLabel: 'English', dir: 'ltr', flag: '🇬🇧' },
-  { code: 'ar', label: 'Arabic',  nativeLabel: 'العربية', dir: 'rtl', flag: '🇸🇦' },
-  { code: 'ur', label: 'Urdu',    nativeLabel: 'اردو',    dir: 'rtl', flag: '🇵🇰' },
+  { code: 'en', label: 'English', nativeLabel: 'English', dir: 'ltr', tag: 'EN' },
+  { code: 'ar', label: 'Arabic',  nativeLabel: 'العربية', dir: 'rtl', tag: 'AR' },
+  { code: 'ur', label: 'Urdu',    nativeLabel: 'اردو',    dir: 'rtl', tag: 'UR' },
 ];
 
 const DICTIONARIES: Record<LanguageCode, TranslationKey> = {

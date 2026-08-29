@@ -86,6 +86,7 @@ export function CustomerProfileCard() {
                 type="button"
                 variant="ghost"
                 size="icon"
+            aria-label="Close"
                 className="h-9 w-9 shrink-0 rounded-xl"
                 onClick={clearActiveCustomer}
               >

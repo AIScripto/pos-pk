@@ -1,10 +1,10 @@
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { adminConfigApi } from '@/lib/api/admin-config.api';
+import { adminConfigApi, type LoyaltyConfig } from '@/lib/api/admin-config.api';
 import { useAppConfig } from '@/context/AppConfigContext';
 import { formatCurrency } from '@/utils/pos';
 import { Switch } from '@/components/ui/switch';
-import { AlertCircle } from 'lucide-react';
+import { AlertCircle, Lightbulb } from 'lucide-react';
 import {
   Field,
   Grid,
@@ -18,25 +18,26 @@ export function LoyaltySection() {
   const { currencyConfig } = useAppConfig();
   const qc = useQueryClient();
   const { data: cfg, isLoading } = useQuery({ queryKey: ['loyaltyConfig'], queryFn: adminConfigApi.getLoyaltyConfig });
-  const [form, setForm] = useState<any>({});
+  const [form, setForm] = useState<Partial<LoyaltyConfig>>({});
   const [saved,     setSaved]     = useState(false);
   const [failedMsg, setFailedMsg] = useState('');
 
   if (cfg && !Object.keys(form).length) setForm(cfg);
 
   const mut = useMutation({
-    mutationFn: (data: any) => adminConfigApi.upsertLoyaltyConfig(data),
+    mutationFn: (data: Partial<LoyaltyConfig>) => adminConfigApi.upsertLoyaltyConfig(data),
     onSuccess: () => { qc.invalidateQueries({ queryKey: ['loyaltyConfig'] }); setSaved(true); setTimeout(() => setSaved(false), 3000); },
-    onError:   (err: any) => {
-      const msg = err?.message || String(err) || 'Unknown error';
+    onError:   (err: Error) => {
+      const msg = err.message || 'Unknown error';
       console.error('Loyalty save error:', err);
       setFailedMsg(msg);
       setTimeout(() => setFailedMsg(''), 8000);
     },
   });
 
-  const set = (key: string, val: any) => setForm((f: any) => ({ ...f, [key]: val }));
-  if (isLoading) return <div className="py-10 text-center text-slate-400">Loading…</div>;
+  const set = <K extends keyof LoyaltyConfig>(key: K, val: LoyaltyConfig[K]) =>
+    setForm((f) => ({ ...f, [key]: val }));
+  if (isLoading) return <div className="py-10 text-center text-muted-foreground/70">Loading…</div>;
 
   const pointValue = formatCurrency((form.pointValuePaisa ?? 50) / 100);
   const earnSpend = formatCurrency((form.earnRatePaisa ?? 1000) / 100);
@@ -45,10 +46,10 @@ export function LoyaltySection() {
     <form onSubmit={(e) => { e.preventDefault(); mut.mutate(form); }} className="space-y-6">
       <SectionCard title="Loyalty Program Settings">
         <div className="space-y-6">
-          <div className="flex items-center justify-between rounded-lg border border-slate-200 p-4 dark:border-slate-700">
+          <div className="flex items-center justify-between rounded-lg border border-border p-4">
             <div>
-              <p className="text-sm font-semibold text-slate-900 dark:text-white">Enable Loyalty Program</p>
-              <p className="text-xs text-slate-600 dark:text-slate-300">Customers earn and redeem points on every purchase</p>
+              <p className="text-sm font-semibold text-foreground">Enable Loyalty Program</p>
+              <p className="text-xs text-muted-foreground">Customers earn and redeem points on every purchase</p>
             </div>
             <Switch checked={form.isEnabled ?? true} onCheckedChange={val => set('isEnabled', val)} />
           </div>
@@ -72,9 +73,11 @@ export function LoyaltySection() {
           </Grid>
 
           {/* Summary box */}
-          <div className="rounded-lg bg-blue-50 p-4 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800">
-            <p className="text-sm font-medium text-blue-800 dark:text-blue-300 mb-1">💡 Summary</p>
-            <p className="text-xs text-blue-700 dark:text-blue-200">
+          <div className="rounded-lg bg-info-subtle p-4 border border-info-border">
+            <p className="mb-1 flex items-center gap-1.5 text-sm font-medium text-primary">
+              <Lightbulb className="h-4 w-4 shrink-0" aria-hidden="true" />Summary
+            </p>
+            <p className="text-xs text-primary">
               Customer spends <strong>{earnSpend}</strong> → earns <strong>1 point</strong> (worth <strong>{pointValue}</strong>).
               Minimum <strong>{form.minPointsRedeem ?? 100} points</strong> to redeem. Max <strong>{form.maxRedeemPct ?? 20}%</strong> of bill.
             </p>
@@ -84,7 +87,7 @@ export function LoyaltySection() {
 
       <div className="flex items-center justify-between">
         {failedMsg
-          ? <span className="flex items-center gap-1.5 text-sm text-red-600 dark:text-red-400"><AlertCircle className="w-4 h-4" /> {failedMsg}</span>
+          ? <span className="flex items-center gap-1.5 text-sm text-danger-text"><AlertCircle className="w-4 h-4" /> {failedMsg}</span>
           : <SaveFeedback success={saved} error={false} />
         }
         <SaveButton loading={mut.isPending} />

@@ -43,11 +43,11 @@ export const CashierLoginForm: React.FC<CashierLoginFormProps> = ({
       {/* Till / Register Selection */}
       <div className="space-y-1.5">
         <div className="flex items-center justify-between">
-          <Label htmlFor="till-select" className="text-xs font-semibold uppercase tracking-wider text-slate-300 flex items-center gap-1.5">
-            <Store className="w-3.5 h-3.5 text-emerald-400" />
+          <Label htmlFor="till-select" className="text-xs font-semibold uppercase tracking-wider text-screen-subtle flex items-center gap-1.5">
+            <Store className="w-3.5 h-3.5 text-success" />
             <span>{t.till.selectTerminal}</span>
           </Label>
-          <span className="text-[11px] font-medium text-emerald-400/90 bg-emerald-950/60 border border-emerald-500/20 px-2 py-0.5 rounded">
+          <span className="text-[11px] font-medium text-success/90 bg-success/60 border border-success/20 px-2 py-0.5 rounded">
             POS
           </span>
         </div>
@@ -57,7 +57,7 @@ export const CashierLoginForm: React.FC<CashierLoginFormProps> = ({
             value={terminalId}
             onChange={(e) => setTerminalId(e.target.value)}
             disabled={terminalsLoading}
-            className="w-full h-12 px-3.5 rounded-xl bg-slate-900/80 border border-slate-700/80 text-white text-sm font-medium focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/30 focus:outline-none transition-all disabled:opacity-50 appearance-none cursor-pointer"
+            className="w-full h-12 px-3.5 rounded-xl bg-screen-raised/80 border border-screen-border/80 text-screen-foreground text-sm font-medium focus:border-success focus:ring-2 focus:ring-success/30 focus:outline-none transition-all disabled:opacity-50 appearance-none cursor-pointer"
           >
             {terminals.length === 0 && (
               <option value="">
@@ -70,7 +70,7 @@ export const CashierLoginForm: React.FC<CashierLoginFormProps> = ({
               </option>
             ))}
           </select>
-          <div className="absolute right-3.5 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400">
+          <div className="absolute right-3.5 top-1/2 -translate-y-1/2 pointer-events-none text-screen-muted">
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
             </svg>
@@ -80,8 +80,8 @@ export const CashierLoginForm: React.FC<CashierLoginFormProps> = ({
 
       {/* Cashier Username Input */}
       <div className="space-y-1.5">
-        <Label htmlFor="cashier-username" className="text-xs font-semibold uppercase tracking-wider text-slate-300 flex items-center gap-1.5">
-          <User className="w-3.5 h-3.5 text-slate-400" />
+        <Label htmlFor="cashier-username" className="text-xs font-semibold uppercase tracking-wider text-screen-subtle flex items-center gap-1.5">
+          <User className="w-3.5 h-3.5 text-screen-muted" />
           <span>{t.auth.username}</span>
         </Label>
         <div className="relative">
@@ -92,7 +92,7 @@ export const CashierLoginForm: React.FC<CashierLoginFormProps> = ({
             value={username}
             onChange={(e) => setUsername(e.target.value)}
             autoComplete="username"
-            className="w-full h-12 px-3.5 rounded-xl bg-slate-900/80 border border-slate-700/80 text-white text-sm placeholder-slate-500 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/30 focus:outline-none transition-all font-medium"
+            className="w-full h-12 px-3.5 rounded-xl bg-screen-raised/80 border border-screen-border/80 text-screen-foreground text-sm placeholder-screen-dim focus:border-success focus:ring-2 focus:ring-success/30 focus:outline-none transition-all font-medium"
             required
             autoFocus
           />
@@ -101,8 +101,8 @@ export const CashierLoginForm: React.FC<CashierLoginFormProps> = ({
 
       {/* Cashier Password Input */}
       <div className="space-y-1.5">
-        <Label htmlFor="cashier-password" className="text-xs font-semibold uppercase tracking-wider text-slate-300 flex items-center gap-1.5">
-          <Lock className="w-3.5 h-3.5 text-slate-400" />
+        <Label htmlFor="cashier-password" className="text-xs font-semibold uppercase tracking-wider text-screen-subtle flex items-center gap-1.5">
+          <Lock className="w-3.5 h-3.5 text-screen-muted" />
           <span>{t.auth.password}</span>
         </Label>
         <div className="relative">
@@ -112,7 +112,7 @@ export const CashierLoginForm: React.FC<CashierLoginFormProps> = ({
             placeholder="••••••••"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            className="w-full h-12 px-3.5 rounded-xl bg-slate-900/80 border border-slate-700/80 text-white text-sm placeholder-slate-500 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/30 focus:outline-none transition-all"
+            className="w-full h-12 px-3.5 rounded-xl bg-screen-raised/80 border border-screen-border/80 text-screen-foreground text-sm placeholder-screen-dim focus:border-success focus:ring-2 focus:ring-success/30 focus:outline-none transition-all"
             required
           />
         </div>
@@ -122,7 +122,7 @@ export const CashierLoginForm: React.FC<CashierLoginFormProps> = ({
       <Button
         type="submit"
         disabled={loading}
-        className="w-full h-12 mt-6 bg-emerald-600 hover:bg-emerald-500 active:scale-[0.99] text-white font-bold text-sm sm:text-base rounded-xl transition-all shadow-lg shadow-emerald-900/30 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 cursor-pointer"
+        className="w-full h-12 mt-6 bg-success hover:bg-success active:scale-[0.99] text-screen-foreground font-bold text-sm sm:text-base rounded-xl transition-all shadow-lg shadow-success/30 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 cursor-pointer"
       >
         {loading ? (
           <>

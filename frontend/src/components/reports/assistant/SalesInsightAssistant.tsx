@@ -136,16 +136,16 @@ export function SalesInsightAssistant() {
   const isEmpty = messages.length === 0 && !loading;
 
   return (
-    <div className="flex min-h-0 flex-1 flex-col bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100">
+    <div className="flex min-h-0 flex-1 flex-col bg-muted/40 text-foreground">
       <SuggestionPanel onSelect={sendQuery} disabled={loading || transcribing} />
 
-      <div ref={chatContainerRef} className="min-h-0 flex-1 overflow-y-auto bg-slate-50 dark:bg-slate-950 px-8 py-6 pos-scrollbar">
+      <div ref={chatContainerRef} className="min-h-0 flex-1 overflow-y-auto bg-muted/40 px-8 py-6 pos-scrollbar">
         <div className="mx-auto flex min-h-full max-w-3xl flex-col space-y-6">
           {messages.length > 0 && (
             <div className="flex justify-end">
               <button
                 onClick={clearChat}
-                className="flex items-center gap-1.5 rounded-full border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-3.5 py-1.5 text-[11px] font-semibold text-slate-600 dark:text-slate-300 shadow-sm transition-colors hover:border-slate-300 hover:text-slate-900 dark:hover:text-white cursor-pointer"
+                className="flex items-center gap-1.5 rounded-full border border-border bg-card px-3.5 py-1.5 text-[11px] font-semibold text-muted-foreground shadow-sm transition-colors hover:border-border hover:text-foreground cursor-pointer"
               >
                 <RotateCcw className="h-3 w-3" /> {t.common.clear}
               </button>
@@ -154,11 +154,11 @@ export function SalesInsightAssistant() {
 
           {isEmpty && (
             <div className="flex h-full flex-col items-center justify-center space-y-3 py-20 text-center">
-              <div className="flex h-14 w-14 items-center justify-center rounded-2xl border border-blue-200 dark:border-blue-900/50 bg-blue-50 dark:bg-blue-950/40 text-blue-600 dark:text-blue-400 shadow-sm">
+              <div className="flex h-14 w-14 items-center justify-center rounded-2xl border border-info-border bg-info-subtle text-primary shadow-sm">
                 <Bot className="h-7 w-7" />
               </div>
-              <p className="text-base font-extrabold text-slate-900 dark:text-slate-100">{t.managerReport.aiAssistantTitle}</p>
-              <p className="max-w-xs text-sm leading-relaxed text-slate-500 dark:text-slate-400 font-medium">
+              <p className="text-base font-extrabold text-foreground">{t.managerReport.aiAssistantTitle}</p>
+              <p className="max-w-xs text-sm leading-relaxed text-muted-foreground font-medium">
                 {t.managerReport.askAiPlaceholder}
               </p>
             </div>
@@ -171,23 +171,23 @@ export function SalesInsightAssistant() {
           )}
 
           {error && (
-            <div className="flex items-start gap-3 rounded-xl border border-red-200 dark:border-red-800/50 bg-red-50 dark:bg-red-950/40 px-4 py-3">
-              <div className="mt-1.5 h-1.5 w-1.5 flex-shrink-0 rounded-full bg-red-500" />
-              <p className="text-sm font-semibold text-red-700 dark:text-red-300">{error}</p>
+            <div className="flex items-start gap-3 rounded-xl border border-danger-border bg-danger-subtle px-4 py-3">
+              <div className="mt-1.5 h-1.5 w-1.5 flex-shrink-0 rounded-full bg-danger" />
+              <p className="text-sm font-semibold text-danger-text">{error}</p>
             </div>
           )}
         </div>
       </div>
 
-      <div className="flex-shrink-0 border-t border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 px-8 py-4">
+      <div className="flex-shrink-0 border-t border-border bg-card px-8 py-4">
         <div className="mx-auto max-w-3xl">
-          <div className="flex items-center gap-3 rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-100/80 dark:bg-slate-800/60 px-2.5 py-2 shadow-sm transition-all focus-within:border-blue-500 focus-within:bg-white dark:focus-within:bg-slate-800 focus-within:ring-2 focus-within:ring-blue-500/20">
+          <div className="flex items-center gap-3 rounded-2xl border border-border bg-secondary/80 px-2.5 py-2 shadow-sm transition-all focus-within:border-primary focus-within:bg-card focus-within:ring-2 focus-within:ring-primary/20">
             <button
               onClick={() => recording ? stopRecording() : startRecording()}
               disabled={loading || transcribing}
-              className={`relative flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-xl transition-all cursor-pointer ${recording ? 'bg-red-500 text-white shadow-lg shadow-red-500/40' : 'bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-400 hover:bg-slate-300 dark:hover:bg-slate-600 hover:text-slate-900 dark:hover:text-white'} disabled:cursor-not-allowed disabled:opacity-40`}
+              className={`relative flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-xl transition-all cursor-pointer ${recording ? 'bg-danger text-white shadow-lg shadow-danger/40' : 'bg-secondary text-muted-foreground hover:bg-secondary hover:text-foreground'} disabled:cursor-not-allowed disabled:opacity-40`}
             >
-              {recording && <span className="absolute inset-0 animate-ping rounded-xl bg-red-500 opacity-25" />}
+              {recording && <span className="absolute inset-0 animate-ping rounded-xl bg-danger opacity-25" />}
               {recording ? <MicOff className="relative z-10 h-4 w-4" /> : <Mic className="h-4 w-4" />}
             </button>
 
@@ -202,20 +202,20 @@ export function SalesInsightAssistant() {
                 t.managerReport.askAiPlaceholder
               }
               disabled={loading || recording || transcribing}
-              className="flex-1 bg-transparent px-1 py-1 text-sm font-medium text-slate-900 dark:text-slate-100 outline-none placeholder:text-slate-400 dark:placeholder:text-slate-500 disabled:cursor-not-allowed"
+              className="flex-1 bg-transparent px-1 py-1 text-sm font-medium text-foreground outline-none placeholder:text-muted-foreground/70 disabled:cursor-not-allowed"
             />
 
             <button
               onClick={() => sendQuery(input)}
               disabled={!input.trim() || loading || recording || transcribing}
-              className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-blue-600 to-indigo-600 text-white shadow-md shadow-blue-500/20 transition-all hover:from-blue-500 hover:to-indigo-500 disabled:cursor-not-allowed disabled:opacity-30 disabled:shadow-none cursor-pointer"
+              className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-xl bg-primary text-white shadow-md shadow-primary/20 transition-all hover:from-primary hover:to-primary disabled:cursor-not-allowed disabled:opacity-30 disabled:shadow-none cursor-pointer"
             >
               {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
             </button>
           </div>
-          <p className="mt-2 text-center text-[10px] text-slate-400 dark:text-slate-500 font-medium">
-            <span className="font-semibold text-slate-600 dark:text-slate-400">Enter</span> to send &nbsp;·&nbsp;
-            <span className="font-semibold text-slate-600 dark:text-slate-400">{t.managerReport.aiAssistantTitle}</span>
+          <p className="mt-2 text-center text-2xs text-muted-foreground/70 font-medium">
+            <span className="font-semibold text-muted-foreground">Enter</span> to send &nbsp;·&nbsp;
+            <span className="font-semibold text-muted-foreground">{t.managerReport.aiAssistantTitle}</span>
           </p>
         </div>
       </div>

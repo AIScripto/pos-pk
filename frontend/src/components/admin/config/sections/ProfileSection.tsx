@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { adminConfigApi } from '@/lib/api/admin-config.api';
+import { adminConfigApi, type OrgConfig } from '@/lib/api/admin-config.api';
 import { branchApi } from '@/lib/api/branch.api';
 import SearchableSelect from '@/components/admin/SearchableSelect';
 import { MapPin, Globe, Hash, Phone, Mail } from 'lucide-react';
@@ -18,24 +18,25 @@ export function ProfileSection() {
   const { data: cfg, isLoading } = useQuery({ queryKey: ['orgConfig'], queryFn: adminConfigApi.getOrgConfig });
   const { data: branches = [] }  = useQuery({ queryKey: ['adminBranches'], queryFn: () => branchApi.list() });
 
-  const [form,   setForm]   = useState<any>({});
+  const [form,   setForm]   = useState<Partial<OrgConfig>>({});
   const [saved,  setSaved]  = useState(false);
   const [failed, setFailed] = useState(false);
 
   if (cfg && !Object.keys(form).length) setForm(cfg);
 
   const mut = useMutation({
-    mutationFn: (data: any) => adminConfigApi.upsertOrgConfig(data),
+    mutationFn: (data: Partial<OrgConfig>) => adminConfigApi.upsertOrgConfig(data),
     onSuccess: () => { qc.invalidateQueries({ queryKey: ['orgConfig'] }); setSaved(true); setTimeout(() => setSaved(false), 3000); },
     onError:   () => { setFailed(true); setTimeout(() => setFailed(false), 3000); },
   });
 
-  const set = (key: string, val: any) => setForm((f: any) => ({ ...f, [key]: val }));
+  const set = <K extends keyof OrgConfig>(key: K, val: OrgConfig[K]) =>
+    setForm((f) => ({ ...f, [key]: val }));
 
   // Find the currently selected branch to show its address preview
-  const selectedBranch = branches.find((b: any) => b.id === form.defaultBranchId);
+  const selectedBranch = branches.find((b) => b.id === form.defaultBranchId);
 
-  if (isLoading) return <div className="py-10 text-center text-slate-400">Loading…</div>;
+  if (isLoading) return <div className="py-10 text-center text-muted-foreground/70">Loading…</div>;
 
   return (
     <form onSubmit={(e) => { e.preventDefault(); mut.mutate(form); }} className="space-y-6">
@@ -75,7 +76,7 @@ export function ProfileSection() {
         <div className="space-y-4">
           <Field label="Default Branch" hint="Address, city and area are sourced from the selected branch">
             <SearchableSelect
-              options={branches.map((b: any) => ({
+              options={branches.map((b) => ({
                 value: b.id,
                 label: `${b.name} (${b.label})`,
               }))}
@@ -87,67 +88,67 @@ export function ProfileSection() {
 
           {/* Branch Address Preview */}
           {selectedBranch ? (
-            <div className="rounded-lg border border-blue-200 bg-blue-50 p-4 dark:border-blue-800 dark:bg-blue-950/30">
-              <p className="mb-3 text-xs font-semibold uppercase tracking-wide text-blue-600 dark:text-blue-400">
+            <div className="rounded-lg border border-info-border bg-info-subtle p-4">
+              <p className="mb-3 text-xs font-semibold uppercase tracking-wide text-primary">
                 Branch Address Preview
               </p>
               <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
                 <div className="flex items-start gap-2">
-                  <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-blue-500" />
+                  <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
                   <div>
-                    <p className="text-xs text-slate-500 dark:text-slate-300">Address</p>
-                    <p className="text-sm font-medium text-slate-800 dark:text-slate-200">
+                    <p className="text-xs text-muted-foreground">Address</p>
+                    <p className="text-sm font-medium text-foreground">
                       {selectedBranch.addrLine1 || '—'}
                       {selectedBranch.addrLine2 && <>, {selectedBranch.addrLine2}</>}
                     </p>
                   </div>
                 </div>
                 <div className="flex items-start gap-2">
-                  <Globe className="mt-0.5 h-4 w-4 shrink-0 text-blue-500" />
+                  <Globe className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
                   <div>
-                    <p className="text-xs text-slate-500 dark:text-slate-300">City / Area</p>
-                    <p className="text-sm font-medium text-slate-800 dark:text-slate-200">
+                    <p className="text-xs text-muted-foreground">City / Area</p>
+                    <p className="text-sm font-medium text-foreground">
                       {selectedBranch.addrCity || selectedBranch.city?.name || '—'}
                       {selectedBranch.addrArea && ` · ${selectedBranch.addrArea}`}
                     </p>
                   </div>
                 </div>
                 <div className="flex items-start gap-2">
-                  <Hash className="mt-0.5 h-4 w-4 shrink-0 text-blue-500" />
+                  <Hash className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
                   <div>
-                    <p className="text-xs text-slate-500 dark:text-slate-300">State / Country</p>
-                    <p className="text-sm font-medium text-slate-800 dark:text-slate-200">
+                    <p className="text-xs text-muted-foreground">State / Country</p>
+                    <p className="text-sm font-medium text-foreground">
                       {selectedBranch.addrState || '—'} · {selectedBranch.addrCountry || 'PK'}
                     </p>
                   </div>
                 </div>
                 {selectedBranch.phone && (
                   <div className="flex items-start gap-2">
-                    <Phone className="mt-0.5 h-4 w-4 shrink-0 text-blue-500" />
+                    <Phone className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
                     <div>
-                      <p className="text-xs text-slate-500 dark:text-slate-300">Branch Phone</p>
-                      <p className="text-sm font-medium text-slate-800 dark:text-slate-200">{selectedBranch.phone}</p>
+                      <p className="text-xs text-muted-foreground">Branch Phone</p>
+                      <p className="text-sm font-medium text-foreground">{selectedBranch.phone}</p>
                     </div>
                   </div>
                 )}
                 {selectedBranch.email && (
                   <div className="flex items-start gap-2">
-                    <Mail className="mt-0.5 h-4 w-4 shrink-0 text-blue-500" />
+                    <Mail className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
                     <div>
-                      <p className="text-xs text-slate-500 dark:text-slate-300">Branch Email</p>
-                      <p className="text-sm font-medium text-slate-800 dark:text-slate-200">{selectedBranch.email}</p>
+                      <p className="text-xs text-muted-foreground">Branch Email</p>
+                      <p className="text-sm font-medium text-foreground">{selectedBranch.email}</p>
                     </div>
                   </div>
                 )}
               </div>
-              <p className="mt-3 text-xs text-blue-500 dark:text-blue-400">
+              <p className="mt-3 text-xs text-primary">
                 ℹ️ To update the address, edit the branch in Location Management → Branches.
               </p>
             </div>
           ) : (
-            <div className="rounded-lg border border-dashed border-slate-300 bg-slate-50 p-4 text-center dark:border-slate-600 dark:bg-slate-950/40">
-              <MapPin className="mx-auto mb-2 h-6 w-6 text-slate-400 dark:text-slate-300" />
-              <p className="text-sm text-slate-500 dark:text-slate-300">Select a default branch to preview its address</p>
+            <div className="rounded-lg border border-dashed border-border bg-muted/40 p-4 text-center">
+              <MapPin className="mx-auto mb-2 h-6 w-6 text-muted-foreground" />
+              <p className="text-sm text-muted-foreground">Select a default branch to preview its address</p>
             </div>
           )}
         </div>

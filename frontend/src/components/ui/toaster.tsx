@@ -13,16 +13,16 @@ export function Toaster() {
         return (
           <Toast key={id} variant={variant} {...props}>
             <div className="flex items-start gap-2.5 min-w-0">
-              <div className="mt-0.5 shrink-0">
+              <div className="mt-0.5 shrink-0" aria-hidden="true">
                 {isDestructive ? (
-                  <AlertTriangle className="h-4.5 w-4.5 text-rose-200 dark:text-white" />
+                  <AlertTriangle className="h-4.5 w-4.5 text-destructive-foreground" />
                 ) : (
-                  <CheckCircle2 className="h-4.5 w-4.5 text-blue-400 dark:text-blue-600" />
+                  <CheckCircle2 className="h-4.5 w-4.5 text-[hsl(var(--pos-success))]" />
                 )}
               </div>
               <div className="grid gap-0.5 min-w-0">
-                {title && <ToastTitle className="font-extrabold text-xs">{title}</ToastTitle>}
-                {description && <ToastDescription className="text-xs opacity-90 leading-snug">{description}</ToastDescription>}
+                {title && <ToastTitle className="font-bold text-sm">{title}</ToastTitle>}
+                {description && <ToastDescription className="text-[13px] opacity-90 leading-snug">{description}</ToastDescription>}
               </div>
             </div>
             {action}

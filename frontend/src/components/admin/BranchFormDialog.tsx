@@ -228,7 +228,7 @@ export default function BranchFormDialog({
         <div className="space-y-1">
           <label className="text-xs font-semibold">Branch Code</label>
           <div className="flex gap-2 items-center h-8">
-            <div className="flex items-center px-3 py-1 bg-gray-100 rounded-lg border border-gray-300 text-xs font-mono text-gray-700 min-w-fit dark:bg-slate-700 dark:border-slate-600 dark:text-slate-100">
+            <div className="flex items-center px-3 py-1 bg-secondary rounded-lg border border-border text-xs font-mono text-foreground/80 min-w-fit">
               {formData.cityId
                 ? `${cities.find((c) => c.id === formData.cityId)?.code || ''}-${
                     formData.areaId ? `${areas.find((a) => a.id === formData.areaId)?.tag || ''}-` : ''
@@ -245,8 +245,8 @@ export default function BranchFormDialog({
             />
           </div>
           {formData.label && (
-            <div className="mt-2 text-xs font-mono font-semibold text-white dark:text-slate-100">
-              Final: <span className="text-blue-400 dark:text-blue-300">{formData.label}</span>
+            <div className="mt-2 text-xs font-mono font-semibold text-white dark:text-foreground">
+              Final: <span className="text-primary">{formData.label}</span>
             </div>
           )}
         </div>

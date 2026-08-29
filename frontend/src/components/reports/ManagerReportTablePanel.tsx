@@ -133,7 +133,7 @@ export function ManagerReportTablePanel({
       <Tabs value={activeTab} onValueChange={(value) => onTabChange?.(value as ManagerReportTableTab)} className="w-full">
         <div className="mb-3 flex flex-wrap items-center justify-between gap-3">
           <div>
-            <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-primary/75">{t.managerReport.reportsTitle}</p>
+            <p className="text-2xs font-semibold uppercase tracking-[0.16em] text-primary/75">{t.managerReport.reportsTitle}</p>
             <p className="mt-1 text-xs text-muted-foreground">
               {meta.dateRangeLabel} · {meta.datasetLabel} · {meta.categoryLabel}
             </p>

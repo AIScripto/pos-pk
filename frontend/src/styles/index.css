@@ -1,9 +1,9 @@
 @import "./tokens.css";
 @import "./base.css";
+@import "./motion.css";
 @import "./components.css";
 @import "./admin.css";
 @import "./pos.css";
-@import "./pos-theme.css";
 @import "./utilities.css";
 @import "./print.css";
 

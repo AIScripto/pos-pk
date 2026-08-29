@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useToast } from '@/hooks/use-toast';
 import { getUserFriendlyErrorMessage } from '@/lib/error-handler';
-import { stateApi } from '@/lib/api/state.api';
+import { stateApi, type State } from '@/lib/api/state.api';
 import StateFormDialog from '@/components/admin/StateFormDialog';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -21,8 +21,8 @@ export default function AdminStates() {
   const queryClient = useQueryClient();
   const { toast } = useToast();
   const [formOpen, setFormOpen] = useState(false);
-  const [selectedState, setSelectedState] = useState<any>(null);
-  const [deleteConfirm, setDeleteConfirm] = useState<any>(null);
+  const [selectedState, setSelectedState] = useState<State | null>(null);
+  const [deleteConfirm, setDeleteConfirm] = useState<State | null>(null);
 
   const { data: states = [], isLoading } = useQuery({
     queryKey: ['states'],
@@ -49,7 +49,7 @@ export default function AdminStates() {
     },
   });
 
-  const handleEdit = (state: any) => {
+  const handleEdit = (state: State) => {
     setSelectedState(state);
     setFormOpen(true);
   };
@@ -64,13 +64,13 @@ export default function AdminStates() {
     setSelectedState(null);
   };
 
-  const handleDeleteState = (state: any) => {
+  const handleDeleteState = (state: State) => {
     setDeleteConfirm(state);
   };
 
   if (isLoading) {
     return (
-      <div className="p-6 text-center text-slate-500">
+      <div className="p-6 text-center text-muted-foreground">
         Loading states...
       </div>
     );
@@ -80,8 +80,8 @@ export default function AdminStates() {
     <div className="p-6 space-y-6">
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900 dark:text-white">States</h1>
-          <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
+          <h1 className="text-2xl font-bold text-foreground">States</h1>
+          <p className="text-sm text-muted-foreground mt-1">
             Manage states and provinces for your organization
           </p>
         </div>
@@ -91,56 +91,56 @@ export default function AdminStates() {
         </Button>
       </div>
 
-      <div className="border rounded-lg border-slate-200 dark:border-slate-700 overflow-hidden">
+      <div className="border rounded-lg border-border overflow-hidden">
         <table className="w-full">
-          <thead className="bg-slate-50 dark:bg-slate-900/50 border-b border-slate-200 dark:border-slate-700">
+          <thead className="bg-muted/40 border-b border-border">
             <tr>
-              <th className="px-6 py-3 text-left text-xs font-semibold text-slate-700 dark:text-slate-300">
+              <th className="px-6 py-3 text-left text-xs font-semibold text-muted-foreground">
                 Name
               </th>
-              <th className="px-6 py-3 text-left text-xs font-semibold text-slate-700 dark:text-slate-300">
+              <th className="px-6 py-3 text-left text-xs font-semibold text-muted-foreground">
                 Tag
               </th>
-              <th className="px-6 py-3 text-left text-xs font-semibold text-slate-700 dark:text-slate-300">
+              <th className="px-6 py-3 text-left text-xs font-semibold text-muted-foreground">
                 Code
               </th>
-              <th className="px-6 py-3 text-left text-xs font-semibold text-slate-700 dark:text-slate-300">
+              <th className="px-6 py-3 text-left text-xs font-semibold text-muted-foreground">
                 Country
               </th>
-              <th className="px-6 py-3 text-left text-xs font-semibold text-slate-700 dark:text-slate-300">
+              <th className="px-6 py-3 text-left text-xs font-semibold text-muted-foreground">
                 Status
               </th>
-              <th className="px-6 py-3 text-right text-xs font-semibold text-slate-700 dark:text-slate-300">
+              <th className="px-6 py-3 text-right text-xs font-semibold text-muted-foreground">
                 Actions
               </th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-slate-200 dark:divide-slate-700">
+          <tbody className="divide-y divide-border">
             {states.map((state) => (
               <tr
                 key={state.id}
-                className="hover:bg-slate-50 dark:hover:bg-slate-900/30 transition-colors"
+                className="hover:bg-muted/40 transition-colors"
               >
-                <td className="px-6 py-4 text-sm font-medium text-slate-900 dark:text-white">
+                <td className="px-6 py-4 text-sm font-medium text-foreground">
                   {state.name}
                 </td>
-                <td className="px-6 py-4 text-sm text-slate-600 dark:text-slate-400">
-                  <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300">
+                <td className="px-6 py-4 text-sm text-muted-foreground">
+                  <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-info-subtle text-primary">
                     {state.tag}
                   </span>
                 </td>
-                <td className="px-6 py-4 text-sm text-slate-600 dark:text-slate-400">
+                <td className="px-6 py-4 text-sm text-muted-foreground">
                   {state.code || '-'}
                 </td>
-                <td className="px-6 py-4 text-sm text-slate-600 dark:text-slate-400">
+                <td className="px-6 py-4 text-sm text-muted-foreground">
                   {state.country}
                 </td>
                 <td className="px-6 py-4 text-sm">
                   <span
                     className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
                       state.isActive
-                        ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300'
-                        : 'bg-gray-100 text-gray-800 dark:bg-gray-900/30 dark:text-gray-300'
+                        ? 'bg-success-subtle text-success-text dark:bg-success/30 dark:text-success'
+                        : 'bg-secondary text-foreground'
                     }`}
                   >
                     {state.isActive ? 'Active' : 'Inactive'}
@@ -160,7 +160,7 @@ export default function AdminStates() {
                       variant="ghost"
                       size="sm"
                       onClick={() => handleDeleteState(state)}
-                      className="gap-1 text-red-600 hover:text-red-700 hover:bg-red-100 dark:text-red-400 dark:hover:bg-red-900/20"
+                      className="gap-1 text-danger-text hover:text-danger-text hover:bg-danger-subtle dark:hover:bg-danger/20"
                     >
                       <Trash2 className="w-4 h-4" />
                     </Button>
@@ -172,7 +172,7 @@ export default function AdminStates() {
         </table>
 
         {states.length === 0 && (
-          <div className="px-6 py-8 text-center text-slate-500 dark:text-slate-400">
+          <div className="px-6 py-8 text-center text-muted-foreground">
             No states found. Create one to get started.
           </div>
         )}
@@ -195,7 +195,7 @@ export default function AdminStates() {
           </AlertDialogHeader>
           <AlertDialogCancel>Cancel</AlertDialogCancel>
           <AlertDialogAction
-            className="bg-red-600 hover:bg-red-700"
+            className="bg-danger hover:bg-danger/90"
             onClick={() => deleteConfirm && deleteMutation.mutate(deleteConfirm.id)}
             disabled={deleteMutation.isPending}
           >

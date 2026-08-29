@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { adminConfigApi } from '@/lib/api/admin-config.api';
+import { adminConfigApi, type OrgConfig } from '@/lib/api/admin-config.api';
 import {
   Field,
   Grid,
@@ -14,20 +14,21 @@ import {
 export function CurrencySection() {
   const qc   = useQueryClient();
   const { data: cfg, isLoading } = useQuery({ queryKey: ['orgConfig'], queryFn: adminConfigApi.getOrgConfig });
-  const [form, setForm] = useState<any>({});
+  const [form, setForm] = useState<Partial<OrgConfig>>({});
   const [saved,  setSaved]  = useState(false);
   const [failed, setFailed] = useState(false);
 
   if (cfg && !Object.keys(form).length) setForm(cfg);
 
   const mut = useMutation({
-    mutationFn: (data: any) => adminConfigApi.upsertOrgConfig(data),
+    mutationFn: (data: Partial<OrgConfig>) => adminConfigApi.upsertOrgConfig(data),
     onSuccess: () => { qc.invalidateQueries({ queryKey: ['orgConfig'] }); setSaved(true); setTimeout(() => setSaved(false), 3000); },
     onError:   () => { setFailed(true); setTimeout(() => setFailed(false), 3000); },
   });
 
-  const set = (key: string, val: any) => setForm((f: any) => ({ ...f, [key]: val }));
-  if (isLoading) return <div className="py-10 text-center text-slate-400">Loading…</div>;
+  const set = <K extends keyof OrgConfig>(key: K, val: OrgConfig[K]) =>
+    setForm((f) => ({ ...f, [key]: val }));
+  if (isLoading) return <div className="py-10 text-center text-muted-foreground">Loading…</div>;
   const symbol = form.currencySymbol ?? 'Rs';
 
   return (

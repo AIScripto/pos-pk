@@ -24,8 +24,8 @@ export default function ProtectedRoute({ children, minRole, permission, requireT
   // Still checking localStorage / server
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <Loader2 className="w-8 h-8 animate-spin text-orange-500" />
+      <div className="min-h-screen flex items-center justify-center bg-muted/40">
+        <Loader2 className="w-8 h-8 animate-spin text-warning" />
       </div>
     );
   }
@@ -56,11 +56,11 @@ export default function ProtectedRoute({ children, minRole, permission, requireT
 
 function AccessDenied({ reason }: { reason: string }) {
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center gap-4 bg-gray-50 text-center p-8">
-      <ShieldX className="w-16 h-16 text-red-400" />
-      <h1 className="text-2xl font-bold text-gray-800">Access Denied</h1>
-      <p className="text-gray-500 max-w-sm">{reason}</p>
-      <a href="/" className="text-orange-500 underline text-sm">← Go back</a>
+    <div className="min-h-screen flex flex-col items-center justify-center gap-4 bg-muted/40 text-center p-8">
+      <ShieldX className="w-16 h-16 text-danger" />
+      <h1 className="text-2xl font-bold text-foreground">Access Denied</h1>
+      <p className="text-muted-foreground max-w-sm">{reason}</p>
+      <a href="/" className="text-warning underline text-sm">← Go back</a>
     </div>
   );
 }

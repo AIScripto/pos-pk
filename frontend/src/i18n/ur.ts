@@ -6,6 +6,7 @@ import { TranslationKey } from './en';
 
 export const ur: TranslationKey = {
   common: {
+    added: 'شامل کر دیا',
     appName: 'کرسپ اینڈ کرمبز پی او ایس',
     subTitle: 'کوئیک سروس ریسٹورنٹ',
     currency: 'روپے',
@@ -92,6 +93,9 @@ export const ur: TranslationKey = {
     results: 'نتائج',
   },
   pos: {
+    processingOrder: 'آرڈر پروسیس ہو رہا ہے…',
+    sendToKitchen: 'تصدیق کریں اور کچن بھیجیں',
+    addItemsToStart: 'آرڈر شروع کرنے کے لیے آئٹمز شامل کریں',
     collectPayment: 'رقم وصول کریں',
     tenderCheckout: 'بل کی ادائیگی',
     totalPayable: 'کل واجب الادا رقم',
@@ -171,6 +175,7 @@ export const ur: TranslationKey = {
     invalidAmount: 'برائے مہربانی درست رقم درج کریں',
   },
   discount: {
+    expandItemHint: 'آئٹم یا مجموعی رعایت لگانے کے لیے کارٹ آئٹم کھولیں',
     discountTitle: 'آرڈر پر ڈسکاؤنٹ لگائیں',
     typePercentage: 'فیصد (%)',
     typeFixed: 'مخصوص رقم (روپے)',

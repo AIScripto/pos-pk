@@ -3,7 +3,7 @@
 // Single-org mode: only one organisation exists per deployment
 // =============================================================================
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { organisationApi, UpdateOrganisationInput } from '@/lib/api/organisation.api';
 import AdminPageLayout from '@/components/admin/AdminPageLayout';
@@ -18,9 +18,9 @@ import { Button } from '@/components/ui/button';
 function Field({ label, children, hint }: { label: string; children: React.ReactNode; hint?: string }) {
   return (
     <div className="space-y-1.5">
-      <label className="block text-sm font-medium text-slate-700 dark:text-slate-300">{label}</label>
+      <label className="block text-sm font-medium text-muted-foreground">{label}</label>
       {children}
-      {hint && <p className="text-xs text-slate-500 dark:text-slate-400">{hint}</p>}
+      {hint && <p className="text-xs text-muted-foreground">{hint}</p>}
     </div>
   );
 }
@@ -28,10 +28,7 @@ function Field({ label, children, hint }: { label: string; children: React.React
 function Input({ className = '', ...props }: React.InputHTMLAttributes<HTMLInputElement>) {
   return (
     <input
-      className={`w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900
-        placeholder-slate-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20
-        dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100 dark:placeholder-slate-500
-        dark:focus:border-blue-400 disabled:opacity-50 disabled:cursor-not-allowed ${className}`}
+      className={`w-full rounded-lg border border-border bg-card px-3 py-2 text-sm text-foreground placeholder-muted-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 disabled:opacity-50 disabled:cursor-not-allowed ${className}`}
       {...props}
     />
   );
@@ -39,10 +36,10 @@ function Input({ className = '', ...props }: React.InputHTMLAttributes<HTMLInput
 
 function SectionCard({ title, icon, children }: { title: string; icon: React.ReactNode; children: React.ReactNode }) {
   return (
-    <div className="rounded-xl border border-slate-200 bg-white shadow-sm dark:border-slate-700 dark:bg-slate-800">
-      <div className="flex items-center gap-2 border-b border-slate-200 px-5 py-4 dark:border-slate-700">
-        <span className="text-slate-500 dark:text-slate-400">{icon}</span>
-        <h2 className="text-sm font-semibold text-slate-800 dark:text-slate-100">{title}</h2>
+    <div className="rounded-xl border border-border bg-card shadow-sm">
+      <div className="flex items-center gap-2 border-b border-border px-5 py-4">
+        <span className="text-muted-foreground">{icon}</span>
+        <h2 className="text-sm font-semibold text-foreground">{title}</h2>
       </div>
       <div className="grid grid-cols-1 gap-4 p-5 sm:grid-cols-2">{children}</div>
     </div>
@@ -62,12 +59,15 @@ export default function AdminOrganisation() {
     queryFn:  organisationApi.get,
   });
 
-  // Populate form once data loads (only on first load)
+  // Populate the form the first time the organisation loads, and only then —
+  // re-running would discard whatever the user has typed since. The guard used
+  // to read `form` without depending on it; a ref says "once" directly.
+  const populated = useRef(false);
   useEffect(() => {
-    if (org && !Object.keys(form).length) {
-      const { id, slug, createdAt, updatedAt, ...rest } = org as any;
-      setForm(rest);
-    }
+    if (!org || populated.current) return;
+    populated.current = true;
+    const { id, slug, createdAt, updatedAt, ...rest } = org;
+    setForm(rest);
   }, [org]);
 
   const mutation = useMutation({
@@ -78,13 +78,16 @@ export default function AdminOrganisation() {
       setErrMsg('');
       setTimeout(() => setSaved(false), 3000);
     },
-    onError: (err: any) => {
-      setErrMsg(err?.response?.data?.message || err?.message || 'Failed to save');
+    onError: (err: Error) => {
+      // The API client throws ApiError, which carries the server's message
+      // directly — the axios-shaped `err.response.data.message` chain that used
+      // to be checked here never matched anything.
+      setErrMsg(err.message || 'Failed to save');
       setTimeout(() => setErrMsg(''), 5000);
     },
   });
 
-  function set(key: keyof UpdateOrganisationInput, value: any) {
+  function set<K extends keyof UpdateOrganisationInput>(key: K, value: UpdateOrganisationInput[K]) {
     setForm(prev => ({ ...prev, [key]: value }));
   }
 
@@ -97,7 +100,7 @@ export default function AdminOrganisation() {
     return (
       <AdminPageLayout title="Organisation" description="Loading…" icon={<Building2 className="w-5 h-5" />}>
         <div className="flex h-48 items-center justify-center">
-          <Loader2 className="w-8 h-8 animate-spin text-blue-500" />
+          <Loader2 className="w-8 h-8 animate-spin text-primary" />
         </div>
       </AdminPageLayout>
     );
@@ -124,8 +127,8 @@ export default function AdminOrganisation() {
 
           <Field label="Slug" hint="URL-safe identifier — cannot be changed">
             <div className="relative">
-              <Lock className="pointer-events-none absolute left-3 top-2.5 w-4 h-4 text-slate-400" />
-              <Input value={org?.slug ?? ''} disabled className="pl-9 bg-slate-50 dark:bg-slate-900" />
+              <Lock className="pointer-events-none absolute left-3 top-2.5 w-4 h-4 text-muted-foreground/70" />
+              <Input value={org?.slug ?? ''} disabled className="pl-9 bg-muted/40" />
             </div>
           </Field>
 
@@ -140,7 +143,7 @@ export default function AdminOrganisation() {
 
           <Field label="Website">
             <div className="relative">
-              <Globe className="pointer-events-none absolute left-3 top-2.5 w-4 h-4 text-slate-400" />
+              <Globe className="pointer-events-none absolute left-3 top-2.5 w-4 h-4 text-muted-foreground/70" />
               <Input
                 value={form.website ?? ''}
                 onChange={e => set('website', e.target.value)}
@@ -156,7 +159,7 @@ export default function AdminOrganisation() {
         <SectionCard title="Contact" icon={<Phone className="w-4 h-4" />}>
           <Field label="Email">
             <div className="relative">
-              <Mail className="pointer-events-none absolute left-3 top-2.5 w-4 h-4 text-slate-400" />
+              <Mail className="pointer-events-none absolute left-3 top-2.5 w-4 h-4 text-muted-foreground/70" />
               <Input
                 value={form.email ?? ''}
                 onChange={e => set('email', e.target.value)}
@@ -169,7 +172,7 @@ export default function AdminOrganisation() {
 
           <Field label="Phone">
             <div className="relative">
-              <Phone className="pointer-events-none absolute left-3 top-2.5 w-4 h-4 text-slate-400" />
+              <Phone className="pointer-events-none absolute left-3 top-2.5 w-4 h-4 text-muted-foreground/70" />
               <Input
                 value={form.phone ?? ''}
                 onChange={e => set('phone', e.target.value)}
@@ -225,7 +228,7 @@ export default function AdminOrganisation() {
 
           <Field label="Postal Code">
             <div className="relative">
-              <Hash className="pointer-events-none absolute left-3 top-2.5 w-4 h-4 text-slate-400" />
+              <Hash className="pointer-events-none absolute left-3 top-2.5 w-4 h-4 text-muted-foreground/70" />
               <Input
                 value={form.addrPostCode ?? ''}
                 onChange={e => set('addrPostCode', e.target.value)}
@@ -237,20 +240,20 @@ export default function AdminOrganisation() {
         </SectionCard>
 
         {/* ── Footer actions ───────────────────────────────────────────── */}
-        <div className="flex items-center justify-between rounded-xl border border-slate-200 bg-white px-5 py-4 shadow-sm dark:border-slate-700 dark:bg-slate-800">
+        <div className="flex items-center justify-between rounded-xl border border-border bg-card px-5 py-4 shadow-sm">
           <div className="flex items-center gap-3">
             {saved && (
-              <span className="flex items-center gap-1.5 text-sm text-green-600 dark:text-green-400">
+              <span className="flex items-center gap-1.5 text-sm text-success-text">
                 <CheckCircle2 className="w-4 h-4" /> Saved successfully
               </span>
             )}
             {errMsg && (
-              <span className="flex items-center gap-1.5 text-sm text-red-600 dark:text-red-400">
+              <span className="flex items-center gap-1.5 text-sm text-danger-text">
                 <AlertCircle className="w-4 h-4" /> {errMsg}
               </span>
             )}
           </div>
-          <Button type="submit" disabled={mutation.isPending} className="bg-blue-600 hover:bg-blue-700 text-white gap-2">
+          <Button type="submit" disabled={mutation.isPending} className="bg-primary hover:bg-primary/90 text-white gap-2">
             {mutation.isPending
               ? <><Loader2 className="w-4 h-4 animate-spin" /> Saving…</>
               : <><Save className="w-4 h-4" /> Save Changes</>}

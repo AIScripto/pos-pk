@@ -36,7 +36,7 @@ export function ManagerTabNavigation({
       label: t.till.openShift + ' & ' + t.till.closeShift,
       icon: <CalendarDays className="h-4 w-4" />,
       badge: (hasOpenDay || hasOpenShift) ? (
-        <span className="flex h-2 w-2 rounded-full bg-emerald-500" title="Active" />
+        <span className="flex h-2 w-2 rounded-full bg-success" title="Active" />
       ) : null,
     },
     {
@@ -44,11 +44,11 @@ export function ManagerTabNavigation({
       label: t.admin.tillSetup,
       icon: <Monitor className="h-4 w-4" />,
       badge: pendingTills > 0 ? (
-        <span className="rounded-full bg-amber-500 px-2 py-0.5 text-[10px] font-black text-white animate-pulse">
+        <span className="rounded-full bg-warning px-2 py-0.5 text-2xs font-black text-white animate-pulse">
           {pendingTills} {t.pos.pending}
         </span>
       ) : openTills > 0 ? (
-        <span className="rounded-full bg-emerald-100 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-400 px-2 py-0.5 text-[10px] font-black">
+        <span className="rounded-full bg-success-subtle text-success-text px-2 py-0.5 text-2xs font-black">
           {openTills} {t.common.active}
         </span>
       ) : null,
@@ -58,7 +58,7 @@ export function ManagerTabNavigation({
       label: t.kds.kdsTitle,
       icon: <UtensilsCrossed className="h-4 w-4" />,
       badge: totalKitchenOrders > 0 ? (
-        <span className="rounded-full bg-rose-500 px-2 py-0.5 text-[10px] font-black text-white">
+        <span className="rounded-full bg-danger px-2 py-0.5 text-2xs font-black text-white">
           {totalKitchenOrders}
         </span>
       ) : null,
@@ -66,7 +66,7 @@ export function ManagerTabNavigation({
   ];
 
   return (
-    <div className="flex overflow-x-auto rounded-2xl border border-slate-200/80 bg-slate-100/70 p-1.5 dark:border-slate-800/80 dark:bg-slate-900/60 backdrop-blur-sm scrollbar-none">
+    <div className="flex overflow-x-auto rounded-2xl border border-border/80 bg-secondary/70 p-1.5 backdrop-blur-sm scrollbar-none">
       <div className="flex w-full min-w-max gap-1">
         {TABS.map((tab) => {
           const active = activeTab === tab.id;
@@ -77,8 +77,8 @@ export function ManagerTabNavigation({
               className={cn(
                 "flex flex-1 items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-xs font-bold transition-all duration-200 cursor-pointer",
                 active
-                  ? "bg-white text-slate-950 shadow-sm dark:bg-slate-950 dark:text-white"
-                  : "text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white hover:bg-white/40 dark:hover:bg-slate-800/40"
+                  ? "bg-card text-foreground shadow-sm dark:text-white"
+                  : "text-muted-foreground hover:text-foreground hover:bg-white/40 dark:hover:bg-muted/40"
               )}
             >
               {tab.icon}

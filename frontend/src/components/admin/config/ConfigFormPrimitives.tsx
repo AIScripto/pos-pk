@@ -6,9 +6,9 @@ import { Button } from '@/components/ui/button';
 export function Field({ label, children, hint }: { label: string; children: ReactNode; hint?: string }) {
   return (
     <div className="space-y-1.5">
-      <label className="block text-sm font-medium text-slate-700 dark:text-slate-200">{label}</label>
+      <label className="block text-sm font-medium text-foreground">{label}</label>
       {children}
-      {hint && <p className="text-xs text-slate-500 dark:text-slate-300">{hint}</p>}
+      {hint && <p className="text-xs text-muted-foreground">{hint}</p>}
     </div>
   );
 }
@@ -16,21 +16,31 @@ export function Field({ label, children, hint }: { label: string; children: Reac
 export function Input({ className = '', ...props }: InputHTMLAttributes<HTMLInputElement>) {
   return (
     <input
-      className={`w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 placeholder-slate-400
-        focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20
-        dark:border-slate-500 dark:bg-slate-950 dark:text-slate-50 dark:placeholder-slate-400
-        dark:focus:border-blue-400 disabled:opacity-50 ${className}`}
+      className={`w-full rounded-lg border border-border bg-card px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 disabled:opacity-50 ${className}`}
       {...props}
     />
   );
 }
 
-export function Select({ className = '', children, ...props }: SelectHTMLAttributes<HTMLSelectElement>) {
+/**
+ * A `<select>` whose value is a union rather than a bare string.
+ *
+ * `value` is typed as the union the field actually holds (a tax mode, a discount
+ * type, a decimal-place count) rather than a bare string, so the option list and
+ * the state it drives cannot drift apart. `onChange` still yields the raw string
+ * the DOM gives us — the caller narrows or parses it.
+ */
+interface SelectProps<T extends string | number>
+  extends Omit<SelectHTMLAttributes<HTMLSelectElement>, 'value' | 'onChange'> {
+  value: T;
+  onChange: (event: { target: { value: string } }) => void;
+}
+
+export function Select<T extends string | number>({ className = '', children, onChange, ...props }: SelectProps<T>) {
   return (
     <select
-      className={`w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900
-        focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20
-        dark:border-slate-500 dark:bg-slate-950 dark:text-slate-50 disabled:opacity-50 ${className}`}
+      className={`w-full rounded-lg border border-border bg-card px-3 py-2 text-sm text-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 disabled:opacity-50 ${className}`}
+      onChange={(e) => onChange({ target: { value: e.target.value } })}
       {...props}
     >
       {children}
@@ -40,7 +50,7 @@ export function Select({ className = '', children, ...props }: SelectHTMLAttribu
 
 export function SaveButton({ loading }: { loading: boolean }) {
   return (
-    <Button type="submit" disabled={loading} className="gap-2 bg-blue-600 text-white hover:bg-blue-700">
+    <Button type="submit" disabled={loading} className="gap-2 bg-primary text-white hover:bg-primary/90">
       {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
       {loading ? 'Saving...' : 'Save Changes'}
     </Button>
@@ -49,12 +59,12 @@ export function SaveButton({ loading }: { loading: boolean }) {
 
 export function SaveFeedback({ success, error }: { success: boolean; error: boolean }) {
   if (success) return (
-    <span className="flex items-center gap-1.5 text-sm text-green-600 dark:text-green-400">
+    <span className="flex items-center gap-1.5 text-sm text-success-text">
       <CheckCircle2 className="h-4 w-4" /> Saved successfully
     </span>
   );
   if (error) return (
-    <span className="flex items-center gap-1.5 text-sm text-red-600 dark:text-red-400">
+    <span className="flex items-center gap-1.5 text-sm text-danger-text">
       <AlertCircle className="h-4 w-4" /> Failed to save
     </span>
   );
@@ -63,9 +73,9 @@ export function SaveFeedback({ success, error }: { success: boolean; error: bool
 
 export function SectionCard({ title, children }: { title: string; children: ReactNode }) {
   return (
-    <div className="rounded-xl border border-slate-200 bg-white shadow-sm dark:border-slate-600 dark:bg-slate-900">
-      <div className="border-b border-slate-200 px-6 py-4 dark:border-slate-600">
-        <h2 className="text-base font-semibold text-slate-900 dark:text-white">{title}</h2>
+    <div className="rounded-xl border border-border bg-card shadow-sm">
+      <div className="border-b border-border px-6 py-4">
+        <h2 className="text-base font-semibold text-foreground">{title}</h2>
       </div>
       <div className="p-6">{children}</div>
     </div>

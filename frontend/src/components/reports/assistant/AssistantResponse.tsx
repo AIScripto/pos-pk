@@ -16,6 +16,7 @@ import {
 import type { AiToolResult } from '@/lib/api/ai-sales.api';
 import { formatCurrency } from '@/utils/pos';
 import { CHART_COLORS } from './constants';
+import { chartTheme, chartSeries, chartTickStyle, chartTooltipStyle, chartTooltipLabelStyle } from '@/lib/chartTheme';
 
 function formatHeaderLabel(key: string): string {
   return key
@@ -49,14 +50,14 @@ function DataTable({ data }: { data: Record<string, unknown>[] }) {
   });
 
   return (
-    <div className="mt-3 overflow-hidden rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm">
+    <div className="mt-3 overflow-hidden rounded-xl border border-border bg-card shadow-sm">
       <div className="overflow-x-auto">
         <table className="w-full text-xs">
           <thead>
-            <tr className="border-b border-slate-200 dark:border-slate-800 bg-slate-100/80 dark:bg-slate-800/90">
-              <th className="w-7 px-3 py-2.5 text-left font-bold text-slate-400 dark:text-slate-500">#</th>
+            <tr className="border-b border-border bg-secondary/80">
+              <th className="w-7 px-3 py-2.5 text-left font-bold text-muted-foreground/70">#</th>
               {headers.map(h => (
-                <th key={h} className="whitespace-nowrap px-3 py-2.5 text-left font-extrabold uppercase tracking-wider text-slate-600 dark:text-slate-400">
+                <th key={h} className="whitespace-nowrap px-3 py-2.5 text-left font-extrabold uppercase tracking-wider text-muted-foreground">
                   {formatHeaderLabel(h)}
                 </th>
               ))}
@@ -64,8 +65,8 @@ function DataTable({ data }: { data: Record<string, unknown>[] }) {
           </thead>
           <tbody>
             {data.map((row, i) => (
-              <tr key={i} className={`border-b border-slate-100 dark:border-slate-800/50 transition-colors hover:bg-slate-50 dark:hover:bg-slate-800/40 ${i % 2 === 0 ? 'bg-white dark:bg-slate-900/30' : 'bg-slate-50/50 dark:bg-slate-800/10'}`}>
-                <td className="px-3 py-2.5 font-mono text-slate-400 dark:text-slate-600">{i + 1}</td>
+              <tr key={i} className={`border-b border-border dark:border-border/50 transition-colors hover:bg-muted dark:hover:bg-muted/40 ${i % 2 === 0 ? 'bg-white dark:bg-muted/30' : 'bg-muted/50'}`}>
+                <td className="px-3 py-2.5 font-mono text-muted-foreground/70">{i + 1}</td>
                 {headers.map((h, hi) => {
                   const val = row[h];
                   const formatted = formatCellValue(h, val);
@@ -73,12 +74,12 @@ function DataTable({ data }: { data: Record<string, unknown>[] }) {
                   const pct = maxByKey[h] > 0 ? Math.round((Number(val) / maxByKey[h]) * 100) : 0;
 
                   return (
-                    <td key={h} className={`whitespace-nowrap px-3 py-2.5 ${hi === 0 ? 'font-extrabold text-slate-900 dark:text-white' : ''} ${isMonetary ? 'font-extrabold text-blue-600 dark:text-orange-400' : 'text-slate-700 dark:text-slate-300 font-medium'}`}>
+                    <td key={h} className={`whitespace-nowrap px-3 py-2.5 ${hi === 0 ? 'font-extrabold text-foreground' : ''} ${isMonetary ? 'font-extrabold text-primary' : 'text-muted-foreground font-medium'}`}>
                       {isMonetary && data.length > 1 ? (
                         <div className="flex items-center gap-2">
                           <span>{formatted}</span>
-                          <div className="h-1.5 w-12 flex-shrink-0 overflow-hidden rounded-full bg-slate-200 dark:bg-slate-700">
-                            <div className="h-full rounded-full bg-gradient-to-r from-blue-600 to-indigo-600 dark:from-orange-500 dark:to-amber-500 transition-all" style={{ width: `${pct}%` }} />
+                          <div className="h-1.5 w-12 flex-shrink-0 overflow-hidden rounded-full bg-secondary">
+                            <div className="h-full rounded-full bg-primary transition-all" style={{ width: `${pct}%` }} />
                           </div>
                         </div>
                       ) : formatted}
@@ -101,7 +102,7 @@ function KpiCards({ data }: { data: Record<string, unknown> }) {
   return (
     <div className="mt-3 space-y-2">
       {period && (
-        <p className="text-[10px] uppercase font-bold tracking-wider text-slate-400 dark:text-slate-500">
+        <p className="text-2xs uppercase font-bold tracking-wider text-muted-foreground/70">
           {period.startDate} to {period.endDate}
         </p>
       )}
@@ -111,11 +112,11 @@ function KpiCards({ data }: { data: Record<string, unknown> }) {
           const isMonetary = key.toLowerCase().includes('pkr') || key.toLowerCase().includes('revenue');
 
           return (
-            <div key={key} className={`rounded-xl border px-3 py-3 ${isMonetary ? 'border-blue-200 dark:border-orange-500/20 bg-blue-50/60 dark:bg-orange-500/5' : 'border-slate-200 dark:border-slate-700/50 bg-slate-50/80 dark:bg-slate-800/40'}`}>
-              <p className="mb-1 text-[10px] font-extrabold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+            <div key={key} className={`rounded-xl border px-3 py-3 ${isMonetary ? 'border-info-border bg-primary/60 dark:bg-warning/5' : 'border-border bg-muted/80'}`}>
+              <p className="mb-1 text-2xs font-extrabold uppercase tracking-wider text-muted-foreground">
                 {formatHeaderLabel(key)}
               </p>
-              <p className={`text-base font-extrabold ${isMonetary ? 'text-blue-600 dark:text-orange-400' : 'text-slate-900 dark:text-white'}`}>
+              <p className={`text-base font-extrabold ${isMonetary ? 'text-primary' : 'text-foreground'}`}>
                 {formatted}
               </p>
             </div>
@@ -131,28 +132,28 @@ function MiniChart({ result }: { result: AiToolResult }) {
   if (!chart || !Array.isArray(data) || data.length < 2) return null;
 
   const chartData = data as Record<string, unknown>[];
-  const tooltipStyle = { background: '#0F172A', border: '1px solid #334155', borderRadius: 8, fontSize: 11 };
+  const tooltipStyle = chartTooltipStyle;
 
   return (
-    <div className="mt-2 rounded-xl border border-slate-700/40 bg-slate-800/30 px-3 pb-1 pt-3">
-      <p className="mb-3 text-[10px] font-semibold uppercase tracking-wider text-slate-500">
+    <div className="mt-2 rounded-xl border border-border/40 bg-muted/30 px-3 pb-1 pt-3">
+      <p className="mb-3 text-2xs font-semibold uppercase tracking-wider text-muted-foreground">
         {chart.label} - chart view
       </p>
       <ResponsiveContainer width="100%" height={160}>
         {chart.type === 'line' ? (
           <LineChart data={chartData}>
-            <CartesianGrid strokeDasharray="3 3" stroke="#1E293B" />
-            <XAxis dataKey={chart.xKey} tick={{ fontSize: 9, fill: '#475569' }} axisLine={false} tickLine={false} />
-            <YAxis tick={{ fontSize: 9, fill: '#475569' }} axisLine={false} tickLine={false} width={40} tickFormatter={v => `${Number(v) >= 1000 ? `${(Number(v) / 1000).toFixed(0)}k` : v}`} />
-            <Tooltip contentStyle={tooltipStyle} labelStyle={{ color: '#94A3B8' }} itemStyle={{ color: '#F97316' }} formatter={(v: unknown) => [formatCurrency(Number(v)), '']} />
-            <Line type="monotone" dataKey={chart.yKey} stroke="#F97316" strokeWidth={2} dot={false} activeDot={{ r: 4, fill: '#F97316', stroke: '#fff', strokeWidth: 1.5 }} />
+            <CartesianGrid strokeDasharray="3 3" stroke={chartTheme.grid} />
+            <XAxis dataKey={chart.xKey} tick={chartTickStyle} axisLine={false} tickLine={false} />
+            <YAxis tick={chartTickStyle} axisLine={false} tickLine={false} width={40} tickFormatter={v => `${Number(v) >= 1000 ? `${(Number(v) / 1000).toFixed(0)}k` : v}`} />
+            <Tooltip contentStyle={tooltipStyle} labelStyle={chartTooltipLabelStyle} itemStyle={{ color: chartSeries[0] }} formatter={(v: unknown) => [formatCurrency(Number(v)), '']} />
+            <Line type="monotone" dataKey={chart.yKey} stroke={chartSeries[0]} strokeWidth={2} dot={false} activeDot={{ r: 4, fill: chartSeries[0], stroke: '#fff', strokeWidth: 1.5 }} />
           </LineChart>
         ) : chart.type === 'bar' ? (
           <BarChart data={chartData}>
-            <CartesianGrid strokeDasharray="3 3" stroke="#1E293B" />
-            <XAxis dataKey={chart.xKey} tick={{ fontSize: 9, fill: '#475569' }} axisLine={false} tickLine={false} />
-            <YAxis tick={{ fontSize: 9, fill: '#475569' }} axisLine={false} tickLine={false} width={40} tickFormatter={v => `${Number(v) >= 1000 ? `${(Number(v) / 1000).toFixed(0)}k` : v}`} />
-            <Tooltip contentStyle={tooltipStyle} labelStyle={{ color: '#94A3B8' }} itemStyle={{ color: '#F97316' }} formatter={(v: unknown) => [formatCurrency(Number(v)), '']} />
+            <CartesianGrid strokeDasharray="3 3" stroke={chartTheme.grid} />
+            <XAxis dataKey={chart.xKey} tick={chartTickStyle} axisLine={false} tickLine={false} />
+            <YAxis tick={chartTickStyle} axisLine={false} tickLine={false} width={40} tickFormatter={v => `${Number(v) >= 1000 ? `${(Number(v) / 1000).toFixed(0)}k` : v}`} />
+            <Tooltip contentStyle={tooltipStyle} labelStyle={chartTooltipLabelStyle} itemStyle={{ color: chartSeries[0] }} formatter={(v: unknown) => [formatCurrency(Number(v)), '']} />
             <Bar dataKey={chart.yKey} radius={[3, 3, 0, 0]}>
               {chartData.map((_, idx) => <Cell key={idx} fill={CHART_COLORS[idx % CHART_COLORS.length]} />)}
             </Bar>
@@ -163,7 +164,7 @@ function MiniChart({ result }: { result: AiToolResult }) {
               {chartData.map((_, idx) => <Cell key={idx} fill={CHART_COLORS[idx % CHART_COLORS.length]} />)}
             </Pie>
             <Tooltip contentStyle={tooltipStyle} formatter={(v: unknown) => [formatCurrency(Number(v)), '']} />
-            <Legend formatter={v => <span style={{ color: '#64748B', fontSize: 10 }}>{v}</span>} />
+            <Legend formatter={v => <span style={{ color: chartTheme.axis, fontSize: 11 }}>{v}</span>} />
           </PieChart>
         )}
       </ResponsiveContainer>
@@ -184,7 +185,7 @@ export function ToolResultBlock({ result }: { result: AiToolResult }) {
   if (data && typeof data === 'object' && !Array.isArray(data)) {
     return <KpiCards data={data as Record<string, unknown>} />;
   }
-  return <p className="mt-2 text-xs italic text-slate-500">No data returned for this query.</p>;
+  return <p className="mt-2 text-xs italic text-muted-foreground">No data returned for this query.</p>;
 }
 
 export function AiAnswerText({ text }: { text: string }) {
@@ -224,13 +225,13 @@ export function AiAnswerText({ text }: { text: string }) {
           const dataRows = dataLines.slice(1);
 
           return (
-            <div key={si} className="mt-2 overflow-hidden rounded-xl border border-slate-700/60">
+            <div key={si} className="mt-2 overflow-hidden rounded-xl border border-border/60">
               <div className="overflow-x-auto">
                 <table className="w-full text-xs">
                   <thead>
-                    <tr className="border-b border-slate-700 bg-slate-800/90">
+                    <tr className="border-b border-border bg-muted/90">
                       {headers.map((h, i) => (
-                        <th key={i} className="whitespace-nowrap px-3 py-2.5 text-left font-semibold uppercase tracking-wider text-slate-400">
+                        <th key={i} className="whitespace-nowrap px-3 py-2.5 text-left font-semibold uppercase tracking-wider text-muted-foreground/70">
                           {h}
                         </th>
                       ))}
@@ -238,11 +239,11 @@ export function AiAnswerText({ text }: { text: string }) {
                   </thead>
                   <tbody>
                     {dataRows.map((row, ri) => (
-                      <tr key={ri} className={`border-b border-slate-800/50 transition-colors hover:bg-slate-700/20 ${ri % 2 === 0 ? 'bg-slate-900/30' : 'bg-slate-800/10'}`}>
+                      <tr key={ri} className={`border-b border-border/50 transition-colors hover:bg-muted/20 ${ri % 2 === 0 ? 'bg-muted/30' : 'bg-muted/10'}`}>
                         {parseRow(row).map((cell, ci) => {
                           const isMonetary = /PKR|revenue|sales|amount|total/i.test(headers[ci] ?? '') || /^[A-Z]{2,4}\s/.test(cell);
                           return (
-                            <td key={ci} className={`whitespace-nowrap px-3 py-2.5 ${ci === 0 ? 'font-medium text-white' : ''} ${isMonetary ? 'font-semibold text-orange-400' : 'text-slate-300'}`}>
+                            <td key={ci} className={`whitespace-nowrap px-3 py-2.5 ${ci === 0 ? 'font-medium text-white' : ''} ${isMonetary ? 'font-semibold text-warning' : 'text-muted-foreground'}`}>
                               {cell}
                             </td>
                           );
@@ -261,11 +262,11 @@ export function AiAnswerText({ text }: { text: string }) {
           const content = isBullet ? line.replace(/^[\s\-•]+/, '') : line;
           return isBullet ? (
             <div key={i} className="flex items-start gap-2">
-              <span className="mt-2 h-1 w-1 flex-shrink-0 rounded-full bg-orange-400" />
-              <span className="text-sm leading-relaxed text-slate-300">{content}</span>
+              <span className="mt-2 h-1 w-1 flex-shrink-0 rounded-full bg-warning" />
+              <span className="text-sm leading-relaxed text-muted-foreground">{content}</span>
             </div>
           ) : (
-            <p key={i} className="text-sm leading-relaxed text-slate-200">{content}</p>
+            <p key={i} className="text-sm leading-relaxed text-foreground">{content}</p>
           );
         });
 

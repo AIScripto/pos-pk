@@ -1,0 +1,59 @@
+/**
+ * Motion policy.
+ *
+ * The POS animates three things and nothing else: tiles arriving in the grid,
+ * panels sliding in, and the press feedback on every tappable surface. Under
+ * `prefers-reduced-motion` we keep every one of those state changes legible and
+ * remove only the travel — an operator who asked for less motion still needs to
+ * see that their tap registered.
+ */
+
+@layer base {
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+
+    /* Entrances resolve instantly at their final position, still fading so the
+       arrival of a new tile or panel is not invisible. */
+    .animate-fade-in,
+    .animate-slide-up,
+    .animate-scale-in,
+    .animate-slide-in-right,
+    .animate-accordion-down,
+    .animate-accordion-up {
+      animation-duration: 1ms;
+      animation-timing-function: linear;
+    }
+
+    /* Travel and zoom come off; colour, border, shadow and opacity stay, so
+       hover, focus and press states all still read. */
+    *,
+    *::before,
+    *::after {
+      transition-property: color, background-color, border-color,
+        text-decoration-color, fill, stroke, opacity, box-shadow;
+      transition-duration: 120ms;
+    }
+
+    [class*="hover:-translate"],
+    [class*="hover:translate"],
+    [class*="group-hover:scale"],
+    [class*="hover:scale"],
+    [class*="active:scale"] {
+      transform: none !important;
+    }
+  }
+
+  /* Windows high-contrast / forced-colours users lose the tinted surfaces the
+     POS relies on to separate a tile from its grid, so give structure back
+     with borders. */
+  @media (prefers-contrast: more) {
+    .pos-tile,
+    .pos-btn,
+    .ui-panel,
+    .admin-panel {
+      border-width: 2px;
+    }
+  }
+}

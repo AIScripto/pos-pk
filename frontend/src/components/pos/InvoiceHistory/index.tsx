@@ -139,13 +139,12 @@ export function InvoiceHistory({
         <div className="flex items-center justify-between gap-2">
           <button
             onClick={() => setShowFilters(!showFilters)}
-            className={cn(
-              'flex items-center gap-1.5 rounded-lg border px-3 py-1.5 text-xs font-700 transition-all',
+            className={cn('font-condensed font-bold', 
+              'flex items-center gap-1.5 rounded-lg border px-3 py-1.5 text-xs font-bold transition-all',
               hasActiveFilters
                 ? 'border-primary/30 bg-primary/10 text-primary'
                 : 'border-border bg-secondary text-muted-foreground hover:text-foreground'
             )}
-            style={{ fontFamily: "'Barlow Condensed', sans-serif", fontWeight: 700 }}
           >
             Filters {hasActiveFilters && `(${[filterStatus !== 'all', filterPayment !== 'all', sortOrder !== 'newest'].filter(Boolean).length} active)`}
           </button>
@@ -162,12 +161,12 @@ export function InvoiceHistory({
           {/* Summary */}
           <div className="ml-auto flex items-center gap-3 text-xs text-muted-foreground">
             <span>{totalVisible} invoices</span>
-            <span className="text-foreground font-700"
-              style={{ fontFamily: "'Barlow Condensed', sans-serif", fontWeight: 700 }}>
+            <span className="text-foreground font-bold font-condensed"
+              >
               {formatCurrency(totalRevenue)}
             </span>
             {totalUnpaid > 0 && (
-              <span className="text-purple-400">{totalUnpaid} unpaid</span>
+              <span className="text-special">{totalUnpaid} unpaid</span>
             )}
           </div>
         </div>
@@ -177,8 +176,8 @@ export function InvoiceHistory({
           <div className="rounded-xl border border-border bg-card p-3 space-y-3 animate-slide-up">
             {/* Payment status */}
             <div>
-              <p className="text-[9px] uppercase tracking-[0.18em] text-muted-foreground mb-1.5"
-                style={{ fontFamily: "'Barlow Condensed', sans-serif", fontWeight: 700 }}>
+              <p className="text-2xs uppercase tracking-[0.18em] text-muted-foreground mb-1.5 font-condensed font-bold"
+                >
                 Payment status
               </p>
               <div className="flex gap-1.5">
@@ -186,17 +185,16 @@ export function InvoiceHistory({
                   <button
                     key={f.key}
                     onClick={() => setFilterStatus(f.key)}
-                    className={cn(
-                      'flex-1 rounded-lg border py-1.5 text-[10px] font-700 uppercase tracking-wide transition-all',
+                    className={cn('font-condensed font-bold', 
+                      'flex-1 rounded-lg border py-1.5 text-2xs font-bold uppercase tracking-wide transition-all',
                       filterStatus === f.key
                         ? f.key === 'pending'
-                          ? 'bg-purple-500/10 border-purple-500/30 text-purple-400'
+                          ? 'bg-special/10 border-special/30 text-special'
                           : f.key === 'paid'
-                            ? 'bg-green-500/10 border-green-500/30 text-green-400'
+                            ? 'bg-success/10 border-success/30 text-success'
                             : 'bg-primary/10 border-primary/30 text-primary'
                         : 'bg-transparent border-border text-muted-foreground hover:bg-secondary'
                     )}
-                    style={{ fontFamily: "'Barlow Condensed', sans-serif", fontWeight: 700 }}
                   >
                     {f.label}
                   </button>
@@ -206,8 +204,8 @@ export function InvoiceHistory({
 
             {/* Payment method */}
             <div>
-              <p className="text-[9px] uppercase tracking-[0.18em] text-muted-foreground mb-1.5"
-                style={{ fontFamily: "'Barlow Condensed', sans-serif", fontWeight: 700 }}>
+              <p className="text-2xs uppercase tracking-[0.18em] text-muted-foreground mb-1.5 font-condensed font-bold"
+                >
                 Payment method
               </p>
               <div className="flex flex-wrap gap-1.5">
@@ -215,13 +213,12 @@ export function InvoiceHistory({
                   <button
                     key={f.key}
                     onClick={() => setFilterPayment(f.key)}
-                    className={cn(
-                      'rounded-lg border px-3 py-1.5 text-[10px] font-700 uppercase tracking-wide transition-all',
+                    className={cn('font-condensed font-bold', 
+                      'rounded-lg border px-3 py-1.5 text-2xs font-bold uppercase tracking-wide transition-all',
                       filterPayment === f.key
                         ? 'bg-primary/10 border-primary/30 text-primary'
                         : 'bg-transparent border-border text-muted-foreground hover:bg-secondary'
                     )}
-                    style={{ fontFamily: "'Barlow Condensed', sans-serif", fontWeight: 700 }}
                   >
                     {f.label}
                   </button>
@@ -231,8 +228,8 @@ export function InvoiceHistory({
 
             {/* Sort */}
             <div>
-              <p className="text-[9px] uppercase tracking-[0.18em] text-muted-foreground mb-1.5"
-                style={{ fontFamily: "'Barlow Condensed', sans-serif", fontWeight: 700 }}>
+              <p className="text-2xs uppercase tracking-[0.18em] text-muted-foreground mb-1.5 font-condensed font-bold"
+                >
                 Sort by
               </p>
               <div className="flex flex-wrap gap-1.5">
@@ -240,13 +237,12 @@ export function InvoiceHistory({
                   <button
                     key={s.key}
                     onClick={() => setSortOrder(s.key)}
-                    className={cn(
-                      'rounded-lg border px-3 py-1.5 text-[10px] font-700 uppercase tracking-wide transition-all',
+                    className={cn('font-condensed font-bold', 
+                      'rounded-lg border px-3 py-1.5 text-2xs font-bold uppercase tracking-wide transition-all',
                       sortOrder === s.key
                         ? 'bg-primary/10 border-primary/30 text-primary'
                         : 'bg-transparent border-border text-muted-foreground hover:bg-secondary'
                     )}
-                    style={{ fontFamily: "'Barlow Condensed', sans-serif", fontWeight: 700 }}
                   >
                     {s.label}
                   </button>
@@ -263,8 +259,8 @@ export function InvoiceHistory({
           <div className="w-14 h-14 rounded-full bg-secondary flex items-center justify-center mb-3">
             <FileText className="w-6 h-6 text-muted-foreground" />
           </div>
-          <p className="text-sm font-700 text-foreground"
-            style={{ fontFamily: "'Barlow', sans-serif", fontWeight: 700 }}>
+          <p className="text-sm font-bold text-foreground font-condensed"
+            >
             {invoices.length === 0 ? 'No invoices yet' : 'No results found'}
           </p>
           <p className="text-xs text-muted-foreground mt-1">
@@ -293,12 +289,12 @@ export function InvoiceHistory({
                 <div className={cn(
                   'w-9 h-9 rounded-lg flex items-center justify-center shrink-0',
                   (invoice.paymentStatus ?? 'paid') === 'pending'
-                    ? 'bg-purple-500/10'
+                    ? 'bg-special/10'
                     : 'bg-primary/10'
                 )}>
                   <FileText className={cn(
                     'w-4 h-4',
-                    (invoice.paymentStatus ?? 'paid') === 'pending' ? 'text-purple-400' : 'text-primary'
+                    (invoice.paymentStatus ?? 'paid') === 'pending' ? 'text-special' : 'text-primary'
                   )} />
                 </div>
 
@@ -308,17 +304,17 @@ export function InvoiceHistory({
                   onClick={() => onViewInvoice(invoice)}
                 >
                   <div className="flex items-center gap-2">
-                    <p className="font-mono font-700 text-foreground text-sm truncate"
+                    <p className="font-mono font-bold text-foreground text-sm truncate"
                       style={{ fontWeight: 700 }}>
                       {invoice.id}
                     </p>
-                    <span className={cn(
-                      'shrink-0 rounded-full px-1.5 py-0.5 text-[9px] font-700 uppercase tracking-wide border',
+                    <span className={cn('font-condensed font-bold', 
+                      'shrink-0 rounded-full px-1.5 py-0.5 text-2xs font-bold uppercase tracking-wide border',
                       (invoice.paymentStatus ?? 'paid') === 'pending'
-                        ? 'bg-purple-500/10 border-purple-500/30 text-purple-400'
-                        : 'bg-green-500/10 border-green-500/30 text-green-400'
+                        ? 'bg-special/10 border-special/30 text-special'
+                        : 'bg-success/10 border-success/30 text-success'
                     )}
-                      style={{ fontFamily: "'Barlow Condensed', sans-serif", fontWeight: 700 }}>
+                      >
                       {(invoice.paymentStatus ?? 'paid') === 'pending' ? 'Unpaid' : 'Paid'}
                     </span>
                   </div>
@@ -341,12 +337,12 @@ export function InvoiceHistory({
 
                 {/* Total */}
                 <div className="text-right shrink-0">
-                  <p className="font-900 text-foreground tabular-nums"
-                    style={{ fontFamily: "'Barlow Condensed', sans-serif", fontWeight: 900, fontSize: '17px' }}>
+                  <p className="font-black text-foreground tabular-nums font-condensed"
+                    style={{ fontSize: '17px' }}>
                     {formatCurrency(invoice.grandTotal)}
                   </p>
                   {invoice.totalDiscount > 0 && (
-                    <p className="text-[10px] text-accent">
+                    <p className="text-2xs text-accent">
                       -{formatCurrency(invoice.totalDiscount)}
                     </p>
                   )}

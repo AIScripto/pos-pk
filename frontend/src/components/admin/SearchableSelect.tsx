@@ -76,19 +76,19 @@ export default function SearchableSelect({
         disabled={disabled}
         onClick={() => !disabled && setOpen(!open)}
         className={cn(
-          'w-full flex items-center justify-between rounded-md border border-slate-300 bg-white px-3 py-2 text-sm shadow-sm transition-colors',
-          'focus:outline-none focus:ring-2 focus:ring-slate-500 focus:border-slate-500',
-          'dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100',
-          disabled && 'cursor-not-allowed opacity-60 bg-slate-100 dark:bg-slate-900',
-          !disabled && 'hover:border-slate-400 cursor-pointer'
+          'w-full flex items-center justify-between rounded-md border border-border bg-white px-3 py-2 text-sm shadow-sm transition-colors',
+          'focus:outline-none focus:ring-2 focus:ring-ring focus:border-primary/40',
+          'dark:border-border dark:bg-muted dark:text-foreground',
+          disabled && 'cursor-not-allowed opacity-60 bg-secondary',
+          !disabled && 'hover:border-primary/40 cursor-pointer'
         )}
       >
-        <span className={cn('truncate', !selected && 'text-slate-400 dark:text-slate-500')}>
+        <span className={cn('truncate', !selected && 'text-muted-foreground/70')}>
           {selected ? (
             <span className="flex items-center gap-2">
               <span>{selected.label}</span>
               {selected.sublabel && (
-                <span className="text-xs text-slate-500 dark:text-slate-400 font-mono bg-slate-100 dark:bg-slate-700 px-1.5 py-0.5 rounded">
+                <span className="text-xs text-muted-foreground font-mono bg-secondary px-1.5 py-0.5 rounded">
                   {selected.sublabel}
                 </span>
               )}
@@ -97,18 +97,18 @@ export default function SearchableSelect({
             placeholder
           )}
         </span>
-        <ChevronsUpDown className="w-4 h-4 text-slate-400 shrink-0 ml-2" />
+        <ChevronsUpDown className="w-4 h-4 text-muted-foreground/70 shrink-0 ml-2" />
       </button>
 
       {/* Dropdown */}
       {open && (
         <div className={cn(
-          'absolute z-50 mt-1 w-full rounded-md border border-slate-200 bg-white shadow-lg',
-          'dark:border-slate-700 dark:bg-slate-800'
+          'absolute z-50 mt-1 w-full rounded-md border border-border bg-white shadow-lg',
+          'dark:border-border dark:bg-muted'
         )}>
           {/* Search input */}
-          <div className="flex items-center gap-2 border-b border-slate-200 dark:border-slate-700 px-3 py-2">
-            <Search className="w-4 h-4 text-slate-400 shrink-0" />
+          <div className="flex items-center gap-2 border-b border-border px-3 py-2">
+            <Search className="w-4 h-4 text-muted-foreground/70 shrink-0" />
             <input
               ref={searchRef}
               type="text"
@@ -116,8 +116,8 @@ export default function SearchableSelect({
               onChange={(e) => setSearch(e.target.value)}
               placeholder={searchPlaceholder}
               className={cn(
-                'flex-1 bg-transparent text-sm outline-none placeholder:text-slate-400',
-                'dark:text-slate-100 dark:placeholder:text-slate-500'
+                'flex-1 bg-transparent text-sm outline-none placeholder:text-muted-foreground/70',
+                'dark:text-foreground dark:placeholder:text-muted-foreground'
               )}
             />
           </div>
@@ -125,7 +125,7 @@ export default function SearchableSelect({
           {/* Options list */}
           <ul className="max-h-52 overflow-y-auto py-1">
             {filtered.length === 0 ? (
-              <li className="px-3 py-2 text-sm text-slate-400 dark:text-slate-500 text-center">
+              <li className="px-3 py-2 text-sm text-muted-foreground/70 text-center">
                 No results found
               </li>
             ) : (
@@ -136,20 +136,20 @@ export default function SearchableSelect({
                     onClick={() => handleSelect(option.value)}
                     className={cn(
                       'w-full flex items-center justify-between px-3 py-2 text-sm transition-colors',
-                      'hover:bg-slate-100 dark:hover:bg-slate-700',
-                      value === option.value && 'bg-slate-100 dark:bg-slate-700 font-medium'
+                      'hover:bg-secondary',
+                      value === option.value && 'bg-secondary font-medium'
                     )}
                   >
                     <span className="flex items-center gap-2">
-                      <span className="text-slate-800 dark:text-slate-100">{option.label}</span>
+                      <span className="text-foreground">{option.label}</span>
                       {option.sublabel && (
-                        <span className="text-xs text-slate-500 dark:text-slate-400 font-mono bg-slate-100 dark:bg-slate-700 px-1.5 py-0.5 rounded">
+                        <span className="text-xs text-muted-foreground font-mono bg-secondary px-1.5 py-0.5 rounded">
                           {option.sublabel}
                         </span>
                       )}
                     </span>
                     {value === option.value && (
-                      <Check className="w-4 h-4 text-slate-700 dark:text-slate-300 shrink-0" />
+                      <Check className="w-4 h-4 text-muted-foreground shrink-0" />
                     )}
                   </button>
                 </li>

@@ -5,9 +5,12 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
 
 const buttonVariants = cva(
-  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0",
+  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium ring-offset-background touch-manipulation transition-[background-color,border-color,color,box-shadow,transform] duration-150 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0",
   {
     variants: {
+      /* The action-named variants below (create/edit/view/delete) are kept for the
+         admin tables that already use them, but now resolve through tokens so a
+         theme change reaches them. */
       variant: {
         default: "bg-primary text-primary-foreground hover:bg-primary/90",
         destructive: "bg-destructive text-destructive-foreground hover:bg-destructive/90",
@@ -15,16 +18,21 @@ const buttonVariants = cva(
         secondary: "bg-secondary text-secondary-foreground hover:bg-secondary/80",
         ghost: "hover:bg-accent hover:text-accent-foreground",
         link: "text-primary underline-offset-4 hover:underline",
-        create: "bg-emerald-600 text-white hover:bg-emerald-700 dark:bg-emerald-600 dark:hover:bg-emerald-700",
-        edit: "text-amber-600 hover:bg-amber-100 dark:text-amber-400 dark:hover:bg-amber-900/30",
-        view: "text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800",
-        delete: "text-red-600 hover:bg-red-100 dark:text-red-400 dark:hover:bg-red-900/30",
+        create:
+          "bg-[hsl(var(--pos-success))] text-white hover:bg-[hsl(var(--pos-success)/0.9)]",
+        edit: "text-[hsl(var(--pos-warning))] hover:bg-[hsl(var(--pos-warning)/0.12)]",
+        view: "text-muted-foreground hover:bg-muted hover:text-foreground",
+        delete: "text-destructive hover:bg-destructive/10",
       },
+      /* Every size clears the 44px pointer target WCAG 2.5.5 asks for — these are
+         tapped with a thumb on a counter terminal, not clicked with a mouse. */
       size: {
-        default: "h-10 px-4 py-2",
-        sm: "h-9 rounded-md px-3",
-        lg: "h-11 rounded-md px-8",
-        icon: "h-10 w-10",
+        default: "h-11 px-4 py-2",
+        sm: "h-11 rounded-md px-3",
+        lg: "h-12 rounded-md px-8 text-base",
+        icon: "h-11 w-11",
+        /* Opt-in for genuinely dense desktop-only surfaces (admin table rows). */
+        compact: "h-9 rounded-md px-2.5 text-xs",
       },
     },
     defaultVariants: {

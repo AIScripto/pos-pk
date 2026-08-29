@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { adminConfigApi } from '@/lib/api/admin-config.api';
+import { adminConfigApi, type DiscountPreset, type DiscountType } from '@/lib/api/admin-config.api';
 import { useAppConfig } from '@/context/AppConfigContext';
 import { formatCurrency } from '@/utils/pos';
 import { Button } from '@/components/ui/button';
@@ -13,19 +13,22 @@ import {
   Select,
 } from '@/components/admin/config/ConfigFormPrimitives';
 
+/** The fields this form writes — a preset minus its server-owned identifiers. */
+type DiscountForm = Pick<DiscountPreset, 'name' | 'type' | 'value' | 'sortOrder'>;
+
 export function DiscountsSection() {
   const { currencyConfig } = useAppConfig();
   const qc = useQueryClient();
   const { data: discounts = [], isLoading } = useQuery({ queryKey: ['discounts'], queryFn: adminConfigApi.listDiscounts });
-  const [form, setForm] = useState({ name: '', type: 'percentage', value: 10, sortOrder: 0 });
+  const [form, setForm] = useState<DiscountForm>({ name: '', type: 'percentage', value: 10, sortOrder: 0 });
   const [editId, setEditId] = useState<string | null>(null);
 
   const createMut = useMutation({
-    mutationFn: (data: any) => adminConfigApi.createDiscount(data),
+    mutationFn: (data: DiscountForm) => adminConfigApi.createDiscount(data),
     onSuccess: () => { qc.invalidateQueries({ queryKey: ['discounts'] }); resetForm(); },
   });
   const updateMut = useMutation({
-    mutationFn: ({ id, data }: any) => adminConfigApi.updateDiscount(id, data),
+    mutationFn: ({ id, data }: { id: string; data: DiscountForm }) => adminConfigApi.updateDiscount(id, data),
     onSuccess: () => { qc.invalidateQueries({ queryKey: ['discounts'] }); resetForm(); },
   });
   const deleteMut = useMutation({
@@ -34,9 +37,10 @@ export function DiscountsSection() {
   });
 
   const resetForm = () => { setForm({ name: '', type: 'percentage', value: 10, sortOrder: 0 }); setEditId(null); };
-  const set = (key: string, val: any) => setForm(f => ({ ...f, [key]: val }));
+  const set = <K extends keyof DiscountForm>(key: K, val: DiscountForm[K]) =>
+    setForm(f => ({ ...f, [key]: val }));
 
-  const handleEdit = (d: any) => {
+  const handleEdit = (d: DiscountPreset) => {
     setForm({ name: d.name, type: d.type, value: d.value, sortOrder: d.sortOrder });
     setEditId(d.id);
   };
@@ -51,19 +55,19 @@ export function DiscountsSection() {
     <div className="space-y-6">
       <SectionCard title="Discount Presets">
         {isLoading ? (
-          <div className="py-6 text-center text-slate-400">Loading…</div>
+          <div className="py-6 text-center text-muted-foreground/70">Loading…</div>
         ) : discounts.length === 0 ? (
-          <p className="py-4 text-center text-sm text-slate-400">No discount presets yet.</p>
+          <p className="py-4 text-center text-sm text-muted-foreground/70">No discount presets yet.</p>
         ) : (
           <div className="space-y-2">
-            {discounts.map((d: any) => (
+            {discounts.map((d) => (
               <div
                 key={d.id}
-                className="flex items-center justify-between gap-4 rounded-lg border border-slate-200 bg-slate-50/80 p-3 dark:border-slate-600 dark:bg-slate-950/40"
+                className="flex items-center justify-between gap-4 rounded-lg border border-border bg-muted/80 p-3"
               >
                 <div>
-                  <p className="text-sm font-semibold text-slate-900 dark:text-slate-50">{d.name}</p>
-                  <p className="text-xs font-medium text-slate-600 dark:text-slate-300">
+                  <p className="text-sm font-semibold text-foreground">{d.name}</p>
+                  <p className="text-xs font-medium text-muted-foreground">
                     {d.type === 'percentage' ? `${d.value}% off` : `${formatCurrency(d.value)} off`}
                   </p>
                 </div>
@@ -72,14 +76,14 @@ export function DiscountsSection() {
                     size="sm"
                     variant="outline"
                     onClick={() => handleEdit(d)}
-                    className="border-blue-200 bg-blue-50 font-semibold text-blue-700 hover:bg-blue-100 dark:border-blue-500/40 dark:bg-blue-500/15 dark:text-blue-100 dark:hover:bg-blue-500/25"
+                    className="border-info-border bg-info-subtle font-semibold text-primary hover:bg-info-subtle"
                   >
                     Edit
                   </Button>
                   <Button
                     size="sm"
                     variant="outline"
-                    className="border-red-200 bg-red-50 font-semibold text-red-700 hover:bg-red-100 dark:border-red-500/40 dark:bg-red-500/15 dark:text-red-100 dark:hover:bg-red-500/25"
+                    className="border-danger-border bg-danger-subtle font-semibold text-danger-text hover:bg-danger-subtle dark:hover:bg-danger/25"
                     onClick={() => deleteMut.mutate(d.id)}
                   >
                     Delete
@@ -98,7 +102,7 @@ export function DiscountsSection() {
               <Input value={form.name} onChange={e => set('name', e.target.value)} placeholder="Staff Discount" required />
             </Field>
             <Field label="Type">
-              <Select value={form.type} onChange={e => set('type', e.target.value)}>
+              <Select value={form.type} onChange={e => set('type', e.target.value as DiscountType)}>
                 <option value="percentage">Percentage (%)</option>
                 <option value="fixed">Fixed Amount ({currencyConfig.currencySymbol})</option>
               </Select>
@@ -111,7 +115,7 @@ export function DiscountsSection() {
             </Field>
           </Grid>
           <div className="flex gap-2">
-            <Button type="submit" disabled={createMut.isPending || updateMut.isPending} className="bg-blue-600 hover:bg-blue-700 text-white gap-2">
+            <Button type="submit" disabled={createMut.isPending || updateMut.isPending} className="bg-primary hover:bg-primary/90 text-white gap-2">
               {(createMut.isPending || updateMut.isPending) ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
               {editId ? 'Update' : 'Add Preset'}
             </Button>
@@ -120,7 +124,7 @@ export function DiscountsSection() {
                 type="button"
                 variant="outline"
                 onClick={resetForm}
-                className="border-slate-300 bg-white text-slate-700 hover:bg-slate-100 dark:border-slate-500 dark:bg-slate-800 dark:text-slate-100 dark:hover:bg-slate-700"
+                className="border-border bg-card text-foreground hover:bg-secondary"
               >
                 Cancel
               </Button>

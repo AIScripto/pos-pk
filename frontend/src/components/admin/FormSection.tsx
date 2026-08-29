@@ -9,8 +9,8 @@ interface FormSectionProps {
 
 export default function FormSection({ title, children, columns = 1 }: FormSectionProps) {
   return (
-    <div className="space-y-3 border-b border-slate-200 pb-4 last:border-b-0 dark:border-slate-700">
-      <h3 className="font-semibold text-sm text-slate-900 dark:text-white">{title}</h3>
+    <div className="space-y-3 border-b border-border pb-4 last:border-b-0">
+      <h3 className="font-semibold text-sm text-foreground">{title}</h3>
       <div className={`grid gap-4 ${columns === 2 ? 'grid-cols-2' : columns === 3 ? 'grid-cols-3' : 'grid-cols-1'}`}>
         {children}
       </div>
@@ -28,12 +28,12 @@ interface FormFieldProps {
 export function FormField({ label, required = false, error, children }: FormFieldProps) {
   return (
     <div className="space-y-2">
-      <Label className="text-xs font-semibold text-slate-700 dark:text-slate-100">
+      <Label className="text-xs font-semibold text-foreground">
         {label}
-        {required && <span className="text-red-500 ml-1">*</span>}
+        {required && <span className="text-danger ml-1">*</span>}
       </Label>
       {children}
-      {error && <p className="text-xs text-red-500 font-medium">{error}</p>}
+      {error && <p className="text-xs text-danger font-medium">{error}</p>}
     </div>
   );
 }

@@ -53,7 +53,7 @@ export function DenominationTable({
                 <span className={cn(
                   'flex h-7 items-center justify-center rounded-md text-xs font-display font-black',
                   isNote
-                    ? 'bg-amber-500/15 text-amber-400 border border-amber-500/25'
+                    ? 'bg-warning/15 text-warning border border-warning/25'
                     : 'bg-secondary border border-border text-muted-foreground',
                 )}>
                   {currencyConfig.currencySymbol} {entry.label}
@@ -95,14 +95,14 @@ export function DenominationTable({
     <div className="w-full overflow-hidden rounded-xl border border-border">
       {/* Header */}
       <div className="grid grid-cols-[1fr_80px_24px_90px] gap-0 bg-secondary/80 px-4 py-2">
-        <span className="font-display font-bold text-[10px] uppercase tracking-[0.15em] text-muted-foreground">
+        <span className="font-display font-bold text-2xs uppercase tracking-[0.15em] text-muted-foreground">
           {t.till.denominationGrid}
         </span>
-        <span className="font-display font-bold text-[10px] uppercase tracking-[0.15em] text-muted-foreground text-right">
+        <span className="font-display font-bold text-2xs uppercase tracking-[0.15em] text-muted-foreground text-right">
           {t.receipt.qty}
         </span>
         <span />
-        <span className="font-display font-bold text-[10px] uppercase tracking-[0.15em] text-muted-foreground text-right">
+        <span className="font-display font-bold text-2xs uppercase tracking-[0.15em] text-muted-foreground text-right">
           {t.pos.subtotal}
         </span>
       </div>
@@ -126,7 +126,7 @@ export function DenominationTable({
               <span className={cn(
                 'flex h-6 min-w-[44px] items-center justify-center rounded-md text-[11px] font-display font-bold',
                 isNote
-                  ? 'bg-amber-500/15 text-amber-400 border border-amber-500/25'
+                  ? 'bg-warning/15 text-warning border border-warning/25'
                   : 'bg-secondary border border-border text-muted-foreground',
               )}>
                 {currencyConfig.currencySymbol} {entry.label}

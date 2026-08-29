@@ -102,11 +102,11 @@ export default function AdminCategories() {
   };
 
   return (
-    <div className="min-h-screen space-y-6 rounded-2xl bg-gradient-to-b from-slate-100 via-slate-50 to-blue-50/30 p-6 dark:from-slate-950 dark:via-slate-950 dark:to-slate-900">
+    <div className="min-h-screen space-y-6 rounded-2xl bg-gradient-to-b from-muted/40 via-muted/40 to-primary/30 p-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white">{t.admin.categories}</h1>
-          <p className="mt-1 text-slate-600 dark:text-slate-200">{t.admin.catalog}</p>
+          <h1 className="text-3xl font-extrabold tracking-tight text-foreground">{t.admin.categories}</h1>
+          <p className="mt-1 text-foreground">{t.admin.catalog}</p>
         </div>
         <Button
           onClick={handleCreate}
@@ -118,12 +118,12 @@ export default function AdminCategories() {
         </Button>
       </div>
 
-      <Card className="border-slate-200 bg-slate-50/90 shadow-sm dark:border-slate-700 dark:bg-slate-900">
+      <Card className="border-border bg-card shadow-sm">
         <CardContent className="pt-6">
           <div className="space-y-4">
             {/* Food Type Filter */}
             <div>
-              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+              <label className="block text-sm font-medium text-muted-foreground mb-2">
                 {t.admin.selectFoodType}
               </label>
               <SearchableSelect
@@ -139,28 +139,28 @@ export default function AdminCategories() {
 
             {/* Search */}
             <div className="relative">
-              <Search className="absolute left-3 top-3 w-4 h-4 text-slate-500 dark:text-slate-300" />
+              <Search className="absolute left-3 top-3 w-4 h-4 text-muted-foreground" />
               <Input
                 placeholder={t.common.searchPlaceholder}
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                className="border-slate-300 bg-slate-100 pl-10 text-slate-900 placeholder:text-slate-500 dark:border-slate-600 dark:bg-slate-800 dark:text-white dark:placeholder:text-slate-300"
+                className="border-border bg-secondary pl-10 text-foreground placeholder:text-muted-foreground"
               />
             </div>
           </div>
         </CardContent>
       </Card>
 
-      <Card className="border-slate-200 bg-slate-50/90 shadow-sm dark:border-slate-700 dark:bg-slate-900">
+      <Card className="border-border bg-card shadow-sm">
         <CardHeader>
-          <CardTitle className="text-slate-900 dark:text-white font-bold">
+          <CardTitle className="text-foreground font-bold">
             {t.admin.categories} ({filteredCategories.length})
           </CardTitle>
         </CardHeader>
         <CardContent>
           {isLoading ? (
             <div className="text-center py-8">
-              <p className="text-slate-500 dark:text-slate-200">{t.common.loading}</p>
+              <p className="text-muted-foreground">{t.common.loading}</p>
             </div>
           ) : error ? (
             <Alert variant="destructive">
@@ -168,19 +168,19 @@ export default function AdminCategories() {
             </Alert>
           ) : categories.length === 0 ? (
             <div className="text-center py-8">
-              <Grid3x3 className="mx-auto mb-3 h-12 w-12 text-slate-400 dark:text-slate-300" />
-              <p className="font-medium text-slate-600 dark:text-slate-100">{t.common.noData}</p>
-              <p className="mt-1 text-sm text-slate-500 dark:text-slate-300">{t.common.addNew}</p>
+              <Grid3x3 className="mx-auto mb-3 h-12 w-12 text-muted-foreground" />
+              <p className="font-medium text-muted-foreground">{t.common.noData}</p>
+              <p className="mt-1 text-sm text-muted-foreground">{t.common.addNew}</p>
             </div>
           ) : filteredCategories.length === 0 ? (
             <div className="text-center py-8">
-              <p className="text-slate-600 dark:text-slate-200">{t.common.noItemsFound}</p>
+              <p className="text-foreground">{t.common.noItemsFound}</p>
             </div>
           ) : (
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
                 <thead>
-                  <tr className="bg-slate-800 dark:bg-slate-950">
+                  <tr className="bg-muted dark:bg-background">
                     <th className="px-4 py-3 text-left font-semibold text-white">{t.admin.nameEn}</th>
                     <th className="px-4 py-3 text-left font-semibold text-white">{t.admin.foodType}</th>
                     <th className="px-4 py-3 text-left font-semibold text-white">{t.admin.slug}</th>
@@ -189,27 +189,27 @@ export default function AdminCategories() {
                     <th className="px-4 py-3 text-right font-semibold text-white">{t.common.actions}</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-200 dark:divide-slate-700">
+                <tbody className="divide-y divide-border">
                   {filteredCategories.map((category: Category) => (
-                    <tr key={category.id} className="hover:bg-slate-100/70 dark:hover:bg-slate-800">
-                      <td className="px-4 py-3 font-semibold text-slate-900 dark:text-white">{category.name}</td>
-                      <td className="px-4 py-3 text-sm text-slate-700 dark:text-slate-200">
-                        <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-400">
+                    <tr key={category.id} className="hover:bg-secondary/70">
+                      <td className="px-4 py-3 font-semibold text-foreground">{category.name}</td>
+                      <td className="px-4 py-3 text-sm text-foreground">
+                        <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-info-subtle text-primary">
                           {getFoodTypeName(category.foodTypeId)}
                         </span>
                       </td>
                       <td className="py-3 px-4">
-                        <span className="rounded-full bg-slate-200 px-2.5 py-0.5 text-xs font-semibold text-slate-700 dark:bg-slate-700 dark:text-white">
+                        <span className="rounded-full bg-secondary px-2.5 py-0.5 text-xs font-semibold text-foreground/80 dark:text-white">
                           {category.tag}
                         </span>
                       </td>
-                      <td className="px-4 py-3 text-slate-700 dark:text-slate-200">{category.sortOrder}</td>
+                      <td className="px-4 py-3 text-foreground">{category.sortOrder}</td>
                       <td className="py-3 px-4">
                         <span
                           className={`rounded-full px-2.5 py-0.5 text-xs font-semibold ${
                             category.isActive
-                              ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-200'
-                              : 'bg-slate-200 text-slate-700 dark:bg-slate-700 dark:text-slate-100'
+                              ? 'bg-success-subtle text-success-text'
+                              : 'bg-secondary text-foreground'
                           }`}
                         >
                           {category.isActive ? t.common.active : t.common.inactive}
@@ -252,11 +252,11 @@ export default function AdminCategories() {
       />
 
       <Dialog open={deleteOpen} onOpenChange={setDeleteOpen}>
-        <DialogContent className="border-slate-200 bg-slate-50 text-slate-900 dark:border-slate-600 dark:bg-slate-900 dark:text-white">
+        <DialogContent className="border-border bg-muted/40 text-foreground">
           <DialogHeader>
             <DialogTitle>{t.common.deleteConfirmTitle}</DialogTitle>
           </DialogHeader>
-          <p className="text-sm text-slate-600 dark:text-slate-200">
+          <p className="text-sm text-foreground">
             {t.common.deleteConfirmDesc} ({selectedCategory?.name})
           </p>
           <DialogFooter>

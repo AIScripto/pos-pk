@@ -3,77 +3,77 @@ import type { ReactNode } from 'react';
 // ─── Colour palette ───────────────────────────────────────────────────────────
 export const THEMES = {
   blue: {
-    border:       'border-slate-200 dark:border-zinc-800/80',
-    headerBg:     'bg-slate-50/40 dark:bg-zinc-900/30',
-    headerBorder: 'border-b border-slate-100 dark:border-zinc-900',
-    iconBg:       'bg-blue-50 text-blue-600 dark:bg-blue-950/40 dark:text-blue-400',
-    title:        'text-slate-900 dark:text-slate-100',
-    badge:        'bg-blue-50 text-blue-600 dark:bg-blue-950/40 dark:text-blue-400',
-    sectionDot:   'bg-blue-500',
+    border:       'border-border',
+    headerBg:     'bg-muted/40',
+    headerBorder: 'border-b border-border',
+    iconBg:       'bg-info-subtle text-primary',
+    title:        'text-foreground',
+    badge:        'bg-info-subtle text-primary',
+    sectionDot:   'bg-primary',
   },
   orange: {
-    border:       'border-slate-200 dark:border-zinc-800/80',
-    headerBg:     'bg-slate-50/40 dark:bg-zinc-900/30',
-    headerBorder: 'border-b border-slate-100 dark:border-zinc-900',
-    iconBg:       'bg-orange-50 text-orange-600 dark:bg-orange-950/40 dark:text-orange-400',
-    title:        'text-slate-900 dark:text-slate-100',
-    badge:        'bg-orange-50 text-orange-600 dark:bg-orange-950/40 dark:text-orange-400',
-    sectionDot:   'bg-orange-500',
+    border:       'border-border',
+    headerBg:     'bg-muted/40',
+    headerBorder: 'border-b border-border',
+    iconBg:       'bg-warning-subtle text-warning-text',
+    title:        'text-foreground',
+    badge:        'bg-warning-subtle text-warning-text',
+    sectionDot:   'bg-warning',
   },
   emerald: {
-    border:       'border-slate-200 dark:border-zinc-800/80',
-    headerBg:     'bg-slate-50/40 dark:bg-zinc-900/30',
-    headerBorder: 'border-b border-slate-100 dark:border-zinc-900',
-    iconBg:       'bg-emerald-50 text-emerald-600 dark:bg-emerald-950/40 dark:text-emerald-400',
-    title:        'text-slate-900 dark:text-slate-100',
-    badge:        'bg-emerald-50 text-emerald-600 dark:bg-emerald-950/40 dark:text-emerald-400',
-    sectionDot:   'bg-emerald-500',
+    border:       'border-border',
+    headerBg:     'bg-muted/40',
+    headerBorder: 'border-b border-border',
+    iconBg:       'bg-success-subtle text-success-text',
+    title:        'text-foreground',
+    badge:        'bg-success-subtle text-success-text',
+    sectionDot:   'bg-success',
   },
   amber: {
-    border:       'border-slate-200 dark:border-zinc-800/80',
-    headerBg:     'bg-slate-50/40 dark:bg-zinc-900/30',
-    headerBorder: 'border-b border-slate-100 dark:border-zinc-900',
-    iconBg:       'bg-amber-50 text-amber-600 dark:bg-amber-950/40 dark:text-amber-400',
-    title:        'text-slate-900 dark:text-slate-100',
-    badge:        'bg-amber-50 text-amber-600 dark:bg-amber-950/40 dark:text-amber-400',
-    sectionDot:   'bg-amber-500',
+    border:       'border-border',
+    headerBg:     'bg-muted/40',
+    headerBorder: 'border-b border-border',
+    iconBg:       'bg-warning-subtle text-warning-text',
+    title:        'text-foreground',
+    badge:        'bg-warning-subtle text-warning-text',
+    sectionDot:   'bg-warning',
   },
   violet: {
-    border:       'border-slate-200 dark:border-zinc-800/80',
-    headerBg:     'bg-slate-50/40 dark:bg-zinc-900/30',
-    headerBorder: 'border-b border-slate-100 dark:border-zinc-900',
-    iconBg:       'bg-violet-50 text-violet-600 dark:bg-violet-950/40 dark:text-violet-400',
-    title:        'text-slate-900 dark:text-slate-100',
-    badge:        'bg-violet-50 text-violet-600 dark:bg-violet-950/40 dark:text-violet-400',
-    sectionDot:   'bg-violet-500',
+    border:       'border-border',
+    headerBg:     'bg-muted/40',
+    headerBorder: 'border-b border-border',
+    iconBg:       'bg-special-subtle text-special-text dark:bg-special/40',
+    title:        'text-foreground',
+    badge:        'bg-special-subtle text-special-text dark:bg-special/40',
+    sectionDot:   'bg-special',
   },
   purple: {
-    border:       'border-slate-200 dark:border-zinc-800/80',
-    headerBg:     'bg-slate-50/40 dark:bg-zinc-900/30',
-    headerBorder: 'border-b border-slate-100 dark:border-zinc-900',
-    iconBg:       'bg-purple-50 text-purple-600 dark:bg-purple-950/40 dark:text-purple-400',
-    title:        'text-slate-900 dark:text-slate-100',
-    badge:        'bg-purple-50 text-purple-600 dark:bg-purple-950/40 dark:text-purple-400',
-    sectionDot:   'bg-purple-500',
+    border:       'border-border',
+    headerBg:     'bg-muted/40',
+    headerBorder: 'border-b border-border',
+    iconBg:       'bg-special-subtle text-special-text',
+    title:        'text-foreground',
+    badge:        'bg-special-subtle text-special-text',
+    sectionDot:   'bg-special',
   },
   rose: {
-    border:       'border-slate-200 dark:border-zinc-800/80',
-    headerBg:     'bg-slate-50/40 dark:bg-zinc-900/30',
-    headerBorder: 'border-b border-slate-100 dark:border-zinc-900',
-    iconBg:       'bg-rose-50 text-rose-600 dark:bg-rose-950/40 dark:text-rose-400',
-    title:        'text-slate-900 dark:text-slate-100',
-    badge:        'bg-rose-50 text-rose-600 dark:bg-rose-950/40 dark:text-rose-400',
-    sectionDot:   'bg-rose-500',
+    border:       'border-border',
+    headerBg:     'bg-muted/40',
+    headerBorder: 'border-b border-border',
+    iconBg:       'bg-danger-subtle text-danger-text',
+    title:        'text-foreground',
+    badge:        'bg-danger-subtle text-danger-text',
+    sectionDot:   'bg-danger',
   },
 } as const;
 
 export type Theme = keyof typeof THEMES;
 
 export const KITCHEN_STATES = [
-  { key: 'new',          label: 'New',         color: 'bg-sky-50 border-sky-200 dark:bg-sky-950/40 dark:border-sky-800',             badge: 'bg-sky-500 text-white' },
-  { key: 'acknowledged', label: 'Acknowledged', color: 'bg-violet-50 border-violet-200 dark:bg-violet-950/40 dark:border-violet-800', badge: 'bg-violet-500 text-white' },
-  { key: 'in_progress',  label: 'Preparing',    color: 'bg-amber-50 border-amber-200 dark:bg-amber-950/40 dark:border-amber-800',     badge: 'bg-amber-500 text-white' },
-  { key: 'ready',        label: 'Ready',         color: 'bg-emerald-50 border-emerald-200 dark:bg-emerald-950/40 dark:border-emerald-800', badge: 'bg-emerald-500 text-white' },
+  { key: 'new',          label: 'New',         color: 'bg-info-subtle border-info-border dark:border-info',             badge: 'bg-info text-white' },
+  { key: 'acknowledged', label: 'Acknowledged', color: 'bg-special-subtle border-special-border dark:bg-special/40', badge: 'bg-special text-white' },
+  { key: 'in_progress',  label: 'Preparing',    color: 'bg-warning-subtle border-warning-border',     badge: 'bg-warning text-white' },
+  { key: 'ready',        label: 'Ready',         color: 'bg-success-subtle border-success-border', badge: 'bg-success text-white' },
 ] as const;
 
 // ─── Formatters ───────────────────────────────────────────────────────────────
@@ -99,16 +99,16 @@ export function SectionHeader({ icon, label, theme }: { icon: ReactNode; label: 
   const t = THEMES[theme];
 
   const bgColors = {
-    blue:    'bg-blue-500/5 dark:bg-blue-500/10 border-blue-500/15 dark:border-blue-500/20 text-blue-600 dark:text-blue-400',
-    orange:  'bg-orange-500/5 dark:bg-orange-500/10 border-orange-500/15 dark:border-orange-500/20 text-orange-600 dark:text-orange-400',
-    emerald: 'bg-emerald-500/5 dark:bg-emerald-500/10 border-emerald-500/15 dark:border-emerald-500/20 text-emerald-600 dark:text-emerald-400',
-    amber:   'bg-amber-500/5 dark:bg-amber-500/10 border-amber-500/15 dark:border-amber-500/20 text-amber-600 dark:text-amber-400',
-    violet:  'bg-violet-500/5 dark:bg-violet-500/10 border-violet-500/15 dark:border-violet-500/20 text-violet-600 dark:text-violet-400',
-    purple:  'bg-purple-500/5 dark:bg-purple-500/10 border-purple-500/15 dark:border-purple-500/20 text-purple-600 dark:text-purple-400',
-    rose:    'bg-rose-500/5 dark:bg-rose-500/10 border-rose-500/15 dark:border-rose-500/20 text-rose-600 dark:text-rose-400',
+    blue:    'bg-primary/5 dark:bg-primary/10 border-primary/15 dark:border-primary/20 text-primary',
+    orange:  'bg-warning/5 dark:bg-warning/10 border-warning/15 dark:border-warning/20 text-warning-text',
+    emerald: 'bg-success/5 dark:bg-success/10 border-success/15 dark:border-success/20 text-success-text',
+    amber:   'bg-warning/5 dark:bg-warning/10 border-warning/15 dark:border-warning/20 text-warning-text',
+    violet:  'bg-special/5 dark:bg-special/10 border-special/15 dark:border-special/20 text-special-text',
+    purple:  'bg-special/5 dark:bg-special/10 border-special/15 dark:border-special/20 text-special-text',
+    rose:    'bg-danger/5 dark:bg-danger/10 border-danger/15 dark:border-danger/20 text-danger-text',
   };
 
-  const bgStyle = bgColors[theme] || 'bg-slate-500/5 border-slate-500/15 text-slate-500';
+  const bgStyle = bgColors[theme] || 'bg-secondary/5 border-border/15 text-muted-foreground';
 
   return (
     <div className={`flex items-center gap-3 px-4 py-2.5 rounded-xl border ${bgStyle} shadow-sm backdrop-blur-sm`}>
@@ -139,8 +139,8 @@ export function PanelHeader({
           {icon}
         </div>
         <div>
-          <h2 className="text-base font-bold tracking-tight text-slate-900 dark:text-white">{title}</h2>
-          {subtitle && <p className="text-xs text-slate-500 dark:text-slate-400">{subtitle}</p>}
+          <h2 className="text-base font-bold tracking-tight text-foreground">{title}</h2>
+          {subtitle && <p className="text-xs text-muted-foreground">{subtitle}</p>}
         </div>
       </div>
       {right}

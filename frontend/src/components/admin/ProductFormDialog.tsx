@@ -261,25 +261,25 @@ export function ProductFormDialog({
             {wasPrice > 0 && (
               <div className={`flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm ${
                 hasDiscount
-                  ? 'bg-green-500/10 border border-green-500/20'
+                  ? 'bg-success/10 border border-success/20'
                   : 'bg-secondary'
               }`}>
                 {hasDiscount ? (
                   <>
                     <div className="flex flex-col">
-                      <span className="text-[10px] uppercase tracking-wide text-muted-foreground">Was</span>
+                      <span className="text-2xs uppercase tracking-wide text-muted-foreground">Was</span>
                       <span className="line-through text-muted-foreground font-mono">
                         ${wasPrice.toFixed(2)}
                       </span>
                     </div>
                     <span className="text-muted-foreground">→</span>
                     <div className="flex flex-col">
-                      <span className="text-[10px] uppercase tracking-wide text-muted-foreground">Now</span>
-                      <span className="font-bold text-green-600 dark:text-green-400 font-mono">
+                      <span className="text-2xs uppercase tracking-wide text-muted-foreground">Now</span>
+                      <span className="font-bold text-success-text font-mono">
                         ${nowPrice.toFixed(2)}
                       </span>
                     </div>
-                    <span className="ml-auto text-xs font-semibold text-green-600 dark:text-green-400 bg-green-500/15 px-2 py-0.5 rounded-full">
+                    <span className="ml-auto text-xs font-semibold text-success-text bg-success/15 px-2 py-0.5 rounded-full">
                       {discountLabel}
                     </span>
                   </>

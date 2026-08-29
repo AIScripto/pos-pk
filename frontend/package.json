@@ -10,7 +10,9 @@
     "typecheck": "tsc --noEmit -p tsconfig.app.json",
     "lint": "eslint .",
     "lint:design": "impeccable detect src/",
-    "design:audit": "impeccable audit --strict"
+    "design:audit": "impeccable audit --strict",
+    "check:classes": "node scripts/check-classes.mjs",
+    "verify": "npm run typecheck && npm run build && npm run check:classes"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.10.0",

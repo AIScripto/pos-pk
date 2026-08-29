@@ -70,7 +70,7 @@ export default function ManagerPanel() {
       />
 
       {error && (
-        <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-semibold text-red-700 dark:border-red-800 dark:bg-red-950/30 dark:text-red-400">
+        <div className="rounded-xl border border-danger-border bg-danger-subtle px-4 py-3 text-sm font-semibold text-danger-text">
           Could not load manager panel — check branch access or server status.
         </div>
       )}

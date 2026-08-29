@@ -141,7 +141,7 @@ export function TillProvider({ children }: { children: ReactNode }) {
     const server = await tillApi.open({
       terminalId,
       openingCashAmount,
-      denominations: denominations as any,
+      denominations,
       notes:         cashierName,
     });
 
@@ -164,7 +164,7 @@ export function TillProvider({ children }: { children: ReactNode }) {
     const server = await tillApi.close({
       sessionId:        session.id,
       closingCashAmount,
-      denominations:    denominations as any,
+      denominations,
       notes:            notes.trim() || undefined,
     });
 
@@ -201,8 +201,8 @@ export function TillProvider({ children }: { children: ReactNode }) {
     const catMap = new Map<string, { total: number; count: number }>();
 
     for (const inv of sessionInvoices) {
-      const pm = (inv as any).paymentMethod ?? 'cash';
-      const ps = (inv as any).paymentStatus ?? 'paid';
+      const pm = inv.paymentMethod ?? 'cash';
+      const ps = inv.paymentStatus ?? 'paid';
 
       grossSales    += inv.grandTotal;
       totalDiscount += inv.totalDiscount;

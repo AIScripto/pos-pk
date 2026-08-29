@@ -13,6 +13,7 @@ import { LockScreen } from '@/components/pos/LockScreen';
 import { ShoppingBag, FileText, ChefHat, Package, Search, PauseCircle, Sparkles } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useTranslation } from '@/i18n';
+import { getLocalizedItemName } from '@/i18n/catalog';
 
 import TillRestoringGate from '@/components/pos/TillRestoringGate';
 import TillClosedGate from '@/components/pos/TillClosedGate';
@@ -27,7 +28,7 @@ const ManagerReportPanel = lazy(() => import('@/components/reports/ManagerReport
 // ---------------------------------------------------------------------------
 
 function POSInner() {
-  const { t } = useTranslation();
+  const { t, language } = useTranslation();
   const { addProduct, addDeal, state, markInvoicePaid, holdOrder, clearCart, clearInvoiceHistory } = useCart();
   const { getActiveOrders, clearSessionOrders } = useOrders();
   const { isOpen: tillOpen, isRestoring: isTillRestoring, session: tillSession } = useTill();
@@ -121,12 +122,12 @@ function POSInner() {
           {/* Left: product area */}
           <div className="flex flex-1 flex-col overflow-hidden border-r border-border">
             {/* Top action bar */}
-            <div className="flex items-center justify-between gap-3 border-b border-slate-200/80 dark:border-slate-800 bg-white dark:bg-slate-900 px-4 py-2.5 no-print shrink-0">
+            <div className="flex items-center justify-between gap-3 border-b border-border bg-card px-4 py-2.5 no-print shrink-0">
               <div>
-                <p className="font-display font-black text-[9px] uppercase tracking-[0.22em] text-blue-600 dark:text-blue-400">
+                <p className="font-display font-black text-2xs uppercase tracking-[0.22em] text-primary">
                   {t.common.serviceBoard}
                 </p>
-                <h2 className="font-display font-black text-[18px] text-slate-900 dark:text-slate-100 leading-tight">
+                <h2 className="font-display font-black text-[18px] text-foreground leading-tight">
                   {t.common.menu}
                 </h2>
               </div>
@@ -140,7 +141,10 @@ function POSInner() {
                     icon: Search,
                     badge: null,
                     action: () => {
-                      const searchInput = document.querySelector<HTMLInputElement>('input[placeholder*="Search"]');
+                      // Keyed off a stable data attribute, not the placeholder text —
+                      // the placeholder is translated, so matching on "Search" broke F1
+                      // in every non-English locale.
+                      const searchInput = document.querySelector<HTMLInputElement>('input[data-pos-search]');
                       if (searchInput) { searchInput.focus(); searchInput.select(); }
                     },
                   },
@@ -196,19 +200,19 @@ function POSInner() {
                       key={fk.key}
                       type="button"
                       onClick={fk.action}
-                      className="flex flex-col items-center justify-center min-w-[64px] sm:min-w-[72px] h-11 px-2.5 py-1 rounded-xl border border-slate-300 dark:border-slate-700/90 bg-slate-200/80 dark:bg-slate-900/90 hover:bg-slate-300/80 dark:hover:bg-slate-800 hover:border-blue-500/80 dark:hover:border-blue-400/80 transition-all cursor-pointer shadow-sm dark:shadow-md hover:shadow-lg active:scale-[0.96] group shrink-0 relative"
+                      className="flex flex-col items-center justify-center min-w-[64px] sm:min-w-[72px] h-11 px-2.5 py-1 rounded-xl border border-border bg-secondary hover:bg-secondary/80 dark:hover:bg-muted hover:border-primary/80 transition-all cursor-pointer shadow-sm dark:shadow-md hover:shadow-lg active:scale-[0.96] group shrink-0 relative"
                     >
                       <div className="flex items-center gap-1.5">
-                        <span className="font-mono font-black text-xs sm:text-[13px] text-blue-600 dark:text-blue-400 group-hover:text-blue-500 transition-colors">
+                        <span className="font-mono font-black text-xs sm:text-[13px] text-primary group-hover:text-primary transition-colors">
                           {fk.key}
                         </span>
-                        <Icon className="w-4 h-4 shrink-0 text-slate-700 dark:text-slate-200 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-transform duration-150 group-hover:scale-110" />
+                        <Icon className="w-4 h-4 shrink-0 text-foreground group-hover:text-primary transition-transform duration-150 group-hover:scale-110" />
                       </div>
-                      <span className="font-display font-extrabold text-[11px] sm:text-xs text-slate-800 dark:text-slate-100 tracking-tight leading-tight mt-0.5 group-hover:text-blue-600 dark:group-hover:text-blue-400">
+                      <span className="font-display font-extrabold text-[11px] sm:text-xs text-foreground tracking-tight leading-tight mt-0.5 group-hover:text-primary">
                         {fk.label}
                       </span>
                       {fk.badge !== null && fk.badge > 0 && (
-                        <span className="absolute -top-1.5 -right-1 flex h-4.5 min-w-[18px] items-center justify-center rounded-full bg-blue-600 text-white font-display font-black text-[10px] px-1 shadow-md border border-white dark:border-slate-900">
+                        <span className="absolute -top-1.5 -right-1 flex h-4.5 min-w-[18px] items-center justify-center rounded-full bg-primary text-white font-display font-black text-2xs px-1 shadow-md border border-white dark:border-border">
                           {fk.badge}
                         </span>
                       )}
@@ -216,7 +220,7 @@ function POSInner() {
                   );
                 })}
 
-                <div className="ml-3 sm:ml-4 pl-3 sm:pl-4 border-l border-slate-300 dark:border-slate-700/80 shrink-0">
+                <div className="ml-3 sm:ml-4 pl-3 sm:pl-4 border-l border-border shrink-0">
                   <Suspense fallback={null}>
                     <ManagerReportPanel invoices={state.invoices} />
                   </Suspense>
@@ -229,11 +233,11 @@ function POSInner() {
               <ProductGrid
                 onAddProduct={(product) => {
                   addProduct(product);
-                  toast({ title: `${product.name} added`, description: 'Item added to order' });
+                  toast({ title: `${getLocalizedItemName(product, language)} ${t.common.added}`, description: t.notifications.itemAdded });
                 }}
                 onAddDeal={(deal) => {
                   addDeal(deal);
-                  toast({ title: `${deal.name} added`, description: 'Deal added to order' });
+                  toast({ title: `${getLocalizedItemName(deal, language)} ${t.common.added}`, description: t.notifications.itemAdded });
                 }}
                 onToggleCart={() => setShowCart((prev) => !prev)}
                 onOpenHeld={() => setShowHeld(true)}
@@ -245,32 +249,36 @@ function POSInner() {
           </div>
 
           {/* Right: buttons and cart */}
-          <div className="hidden lg:flex w-[22rem] xl:w-[24rem] shrink-0 flex-col bg-card overflow-hidden">
+          {/* The running order is the one panel a cashier never wants to lose.
+              It used to appear only from 1024px, so on tablet portrait — a very
+              common POS form factor — the cart was reachable only through a
+              modal. It now holds from 768px at a narrower width. */}
+          <div className="hidden md:flex w-[19rem] lg:w-[22rem] xl:w-[24rem] shrink-0 flex-col border-l border-border bg-card overflow-hidden">
             <QuickActionButtons
               cartItemCount={cartItemCount}
               onNewOrder={() => {
                 if (state.items.length > 0) {
                   clearCart();
-                  toast({ title: 'New order started', description: 'Cart cleared for next customer.' });
+                  toast({ title: t.common.newOrder, description: t.notifications.cartCleared });
                 } else {
-                  toast({ title: 'New order', description: 'Ready to add items to cart.' });
+                  toast({ title: t.common.newOrder, description: t.pos.addItemsToStart });
                 }
               }}
               onDiscount={() => {
                 if (state.items.length === 0) {
-                  toast({ title: 'Cart empty', description: 'Add items to cart first before applying discount.', variant: 'destructive' });
+                  toast({ title: t.pos.cartEmpty, description: t.pos.addItemsToStart, variant: 'destructive' });
                 } else {
-                  toast({ title: 'Discount (F2)', description: 'Expand cart item below to apply item or lump-sum discount.' });
+                  toast({ title: t.discount.discountTitle, description: t.discount.expandItemHint });
                 }
               }}
               onHold={() => {
                 if (state.items.length === 0) {
-                  toast({ title: 'Cart empty', description: 'Add items before parking order.', variant: 'destructive' });
+                  toast({ title: t.pos.cartEmpty, description: t.pos.addItemsToStart, variant: 'destructive' });
                   return;
                 }
                 const held = holdOrder();
                 if (held) {
-                  toast({ title: 'Order parked', description: `Saved as ${held.label}` });
+                  toast({ title: t.notifications.orderHeld, description: held.label });
                 }
               }}
             />
@@ -281,7 +289,7 @@ function POSInner() {
                 onDirectCashCheckout={onDirectCashCheckoutClick}
                 isConfirming={checkout.isConfirmingInvoice}
                 onHold={(label) => {
-                  toast({ title: 'Order held', description: `"${label}" saved.` });
+                  toast({ title: t.notifications.orderHeld, description: label });
                   setShowHeld(true);
                 }}
               />

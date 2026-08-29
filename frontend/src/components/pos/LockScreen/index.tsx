@@ -138,7 +138,7 @@ export function LockScreen() {
 
         {/* Header */}
         <div className="flex flex-col items-center gap-2 px-6 pt-6 pb-4 border-b border-border">
-          <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-primary to-amber-400 shadow-lg shadow-primary/30">
+          <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-primary to-warning shadow-lg shadow-primary/30">
             <LockKeyhole className="w-6 h-6 text-white" />
           </div>
           <div className="text-center">
@@ -146,7 +146,7 @@ export function LockScreen() {
               {user?.name ?? t.lock.lockedTitle}
             </p>
             {user?.role && (
-              <span className="inline-block mt-0.5 rounded-full bg-primary/10 border border-primary/20 px-2.5 py-0.5 font-body text-[10px] uppercase tracking-wider text-primary font-semibold">
+              <span className="inline-block mt-0.5 rounded-full bg-primary/10 border border-primary/20 px-2.5 py-0.5 font-body text-2xs uppercase tracking-wider text-primary font-semibold">
                 {user.role.replace('_', ' ')}
               </span>
             )}
@@ -265,7 +265,7 @@ export function LockScreen() {
 
 
       {/* Brand footer */}
-      <p className="mt-8 font-display text-[10px] uppercase tracking-widest text-muted-foreground/50">
+      <p className="mt-8 font-display text-2xs uppercase tracking-widest text-muted-foreground/50">
         Crisp &amp; Crumbs POS
       </p>
 

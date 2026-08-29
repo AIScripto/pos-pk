@@ -88,11 +88,11 @@ export default function AdminAreas() {
   };
 
   return (
-    <div className="min-h-screen space-y-6 rounded-2xl bg-gradient-to-b from-slate-100 via-slate-50 to-blue-50/30 p-6 dark:from-slate-950 dark:via-slate-950 dark:to-slate-900">
+    <div className="min-h-screen space-y-6 rounded-2xl bg-gradient-to-b from-muted/40 via-muted/40 to-primary/30 p-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white">Areas</h1>
-          <p className="mt-1 text-slate-600 dark:text-slate-200">Manage areas by city</p>
+          <h1 className="text-3xl font-extrabold tracking-tight text-foreground">Areas</h1>
+          <p className="mt-1 text-foreground">Manage areas by city</p>
         </div>
         <Button
           onClick={handleCreate}
@@ -103,10 +103,10 @@ export default function AdminAreas() {
         </Button>
       </div>
 
-      <Card className="border-slate-200 bg-slate-50/90 shadow-sm dark:border-slate-700 dark:bg-slate-900">
+      <Card className="border-border bg-card shadow-sm">
         <CardContent className="pt-6 space-y-4">
           <div>
-            <label className="mb-2 block text-sm font-semibold text-slate-700 dark:text-slate-100">Select City *</label>
+            <label className="mb-2 block text-sm font-semibold text-foreground">Select City *</label>
             <SearchableSelect
               value={selectedCityId}
               onChange={(val) => { setSelectedCityId(val); setSearch(''); }}
@@ -116,28 +116,28 @@ export default function AdminAreas() {
           </div>
 
           <div className="relative">
-            <Search className="absolute left-3 top-3 w-4 h-4 text-slate-500 dark:text-slate-300" />
+            <Search className="absolute left-3 top-3 w-4 h-4 text-muted-foreground" />
             <Input
               placeholder="Search by area tag or name..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               disabled={!selectedCityId}
-              className="border-slate-300 bg-slate-100 pl-10 text-slate-900 placeholder:text-slate-500 dark:border-slate-600 dark:bg-slate-800 dark:text-white dark:placeholder:text-slate-300"
+              className="border-border bg-secondary pl-10 text-foreground placeholder:text-muted-foreground"
             />
           </div>
         </CardContent>
       </Card>
 
-      <Card className="border-slate-200 bg-slate-50/90 shadow-sm dark:border-slate-700 dark:bg-slate-900">
+      <Card className="border-border bg-card shadow-sm">
         <CardHeader>
-          <CardTitle className="text-slate-900 dark:text-white font-bold">
+          <CardTitle className="text-foreground font-bold">
             Areas {selectedCityName ? `in ${selectedCityName}` : ''} ({areas.length})
           </CardTitle>
         </CardHeader>
         <CardContent>
           {!selectedCityId ? (
             <div className="text-center py-8">
-              <p className="text-slate-600 dark:text-slate-200">Select a city to view and manage areas.</p>
+              <p className="text-foreground">Select a city to view and manage areas.</p>
             </div>
           ) : isLoading ? (
             <div className="space-y-2">
@@ -158,34 +158,34 @@ export default function AdminAreas() {
             </Alert>
           ) : areas.length === 0 ? (
             <div className="text-center py-8">
-              <MapPin className="mx-auto mb-3 h-12 w-12 text-slate-400 dark:text-slate-300" />
-              <p className="font-medium text-slate-600 dark:text-slate-100">No areas found</p>
-              <p className="mt-1 text-sm text-slate-500 dark:text-slate-300">Click "Add Area" to create one</p>
+              <MapPin className="mx-auto mb-3 h-12 w-12 text-muted-foreground" />
+              <p className="font-medium text-muted-foreground">No areas found</p>
+              <p className="mt-1 text-sm text-muted-foreground">Click "Add Area" to create one</p>
             </div>
           ) : (
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
-                <thead className="border-b border-slate-200 dark:border-slate-600">
+                <thead className="border-b border-border">
                   <tr>
-                    <th className="px-4 py-3 text-left font-bold text-slate-700 dark:text-white">Tag</th>
-                    <th className="px-4 py-3 text-left font-bold text-slate-700 dark:text-white">Name</th>
-                    <th className="px-4 py-3 text-left font-bold text-slate-700 dark:text-white">Details</th>
-                    <th className="px-4 py-3 text-left font-bold text-slate-700 dark:text-white">Coordinates</th>
-                    <th className="px-4 py-3 text-left font-bold text-slate-700 dark:text-white">Status</th>
-                    <th className="px-4 py-3 text-right font-bold text-slate-700 dark:text-white">Actions</th>
+                    <th className="px-4 py-3 text-left font-bold text-foreground/80 dark:text-white">Tag</th>
+                    <th className="px-4 py-3 text-left font-bold text-foreground/80 dark:text-white">Name</th>
+                    <th className="px-4 py-3 text-left font-bold text-foreground/80 dark:text-white">Details</th>
+                    <th className="px-4 py-3 text-left font-bold text-foreground/80 dark:text-white">Coordinates</th>
+                    <th className="px-4 py-3 text-left font-bold text-foreground/80 dark:text-white">Status</th>
+                    <th className="px-4 py-3 text-right font-bold text-foreground/80 dark:text-white">Actions</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-200 dark:divide-slate-700">
+                <tbody className="divide-y divide-border">
                   {areas.map((area: Area) => (
-                    <tr key={area.id} className="hover:bg-slate-100/70 dark:hover:bg-slate-800">
+                    <tr key={area.id} className="hover:bg-secondary/70">
                       <td className="py-3 px-4">
-                        <span className="rounded-full bg-slate-200 px-2.5 py-0.5 text-xs font-semibold text-slate-700 dark:bg-slate-700 dark:text-white">
+                        <span className="rounded-full bg-secondary px-2.5 py-0.5 text-xs font-semibold text-foreground/80 dark:text-white">
                           {area.tag}
                         </span>
                       </td>
-                      <td className="px-4 py-3 font-semibold text-slate-900 dark:text-white">{area.name}</td>
-                      <td className="px-4 py-3 text-slate-700 dark:text-slate-200">{area.details || '—'}</td>
-                      <td className="px-4 py-3 text-xs text-slate-600 dark:text-slate-200">
+                      <td className="px-4 py-3 font-semibold text-foreground">{area.name}</td>
+                      <td className="px-4 py-3 text-foreground">{area.details || '—'}</td>
+                      <td className="px-4 py-3 text-xs text-foreground">
                         {area.latitude != null && area.longitude != null
                           ? `${Number(area.latitude).toFixed(4)}, ${Number(area.longitude).toFixed(4)}`
                           : '—'}
@@ -194,8 +194,8 @@ export default function AdminAreas() {
                         <span
                           className={`rounded-full px-2.5 py-0.5 text-xs font-semibold ${
                             area.isActive
-                              ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-200'
-                              : 'bg-slate-200 text-slate-700 dark:bg-slate-700 dark:text-slate-100'
+                              ? 'bg-success-subtle text-success-text'
+                              : 'bg-secondary text-foreground'
                           }`}
                         >
                           {area.isActive ? 'Active' : 'Inactive'}
@@ -238,11 +238,11 @@ export default function AdminAreas() {
       />
 
       <Dialog open={deleteOpen} onOpenChange={setDeleteOpen}>
-        <DialogContent className="border-slate-200 bg-slate-50 text-slate-900 dark:border-slate-600 dark:bg-slate-900 dark:text-white">
+        <DialogContent className="border-border bg-muted/40 text-foreground">
           <DialogHeader>
             <DialogTitle>Delete Area?</DialogTitle>
           </DialogHeader>
-          <p className="text-sm text-slate-600 dark:text-slate-200">
+          <p className="text-sm text-foreground">
             Are you sure you want to delete <strong>{selectedArea?.name}</strong>?
           </p>
           <DialogFooter>

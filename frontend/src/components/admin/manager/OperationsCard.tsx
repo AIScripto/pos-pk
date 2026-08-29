@@ -22,9 +22,9 @@ export function OperationsCard({
   const isOpen = status === 'open';
 
   const btnClass = {
-    primary: 'bg-slate-950 text-white hover:bg-slate-800 dark:bg-white dark:text-slate-950',
-    danger:  'bg-red-600 text-white hover:bg-red-700',
-    warning: 'bg-amber-500 text-white hover:bg-amber-600',
+    primary: 'bg-muted text-white hover:bg-muted dark:bg-white dark:text-foreground',
+    danger:  'bg-danger text-white hover:bg-danger/90',
+    warning: 'bg-warning text-white hover:bg-warning',
   }[actionVariant];
 
   const pendingLabel = actionLabel
@@ -33,31 +33,31 @@ export function OperationsCard({
     .concat('…');
 
   return (
-    <div className={`overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm dark:border-slate-850 dark:bg-slate-900/25 hover:dark:bg-slate-900/35 hover:border-slate-700/60 hover:shadow-lg transition-all duration-200 backdrop-blur-sm ${t.border}`}>
+    <div className={`overflow-hidden rounded-2xl border border-border bg-white shadow-sm dark:bg-muted/25 hover:dark:bg-muted/35 hover:border-primary/40 hover:shadow-lg transition-all duration-200 backdrop-blur-sm ${t.border}`}>
       <div className={`flex items-center justify-between px-5 py-3 ${t.headerBg} ${t.headerBorder}`}>
         <div className="flex items-center gap-2">
           <div className={`flex h-7 w-7 items-center justify-center rounded-lg ${t.iconBg}`}>{icon}</div>
           <span className={`font-black ${t.title}`}>{title}</span>
         </div>
-        <span className={`rounded-full px-2 py-0.5 text-[10px] font-black uppercase tracking-wide ${
+        <span className={`rounded-full px-2 py-0.5 text-2xs font-black uppercase tracking-wide ${
           isPending
-            ? 'bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300 animate-pulse'
+            ? 'bg-warning-subtle text-warning-text animate-pulse'
             : isOpen
-              ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300'
-              : 'bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-400'
+              ? 'bg-success-subtle text-success-text'
+              : 'bg-secondary text-muted-foreground'
         }`}>
           {isPending ? 'please wait' : status}
         </span>
       </div>
 
       {isPending && (
-        <div className="h-0.5 w-full overflow-hidden bg-slate-100 dark:bg-slate-800">
-          <div className="h-full animate-[loading_1.2s_ease-in-out_infinite] bg-amber-400" />
+        <div className="h-0.5 w-full overflow-hidden bg-secondary">
+          <div className="h-full animate-[loading_1.2s_ease-in-out_infinite] bg-warning" />
         </div>
       )}
 
       <div className="flex items-center justify-between gap-4 px-5 py-4">
-        <p className="text-sm text-slate-500 dark:text-slate-400">
+        <p className="text-sm text-muted-foreground">
           {isPending ? `Please wait — ${pendingLabel.toLowerCase()}` : detail}
         </p>
         <button

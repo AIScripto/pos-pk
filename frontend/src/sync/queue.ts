@@ -189,11 +189,16 @@ async function processSingleBatch(batchItems: SyncQueueItem[]): Promise<void> {
   }
 }
 
+/** An error carrying the server's Retry-After hint, in milliseconds. */
+interface RetryableError extends Error {
+  retryAfterMs?: number;
+}
+
 /**
  * Handle single item failure with exponential backoff
  * FIXED: Only update once (no double-update bug)
  */
-async function handleItemFailure(item: SyncQueueItem, error: any): Promise<void> {
+async function handleItemFailure(item: SyncQueueItem, error: unknown): Promise<void> {
   item.retries += 1;
   item.lastError = error instanceof Error ? error.message : String(error);
 
@@ -204,8 +209,12 @@ async function handleItemFailure(item: SyncQueueItem, error: any): Promise<void>
     // Max retries exceeded: keep failed item for manual review
     console.error(`Queue item ${item.id} failed after ${item.maxRetries} retries:`, item.lastError);
   } else {
-    // Schedule retry with exponential backoff
-    const backoffMs = BACKOFF_MS[Math.min(item.retries - 1, BACKOFF_MS.length - 1)];
+    // Schedule retry with exponential backoff. When the server sent a
+    // Retry-After, honour it instead — the request layer parses that header and
+    // attaches it here, but nothing used to read it back, so rate limits were
+    // being ignored and the queue kept hammering at its own fixed cadence.
+    const retryAfterMs = (error as RetryableError | undefined)?.retryAfterMs;
+    const backoffMs = retryAfterMs ?? BACKOFF_MS[Math.min(item.retries - 1, BACKOFF_MS.length - 1)];
     setTimeout(() => {
       syncQueue().catch(console.error);
     }, backoffMs);
@@ -248,7 +257,7 @@ async function processQueueItem(item: SyncQueueItem): Promise<void> {
       const delayMs = isNaN(Number(retryAfter))
         ? new Date(retryAfter).getTime() - Date.now()
         : Number(retryAfter) * 1000;
-      (error as any).retryAfterMs = Math.max(delayMs, BACKOFF_MS[0]);
+      (error as RetryableError).retryAfterMs = Math.max(delayMs, BACKOFF_MS[0]);
     }
     throw error;
   }

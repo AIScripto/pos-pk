@@ -10,6 +10,15 @@ import { KITCHEN_STATES } from '@/components/admin/manager/ManagerCommon';
 const BRANCH_FIXED_ROLES = new Set(['branch_manager', 'manager']);
 export type TabCategory = 'overview' | 'openclosing' | 'tills' | 'kitchen';
 
+/**
+ * Everything the manager panel and its tabs read.
+ *
+ * The tabs derive their props from this with `Pick<>` rather than restating the
+ * shapes, so a change here reaches them as a type error instead of drifting into
+ * `any`.
+ */
+export type ManagerPanelState = ReturnType<typeof useManagerPanelState>;
+
 export function useManagerPanelState() {
   const { user } = useAuth();
   const queryClient = useQueryClient();

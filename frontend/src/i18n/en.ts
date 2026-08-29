@@ -5,6 +5,7 @@
 
 export const en = {
   common: {
+    added: 'added',
     appName: 'Crisp&Crumbs POS',
     subTitle: 'Quick Service Restaurant',
     currency: 'Rs.',
@@ -91,6 +92,9 @@ export const en = {
     results: 'results',
   },
   pos: {
+    processingOrder: 'Processing order…',
+    sendToKitchen: 'Confirm & Send to Kitchen',
+    addItemsToStart: 'Add items to start an order',
     collectPayment: 'Collect Payment',
     tenderCheckout: 'Tender Checkout',
     totalPayable: 'Total Payable',
@@ -174,6 +178,7 @@ export const en = {
     invalidAmount: 'Please enter a valid payment amount',
   },
   discount: {
+    expandItemHint: 'Expand a cart item to apply an item or lump-sum discount',
     discountTitle: 'Apply Order Discount',
     typePercentage: 'Percentage (%)',
     typeFixed: 'Fixed Amount (Rs.)',

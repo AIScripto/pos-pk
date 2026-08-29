@@ -4,20 +4,20 @@ import { formatCurrency } from '@/utils/pos';
 import { cn } from '@/lib/utils';
 
 export function ReviewMetric({ label, value, accent = 'neutral' }: { label: string; value: string; accent?: 'neutral' | 'good' | 'bad' }) {
-  const color = accent === 'good' ? 'text-emerald-600 dark:text-emerald-400' : accent === 'bad' ? 'text-red-600 dark:text-rose-400' : 'text-slate-950 dark:text-white';
+  const color = accent === 'good' ? 'text-success-text' : accent === 'bad' ? 'text-danger-text' : 'text-foreground dark:text-white';
   return (
-    <div className="rounded-xl border border-slate-200 p-3.5 dark:border-slate-800/80 bg-white dark:bg-slate-950/20 backdrop-blur-sm">
-      <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400">{label}</p>
-      <p className={cn("mt-1 text-2xl font-black tracking-tight", color)} style={{ fontFamily: "'Roboto', sans-serif", fontWeight: 900 }}>{value}</p>
+    <div className="rounded-xl border border-border p-3.5 bg-white dark:bg-background/20 backdrop-blur-sm">
+      <p className="text-2xs font-bold uppercase tracking-wider text-muted-foreground/70">{label}</p>
+      className="font-display font-black" <p className={cn("mt-1 text-2xl font-black tracking-tight", color)} >{value}</p>
     </div>
   );
 }
 
 export function ReviewPill({ label, value }: { label: string; value: string }) {
   return (
-    <div className="rounded-xl bg-slate-50 px-3.5 py-2.5 dark:bg-slate-900/40">
-      <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400">{label}</p>
-      <p className="mt-0.5 text-base font-black text-slate-900 dark:text-slate-100" style={{ fontFamily: "'Roboto', sans-serif", fontWeight: 900 }}>{value}</p>
+    <div className="rounded-xl bg-muted/40 px-3.5 py-2.5">
+      <p className="text-2xs font-bold uppercase tracking-wider text-muted-foreground/70">{label}</p>
+      <p className="mt-0.5 text-base font-black text-foreground" >{value}</p>
     </div>
   );
 }
@@ -45,7 +45,7 @@ export function ClosingSummaryCard({ theme, title, subtitle, totals, lines, empt
   const hasBlock = Boolean(totals && (totals.openTills > 0 || totals.pendingCloseTills > 0));
 
   return (
-    <div className={`overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm dark:border-slate-850 dark:bg-slate-900/25 hover:dark:bg-slate-900/35 hover:border-slate-700/60 hover:shadow-lg transition-all duration-200 backdrop-blur-sm ${t.border}`}>
+    <div className={`overflow-hidden rounded-2xl border border-border bg-white shadow-sm dark:bg-muted/25 hover:dark:bg-muted/35 hover:border-primary/40 hover:shadow-lg transition-all duration-200 backdrop-blur-sm ${t.border}`}>
       <PanelHeader
         theme={theme}
         icon={hasBlock ? <AlertTriangle className="h-4 w-4" /> : <Banknote className="h-4 w-4" />}
@@ -76,7 +76,7 @@ export function ClosingSummaryCard({ theme, title, subtitle, totals, lines, empt
           </div>
 
           {hasBlock && (
-            <div className="flex items-start gap-2 rounded-xl border border-amber-200 bg-amber-50 px-3 py-2.5 text-sm font-semibold text-amber-800 dark:border-amber-800 dark:bg-amber-950/30 dark:text-amber-400">
+            <div className="flex items-start gap-2 rounded-xl border border-warning-border bg-warning-subtle px-3 py-2.5 text-sm font-semibold text-warning-text">
               <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0" />
               <span>Close blocked — {totals.openTills} open till(s) and {totals.pendingCloseTills} pending approval(s) must be cleared first.</span>
             </div>
@@ -87,30 +87,30 @@ export function ClosingSummaryCard({ theme, title, subtitle, totals, lines, empt
               <thead>
                 <tr>
                   {['Unit', 'Status', 'Orders', 'Sales', 'Variance'].map((h, i) => (
-                    <th key={h} className={`pb-2 pr-3 text-[11px] font-black uppercase tracking-wide text-slate-400 ${i >= 2 ? 'text-right' : ''}`}>{h}</th>
+                    <th key={h} className={`pb-2 pr-3 text-[11px] font-black uppercase tracking-wide text-muted-foreground ${i >= 2 ? 'text-right' : ''}`}>{h}</th>
                   ))}
                 </tr>
               </thead>
               <tbody>
                 {lines.map((line) => (
-                  <tr key={line.sessionId} className="border-t border-slate-100 dark:border-slate-800">
+                  <tr key={line.sessionId} className="border-t border-border">
                     <td className="py-3 pr-3">
-                      <p className="font-bold text-slate-950 dark:text-white">{line.terminalName}</p>
-                      <p className="text-xs text-slate-400">{line.terminalCode || line.openedByName || '—'}</p>
+                      <p className="font-bold text-foreground dark:text-white">{line.terminalName}</p>
+                      <p className="text-xs text-muted-foreground/70">{line.terminalCode || line.openedByName || '—'}</p>
                     </td>
                     <td className="py-3 pr-3">
-                      <span className={`rounded px-1.5 py-0.5 text-[10px] font-black uppercase ${line.status === 'open' ? 'bg-emerald-100 text-emerald-700' : line.status === 'closed' ? 'bg-slate-100 text-slate-500 dark:bg-slate-800' : 'bg-amber-100 text-amber-700'}`}>
+                      <span className={`rounded px-1.5 py-0.5 text-2xs font-black uppercase ${line.status === 'open' ? 'bg-success-subtle text-success-text' : line.status === 'closed' ? 'bg-secondary text-muted-foreground' : 'bg-warning-subtle text-warning-text'}`}>
                         {line.status}
                       </span>
                     </td>
-                    <td className="py-3 pr-3 text-right font-bold text-slate-950 dark:text-white" style={{ fontFamily: "'Roboto', sans-serif", fontSize: '15px' }}>{line.invoiceCount}</td>
-                    <td className="py-3 pr-3 text-right font-bold text-slate-950 dark:text-white" style={{ fontFamily: "'Roboto', sans-serif", fontSize: '15px' }}>{formatCurrency(line.grossSalesPaisa / 100)}</td>
-                    <td className="py-3 pr-3 text-right font-black" style={{ fontFamily: "'Roboto', sans-serif", fontSize: '15px' }}>
+                    <td className="py-3 pr-3 text-right font-bold text-foreground dark:text-white" style={{ fontSize: '15px' }}>{line.invoiceCount}</td>
+                    <td className="py-3 pr-3 text-right font-bold text-foreground dark:text-white" style={{ fontSize: '15px' }}>{formatCurrency(line.grossSalesPaisa / 100)}</td>
+                    <td className="py-3 pr-3 text-right font-black" style={{ fontSize: '15px' }}>
                       {line.variancePaisa == null ? '—' : (
                         <span className={
                           Math.abs(line.variancePaisa) < 100
-                            ? 'text-slate-500'
-                            : line.variancePaisa > 0 ? 'text-emerald-600' : 'text-rose-500'
+                            ? 'text-muted-foreground'
+                            : line.variancePaisa > 0 ? 'text-success-text' : 'text-danger'
                         }>
                           {Math.abs(line.variancePaisa) < 100 ? formatCurrency(0) : formatCurrency(line.variancePaisa / 100)}
                         </span>
@@ -119,7 +119,7 @@ export function ClosingSummaryCard({ theme, title, subtitle, totals, lines, empt
                   </tr>
                 ))}
                 {lines.length === 0 && (
-                  <tr><td colSpan={5} className="py-8 text-center text-sm text-slate-400">{emptyText}</td></tr>
+                  <tr><td colSpan={5} className="py-8 text-center text-sm text-muted-foreground/70">{emptyText}</td></tr>
                 )}
               </tbody>
             </table>
@@ -127,8 +127,8 @@ export function ClosingSummaryCard({ theme, title, subtitle, totals, lines, empt
         </div>
       ) : (
         <div className="flex flex-col items-center justify-center px-5 py-16 text-center">
-          <Boxes className="mb-3 h-8 w-8 text-slate-300" />
-          <p className="text-sm text-slate-400">{emptyText}</p>
+          <Boxes className="mb-3 h-8 w-8 text-muted-foreground" />
+          <p className="text-sm text-muted-foreground/70">{emptyText}</p>
         </div>
       )}
     </div>

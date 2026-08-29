@@ -1,3 +1,4 @@
+import { lazy, Suspense } from "react";
 import { Toaster }          from "@/components/ui/toaster";
 import { TooltipProvider }  from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -10,32 +11,33 @@ import { TillProvider }     from "@/context/TillContext";
 import { OrderProvider }    from "@/context/OrderContext";
 import { OfflineProvider }  from "@/sync/offline-context";
 import { OfflineIndicator } from "@/sync/OfflineIndicator";
+import { RouteFallback }    from "@/components/common/RouteFallback";
 import ProtectedRoute          from "@/components/auth/ProtectedRoute";
 import AdminProtectedRoute     from "@/components/auth/AdminProtectedRoute";
 import ManagerProtectedRoute   from "@/components/auth/ManagerProtectedRoute";
 import LoginPage            from "./pages/LoginPage";
-import AdminLoginPage       from "./pages/admin/AdminLoginPage";
+const AdminLoginPage = lazy(() => import("./pages/admin/AdminLoginPage"));
 import POSPage              from "./pages/POSPage";
-import AdminDashboard       from "./pages/admin/AdminDashboard";
-import ManagerPanel         from "./pages/admin/ManagerPanel";
-import AdminProducts        from "./pages/admin/AdminProducts";
-import AdminDeals           from "./pages/admin/AdminDeals";
-import AdminFoodTypes       from "./pages/admin/AdminFoodTypes";
-import AdminCategories      from "./pages/admin/AdminCategories";
-import AdminConfig          from "./pages/admin/AdminConfig";
-import AdminTillSetup       from "./pages/admin/AdminTillSetup";
-import AdminUsers           from "./pages/admin/AdminUsers";
-import AdminBranches        from "./pages/admin/AdminBranches";
-import AdminCities          from "./pages/admin/AdminCities";
-import AdminAreas           from "./pages/admin/AdminAreas";
-import AdminStates          from "./pages/admin/AdminStates";
-import AdminRoles           from "./pages/admin/AdminRoles";
-import AdminReports         from "./pages/admin/AdminReports";
-import AdminOrganisation    from "./pages/admin/AdminOrganisation";
-import AdminBrands          from "./pages/admin/AdminBrands";
-import KitchenPage          from "./pages/KitchenPage";
-import CustomerDisplayPage from "./pages/CustomerDisplayPage";
-import NotFound             from "./pages/NotFound";
+const AdminDashboard = lazy(() => import("./pages/admin/AdminDashboard"));
+const ManagerPanel = lazy(() => import("./pages/admin/ManagerPanel"));
+const AdminProducts = lazy(() => import("./pages/admin/AdminProducts"));
+const AdminDeals = lazy(() => import("./pages/admin/AdminDeals"));
+const AdminFoodTypes = lazy(() => import("./pages/admin/AdminFoodTypes"));
+const AdminCategories = lazy(() => import("./pages/admin/AdminCategories"));
+const AdminConfig = lazy(() => import("./pages/admin/AdminConfig"));
+const AdminTillSetup = lazy(() => import("./pages/admin/AdminTillSetup"));
+const AdminUsers = lazy(() => import("./pages/admin/AdminUsers"));
+const AdminBranches = lazy(() => import("./pages/admin/AdminBranches"));
+const AdminCities = lazy(() => import("./pages/admin/AdminCities"));
+const AdminAreas = lazy(() => import("./pages/admin/AdminAreas"));
+const AdminStates = lazy(() => import("./pages/admin/AdminStates"));
+const AdminRoles = lazy(() => import("./pages/admin/AdminRoles"));
+const AdminReports = lazy(() => import("./pages/admin/AdminReports"));
+const AdminOrganisation = lazy(() => import("./pages/admin/AdminOrganisation"));
+const AdminBrands = lazy(() => import("./pages/admin/AdminBrands"));
+const KitchenPage = lazy(() => import("./pages/KitchenPage"));
+const CustomerDisplayPage = lazy(() => import("./pages/CustomerDisplayPage"));
+const NotFound = lazy(() => import("./pages/NotFound"));
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -54,6 +56,7 @@ const App = () => (
                 <Toaster />
                 <OfflineIndicator />
                 <BrowserRouter>
+                <Suspense fallback={<RouteFallback />}>
                 <Routes>
 
                   {/* ── Public ─────────────────────────────────────────────── */}
@@ -124,6 +127,7 @@ const App = () => (
                   <Route path="*" element={<NotFound />} />
 
                 </Routes>
+                </Suspense>
               </BrowserRouter>
               </TooltipProvider>
             </OfflineProvider>

@@ -85,21 +85,21 @@ export default function AdminTillSetup() {
   };
 
   return (
-    <div className="min-h-screen space-y-6 bg-slate-50 p-6 dark:bg-slate-950">
+    <div className="min-h-screen space-y-6 bg-muted/40 p-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white">
+          <h1 className="text-3xl font-extrabold tracking-tight text-foreground">
             Tills & Shifts
           </h1>
-          <p className="mt-1 text-slate-600 dark:text-slate-300">
+          <p className="mt-1 text-muted-foreground">
             Number branch tills and configure operational shifts for clean opening and closing.
           </p>
         </div>
       </div>
 
-      <Card className="border-slate-200 bg-white shadow-sm dark:border-slate-700 dark:bg-slate-900">
+      <Card className="border-border bg-card shadow-sm">
         <CardContent className="pt-6">
-          <label className="mb-2 block text-sm font-semibold text-slate-700 dark:text-slate-100">
+          <label className="mb-2 block text-sm font-semibold text-foreground">
             Branch
           </label>
           <SearchableSelect
@@ -116,16 +116,16 @@ export default function AdminTillSetup() {
       </Card>
 
       {error && (
-        <div className="rounded-lg border border-red-300 bg-red-50 px-4 py-3 text-sm text-red-700 dark:border-red-800 dark:bg-red-950 dark:text-red-200">
+        <div className="rounded-lg border border-danger-border bg-danger-subtle px-4 py-3 text-sm text-danger-text dark:border-danger">
           {error}
         </div>
       )}
 
       {branchId && (
         <div className="grid gap-6 xl:grid-cols-2">
-          <Card className="border-slate-200 bg-white shadow-sm dark:border-slate-700 dark:bg-slate-900">
+          <Card className="border-border bg-card shadow-sm">
             <CardHeader className="flex flex-row items-center justify-between">
-              <CardTitle className="flex items-center gap-2 text-slate-900 dark:text-white">
+              <CardTitle className="flex items-center gap-2 text-foreground">
                 <Monitor className="h-5 w-5" />
                 Tills
               </CardTitle>
@@ -135,16 +135,16 @@ export default function AdminTillSetup() {
               </Button>
             </CardHeader>
             <CardContent className="space-y-3">
-              {tillsLoading && <p className="text-sm text-slate-500">Loading tills...</p>}
+              {tillsLoading && <p className="text-sm text-muted-foreground">Loading tills...</p>}
               {tills.map((till) => (
                 <TillRow key={till.id} till={till} onSave={(patch) => saveTill.mutate({ ...till, ...patch, branchId })} />
               ))}
             </CardContent>
           </Card>
 
-          <Card className="border-slate-200 bg-white shadow-sm dark:border-slate-700 dark:bg-slate-900">
+          <Card className="border-border bg-card shadow-sm">
             <CardHeader className="flex flex-row items-center justify-between">
-              <CardTitle className="flex items-center gap-2 text-slate-900 dark:text-white">
+              <CardTitle className="flex items-center gap-2 text-foreground">
                 <CalendarClock className="h-5 w-5" />
                 Shift Templates
               </CardTitle>
@@ -154,7 +154,7 @@ export default function AdminTillSetup() {
               </Button>
             </CardHeader>
             <CardContent className="space-y-3">
-              {shiftsLoading && <p className="text-sm text-slate-500">Loading shifts...</p>}
+              {shiftsLoading && <p className="text-sm text-muted-foreground">Loading shifts...</p>}
               {shifts.map((shift) => (
                 <ShiftRow key={shift.id} shift={shift} onSave={(patch) => saveShift.mutate({ ...shift, ...patch, branchId })} />
               ))}
@@ -174,7 +174,7 @@ function TillRow({ till, onSave }: { till: TillConfig; onSave: (patch: Partial<T
   }, [till]);
 
   return (
-    <div className="grid gap-2 rounded-lg border border-slate-200 p-3 dark:border-slate-700 md:grid-cols-[1fr_1fr_1fr_auto_auto]">
+    <div className="grid gap-2 rounded-lg border border-border p-3 md:grid-cols-[1fr_1fr_1fr_auto_auto]">
       <Input value={draft.name} onChange={(e) => setDraft({ ...draft, name: e.target.value })} />
       <Input value={draft.code ?? ''} onChange={(e) => setDraft({ ...draft, code: e.target.value })} />
       <select
@@ -184,7 +184,7 @@ function TillRow({ till, onSave }: { till: TillConfig; onSave: (patch: Partial<T
       >
         {tillTypes.map((type) => <option key={type} value={type}>{type.replace('_', ' ')}</option>)}
       </select>
-      <label className="flex min-w-[88px] items-center justify-between gap-2 rounded-md border border-input bg-background px-3 py-2 text-xs font-semibold text-slate-700 dark:text-slate-100">
+      <label className="flex min-w-[88px] items-center justify-between gap-2 rounded-md border border-input bg-background px-3 py-2 text-xs font-semibold text-foreground">
         Active
         <Switch
           checked={draft.isActive}
@@ -207,11 +207,11 @@ function ShiftRow({ shift, onSave }: { shift: ShiftTemplate; onSave: (patch: Par
   }, [shift]);
 
   return (
-    <div className="grid gap-2 rounded-lg border border-slate-200 p-3 dark:border-slate-700 md:grid-cols-[1fr_120px_120px_auto_auto]">
+    <div className="grid gap-2 rounded-lg border border-border p-3 md:grid-cols-[1fr_120px_120px_auto_auto]">
       <Input value={draft.name} onChange={(e) => setDraft({ ...draft, name: e.target.value })} />
       <Input type="time" value={draft.startTime} onChange={(e) => setDraft({ ...draft, startTime: e.target.value })} />
       <Input type="time" value={draft.endTime} onChange={(e) => setDraft({ ...draft, endTime: e.target.value })} />
-      <label className="flex min-w-[88px] items-center justify-between gap-2 rounded-md border border-input bg-background px-3 py-2 text-xs font-semibold text-slate-700 dark:text-slate-100">
+      <label className="flex min-w-[88px] items-center justify-between gap-2 rounded-md border border-input bg-background px-3 py-2 text-xs font-semibold text-foreground">
         Active
         <Switch
           checked={draft.isActive}

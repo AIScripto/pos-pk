@@ -64,6 +64,68 @@
     --pos-surface-elevated: 0 0% 100%;
     --pos-surface2: 214 20% 92.5%;
     --pos-surface3: 214 20% 86%;
+
+    /* --- Semantic status scale -------------------------------------------
+       Every status in the POS domain gets a solid fill, a text/icon colour that
+       is legible on the page ground, a tinted surface for badges and rows, and a
+       border. These replace the hand-paired `bg-emerald-100 text-emerald-700
+       dark:bg-emerald-900/40 dark:text-emerald-400` chains that were duplicated
+       across ~100 files, once per dark-mode twin. */
+    --success: 158 75% 32%;
+    --success-foreground: 0 0% 100%;
+    --success-text: 158 78% 26%;
+    --success-subtle: 158 60% 94%;
+    --success-border: 158 45% 80%;
+
+    --warning: 28 88% 45%;
+    --warning-foreground: 0 0% 100%;
+    --warning-text: 26 88% 34%;
+    --warning-subtle: 36 92% 94%;
+    --warning-border: 32 70% 78%;
+
+    --danger: 350 78% 48%;
+    --danger-foreground: 0 0% 100%;
+    --danger-text: 350 78% 40%;
+    --danger-subtle: 350 90% 96%;
+    --danger-border: 350 60% 85%;
+
+    --info: 217 85% 48%;
+    --info-foreground: 0 0% 100%;
+    --info-text: 217 85% 40%;
+    --info-subtle: 214 95% 95%;
+    --info-border: 214 70% 84%;
+
+    /* Dispatched / handed to a rider — the one status with no natural place on
+       the success–warning–danger axis. */
+    --special: 265 62% 50%;
+    --special-foreground: 0 0% 100%;
+    --special-text: 265 62% 42%;
+    --special-subtle: 265 80% 96%;
+    --special-border: 265 50% 86%;
+
+    /* Fixed-dark surfaces. The kitchen display, the customer-facing screen, the
+       admin sign-in and the payment modal are dark in both themes by design —
+       read across a room, or a deliberately focused full-screen moment. The steps
+       below are the exact slate values those screens already used, so naming them
+       changes nothing on screen; it only makes the choice one a theme can reach. */
+    --screen: 229 84% 5%;            /* was slate-950 */
+    --screen-raised: 222 47% 11%;    /* was slate-900 */
+    --screen-raised-2: 217 33% 17%;  /* was slate-800 */
+    --screen-border: 215 25% 27%;    /* was slate-700 */
+    --screen-dim: 215 19% 35%;       /* was slate-600 */
+    --screen-muted: 215 20% 65%;     /* was slate-400 */
+    --screen-subtle: 213 27% 84%;    /* was slate-300 */
+    --screen-foreground: 210 40% 96%;/* was slate-100 */
+
+    /* Brand mark. The logo square is warm orange while the interface is blue —
+       a deliberate contrast, and the one gradient in the system that earns its
+       place, so it lives here rather than as a raw palette pair in two files. */
+    --brand: 27 96% 61%;
+    --brand-deep: 21 90% 48%;
+    /* The back-office signs in under a teal mark, the terminal under an orange
+       one — that is how staff tell the two apart at a glance. */
+    --brand-admin: 172 66% 50%;
+    --brand-admin-deep: 175 84% 32%;
   }
 
   .dark {
@@ -129,6 +191,39 @@
     --pos-surface-elevated: 240 3.7% 15.9%;
     --pos-surface2: 240 3.7% 13.9%;
     --pos-surface3: 240 3.7% 18%;
+
+    /* --- Semantic status scale (dark) ------------------------------------ */
+    --success: 158 64% 42%;
+    --success-foreground: 150 60% 8%;
+    --success-text: 158 65% 60%;
+    --success-subtle: 158 45% 14%;
+    --success-border: 158 40% 26%;
+
+    --warning: 32 90% 52%;
+    --warning-foreground: 30 80% 10%;
+    --warning-text: 36 92% 62%;
+    --warning-subtle: 30 50% 14%;
+    --warning-border: 32 45% 28%;
+
+    --danger: 350 82% 56%;
+    --danger-foreground: 350 90% 97%;
+    --danger-text: 350 90% 70%;
+    --danger-subtle: 350 45% 15%;
+    --danger-border: 350 40% 30%;
+
+    --info: 217 90% 60%;
+    --info-foreground: 217 60% 10%;
+    --info-text: 214 95% 72%;
+    --info-subtle: 217 45% 16%;
+    --info-border: 217 40% 30%;
+
+    --special: 265 78% 66%;
+    --special-foreground: 265 60% 10%;
+    --special-text: 265 85% 76%;
+    --special-subtle: 265 40% 17%;
+    --special-border: 265 35% 32%;
+
+    /* Fixed-dark surfaces and the brand mark are identical in both themes — see :root. */
   }
 }
 

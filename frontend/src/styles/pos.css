@@ -1,82 +1,121 @@
+/**
+ * POS terminal layer.
+ *
+ * Everything here is token-driven and reads at arm's length under mixed shop
+ * lighting. The floor is 48px for anything a cashier taps mid-transaction and
+ * 11px for anything they read; the density that suits an analytics dashboard is
+ * wrong at a counter.
+ */
+
 @layer components {
+  /* --- Buttons ---------------------------------------------------------- */
+
   .pos-btn {
-    @apply min-h-[48px] min-w-[48px] rounded-xl font-semibold transition-all duration-200;
-    @apply active:scale-95 touch-manipulation;
+    @apply inline-flex min-h-[48px] min-w-[48px] items-center justify-center gap-2
+           rounded-xl px-4 text-sm font-semibold tracking-tight
+           transition-[background-color,border-color,color,box-shadow,transform] duration-150
+           touch-manipulation active:scale-[0.97]
+           focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring
+           focus-visible:ring-offset-2 focus-visible:ring-offset-background
+           disabled:pointer-events-none disabled:opacity-50;
   }
 
   .pos-btn-primary {
-    @apply pos-btn bg-primary text-primary-foreground shadow-lg shadow-primary/25 hover:brightness-110;
-    background-image: linear-gradient(135deg, hsl(var(--primary)), hsl(18 95% 58%));
-  }
-
-  .pos-btn-secondary {
-    @apply pos-btn bg-secondary text-secondary-foreground hover:bg-secondary/80;
+    @apply pos-btn bg-primary text-primary-foreground
+           shadow-[0_2px_8px_-2px_hsl(var(--primary)/0.45)]
+           hover:bg-primary/90 hover:shadow-[0_6px_16px_-4px_hsl(var(--primary)/0.5)];
   }
 
   .pos-btn-success {
-    @apply pos-btn text-accent-foreground hover:brightness-110;
-    background-color: hsl(var(--pos-success));
-    box-shadow: 0 4px 14px 0 hsl(var(--pos-success) / 0.3);
+    @apply pos-btn bg-[hsl(var(--pos-success))] text-white
+           shadow-[0_2px_8px_-2px_hsl(var(--pos-success)/0.45)]
+           hover:bg-[hsl(var(--pos-success)/0.9)]
+           hover:shadow-[0_6px_16px_-4px_hsl(var(--pos-success)/0.5)];
+  }
+
+  .pos-btn-destructive {
+    @apply pos-btn bg-destructive text-destructive-foreground
+           shadow-[0_2px_8px_-2px_hsl(var(--destructive)/0.4)]
+           hover:bg-destructive/90;
+  }
+
+  .pos-btn-secondary {
+    @apply pos-btn border border-border bg-secondary text-secondary-foreground
+           shadow-xs hover:border-primary/40 hover:bg-secondary/70;
   }
 
   .pos-btn-ghost {
     @apply pos-btn bg-transparent hover:bg-secondary;
   }
 
-  .pos-card {
-    @apply cursor-pointer overflow-hidden rounded-[20px] border border-border/70 bg-card transition-all duration-300;
-    @apply hover:-translate-y-1 hover:border-primary/35 hover:shadow-[0_22px_60px_-28px_rgba(15,23,42,0.45)];
-    @apply active:scale-[0.98] touch-manipulation;
-  }
-
-  .pos-card-image {
-    @apply aspect-square w-full object-cover;
-  }
-
-  .pos-cart {
-    @apply h-full flex-col bg-card/60;
-    background-image: linear-gradient(180deg, hsl(var(--card) / 0.98), hsl(var(--background) / 0.96));
-  }
-
-  .pos-cart-item {
-    @apply border-b border-border/60 p-3 transition-colors last:border-b-0 hover:bg-muted/45;
-  }
-
-  .pos-category {
-    @apply whitespace-nowrap rounded-full bg-secondary/85 px-4 py-2 text-sm font-medium text-secondary-foreground transition-all duration-200;
-    @apply hover:border-primary/20 hover:bg-primary/10 hover:text-primary active:scale-95 touch-manipulation;
-  }
-
-  .pos-category-active {
-    @apply border-primary/20 bg-primary text-primary-foreground shadow-lg shadow-primary/25;
-  }
-
-  .pos-price {
-    @apply font-mono font-bold text-primary;
-  }
-
-  .pos-price-total {
-    @apply font-mono text-3xl font-bold text-primary;
-  }
-
   .pos-qty-btn {
-    @apply flex h-8 w-8 items-center justify-center rounded-lg bg-secondary font-bold text-secondary-foreground;
-    @apply transition-all duration-150 hover:bg-primary hover:text-primary-foreground active:scale-90;
+    @apply flex h-11 w-11 items-center justify-center rounded-lg bg-secondary
+           text-base font-bold text-secondary-foreground touch-manipulation
+           transition-colors duration-150 hover:bg-primary hover:text-primary-foreground
+           focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring
+           active:scale-95;
   }
 
-  .pos-deal-badge {
-    @apply absolute right-3 top-3 rounded-full px-2 py-1 text-xs font-bold text-accent-foreground;
-    background: linear-gradient(135deg, hsl(var(--pos-success)), hsl(142 70% 35%));
-    box-shadow: 0 12px 30px -18px hsl(var(--pos-success));
+  /* --- Product tile ----------------------------------------------------- */
+
+  .pos-tile {
+    @apply relative flex flex-col overflow-hidden rounded-xl border border-border
+           bg-card text-left text-card-foreground shadow-xs touch-manipulation
+           transition-[border-color,box-shadow,transform] duration-200
+           focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring
+           focus-visible:ring-offset-2 focus-visible:ring-offset-background;
+  }
+
+  .pos-tile-available {
+    @apply cursor-pointer hover:-translate-y-0.5 hover:border-primary/50
+           hover:shadow-[0_10px_24px_-12px_hsl(222_47%_11%/0.35)] active:scale-[0.98];
+  }
+
+  .pos-tile-unavailable {
+    @apply cursor-not-allowed border-border/50 opacity-60;
+  }
+
+  /* --- Status badges ---------------------------------------------------- */
+
+  .stock-badge {
+    @apply inline-flex items-center rounded-md px-1.5 py-0.5 text-[11px]
+           font-bold uppercase leading-none tracking-wide;
+  }
+
+  .stock-badge-low {
+    @apply stock-badge bg-[hsl(var(--pos-warning)/0.16)] text-[hsl(var(--pos-warning))];
+  }
+
+  .stock-badge-out {
+    @apply stock-badge bg-destructive/15 text-destructive;
+  }
+
+  .stock-badge-sale {
+    @apply stock-badge bg-[hsl(var(--pos-success)/0.14)] text-[hsl(var(--pos-success))];
+  }
+
+  /* --- Inputs and receipt ----------------------------------------------- */
+
+  .pos-notes-input {
+    @apply w-full resize-none rounded-xl border border-border bg-secondary px-3 py-2
+           text-sm leading-relaxed text-foreground transition-colors
+           placeholder:text-muted-foreground/70
+           focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary;
   }
 
   .pos-receipt {
-    @apply font-mono text-sm leading-relaxed;
+    @apply font-mono text-sm leading-relaxed [font-variant-numeric:tabular-nums];
   }
 
   .pos-receipt-divider {
     @apply my-2 border-t border-dashed border-foreground/30;
   }
+
+  .pos-price {
+    @apply font-display font-black tabular-nums text-primary;
+  }
+
+  /* --- Surfaces --------------------------------------------------------- */
 
   .pos-surface {
     @apply bg-[hsl(var(--pos-surface))];
@@ -86,25 +125,14 @@
     @apply bg-[hsl(var(--pos-surface-elevated))];
   }
 
-  .stock-badge-low {
-    @apply rounded-md bg-amber-500/15 px-1.5 py-0.5 text-[9px] font-bold uppercase leading-none tracking-wide text-amber-600 dark:text-amber-400;
-  }
-
-  .stock-badge-out {
-    @apply rounded-md bg-destructive/15 px-1.5 py-0.5 text-[9px] font-bold uppercase leading-none tracking-wide text-destructive;
-  }
-
-  .pos-notes-input {
-    @apply w-full resize-none rounded-xl border border-border bg-secondary px-3 py-2 text-xs leading-relaxed text-foreground transition-all placeholder:text-muted-foreground/60 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary;
-  }
-
   .pos-scrollbar {
-    scrollbar-color: hsl(var(--muted)) transparent;
+    scrollbar-color: hsl(var(--border)) transparent;
     scrollbar-width: thin;
   }
 
   .pos-scrollbar::-webkit-scrollbar {
     width: 6px;
+    height: 6px;
   }
 
   .pos-scrollbar::-webkit-scrollbar-track {
@@ -112,7 +140,11 @@
   }
 
   .pos-scrollbar::-webkit-scrollbar-thumb {
-    background-color: hsl(var(--muted));
+    background-color: hsl(var(--border));
     border-radius: 3px;
+  }
+
+  .pos-scrollbar:hover::-webkit-scrollbar-thumb {
+    background-color: hsl(var(--muted-foreground) / 0.5);
   }
 }

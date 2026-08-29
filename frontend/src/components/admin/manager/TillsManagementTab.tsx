@@ -1,19 +1,21 @@
+import type { ManagerPanelState } from '@/hooks/useManagerPanelState';
 import { Monitor, CheckCircle2 } from 'lucide-react';
 import { SectionHeader, PanelHeader, THEMES, formatTime } from './ManagerCommon';
 import { formatCurrency } from '@/utils/pos';
 import { cn } from '@/lib/utils';
 
-interface TillsManagementTabProps {
-  data: any;
-  isLoading: boolean;
-  openTills: number;
-  pendingTills: number;
-  activeTillsList: any[];
-  forceClose: any;
-  approveClose: any;
-  rejectClose: any;
-  openModalPrompt: (params: any) => void;
-}
+type TillsManagementTabProps = Pick<
+  ManagerPanelState,
+  | 'data'
+  | 'isLoading'
+  | 'openTills'
+  | 'pendingTills'
+  | 'activeTillsList'
+  | 'forceClose'
+  | 'approveClose'
+  | 'rejectClose'
+  | 'openModalPrompt'
+>;
 
 export function TillsManagementTab({
   data,
@@ -33,41 +35,41 @@ export function TillsManagementTab({
         <div className="grid grid-cols-1 gap-6 xl:grid-cols-2">
 
           {/* Open Tills Table */}
-          <div className={cn("overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm dark:border-slate-850 dark:bg-slate-900/25 hover:dark:bg-slate-900/35 hover:border-slate-700/60 hover:shadow-lg transition-all duration-200 backdrop-blur-sm", THEMES.emerald.border)}>
+          <div className={cn("overflow-hidden rounded-2xl border border-border bg-white shadow-sm dark:bg-muted/25 hover:dark:bg-muted/35 hover:border-primary/40 hover:shadow-lg transition-all duration-200 backdrop-blur-sm", THEMES.emerald.border)}>
             <PanelHeader
               theme="emerald"
               icon={<Monitor className="h-4 w-4" />}
               title="Open Tills"
               subtitle={`Live sessions for ${data?.businessDate ?? 'today'}`}
               right={
-                <span className={`rounded-full px-2.5 py-0.5 text-xs font-black ${openTills > 0 ? THEMES.emerald.badge : 'bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-400'}`}>
+                <span className={`rounded-full px-2.5 py-0.5 text-xs font-black ${openTills > 0 ? THEMES.emerald.badge : 'bg-secondary text-muted-foreground'}`}>
                   {openTills} open
                 </span>
               }
             />
             <div className="overflow-x-auto">
               <table className="w-full text-left text-sm">
-                <thead className="bg-slate-50 dark:bg-slate-900">
+                <thead className="bg-muted/40">
                   <tr>
                     {['Till', 'Cashier', 'Shift', 'Orders', 'Sale', 'Action'].map((h, i) => (
-                      <th key={h} className={`px-5 py-3 text-[11px] font-black uppercase tracking-wide text-slate-500 ${i >= 3 ? 'text-right' : ''}`}>{h}</th>
+                      <th key={h} className={`px-5 py-3 text-[11px] font-black uppercase tracking-wide text-muted-foreground ${i >= 3 ? 'text-right' : ''}`}>{h}</th>
                     ))}
                   </tr>
                 </thead>
                 <tbody>
                   {activeTillsList.map((till) => (
-                    <tr key={till.sessionId} className="border-t border-slate-100 dark:border-slate-800">
+                    <tr key={till.sessionId} className="border-t border-border">
                       <td className="px-5 py-3">
-                        <p className="font-bold text-slate-950 dark:text-white">{till.terminalName}</p>
-                        <p className="text-xs text-slate-400">{till.terminalCode ?? `#${till.terminalId}`}</p>
+                        <p className="font-bold text-foreground dark:text-white">{till.terminalName}</p>
+                        <p className="text-xs text-muted-foreground/70">{till.terminalCode ?? `#${till.terminalId}`}</p>
                       </td>
-                      <td className="px-5 py-3 text-slate-700 dark:text-slate-300">{till.openedBy || 'Cashier'}</td>
+                      <td className="px-5 py-3 text-muted-foreground">{till.openedBy || 'Cashier'}</td>
                       <td className="px-5 py-3">
-                        <p className="font-semibold text-slate-700 dark:text-slate-200">{till.shiftName ?? '—'}</p>
-                        <p className="text-xs text-slate-400">{formatTime(till.openedAt)}</p>
+                        <p className="font-semibold text-foreground">{till.shiftName ?? '—'}</p>
+                        <p className="text-xs text-muted-foreground/70">{formatTime(till.openedAt)}</p>
                       </td>
-                      <td className="px-5 py-3 text-right font-bold text-slate-950 dark:text-white" style={{ fontFamily: "'Roboto', sans-serif", fontSize: '15px' }}>{till.orderCount}</td>
-                      <td className="px-5 py-3 text-right font-black text-emerald-600" style={{ fontFamily: "'Roboto', sans-serif", fontSize: '15px' }}>{formatCurrency(till.currentSale)}</td>
+                      <td className="px-5 py-3 text-right font-bold text-foreground dark:text-white" style={{ fontSize: '15px' }}>{till.orderCount}</td>
+                      <td className="px-5 py-3 text-right font-black text-success-text" style={{ fontSize: '15px' }}>{formatCurrency(till.currentSale)}</td>
                       <td className="px-5 py-3 text-right">
                         <button
                           onClick={() => {
@@ -81,7 +83,7 @@ export function TillsManagementTab({
                             });
                           }}
                           disabled={forceClose.isPending}
-                          className="inline-flex h-8 items-center rounded-lg border border-red-200 bg-red-50 px-3 text-xs font-black text-red-700 hover:bg-red-100 dark:border-red-800 dark:bg-red-950/40 dark:text-red-400 dark:hover:bg-red-900/60 transition disabled:opacity-50"
+                          className="inline-flex h-8 items-center rounded-lg border border-danger-border bg-danger-subtle px-3 text-xs font-black text-danger-text hover:bg-danger-subtle dark:hover:bg-danger/60 transition disabled:opacity-50"
                         >
                           Force Close
                         </button>
@@ -90,7 +92,7 @@ export function TillsManagementTab({
                   ))}
                   {!isLoading && openTills === 0 && (
                     <tr>
-                      <td colSpan={6} className="px-5 py-10 text-center text-sm text-slate-400">No tills are currently open.</td>
+                      <td colSpan={6} className="px-5 py-10 text-center text-sm text-muted-foreground/70">No tills are currently open.</td>
                     </tr>
                   )}
                 </tbody>
@@ -99,35 +101,35 @@ export function TillsManagementTab({
           </div>
 
           {/* Pending Closes Approvals */}
-          <div className={cn("overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm dark:border-slate-850 dark:bg-slate-900/25 hover:dark:bg-slate-900/35 hover:border-slate-700/60 hover:shadow-lg transition-all duration-200 backdrop-blur-sm", THEMES.amber.border)}>
+          <div className={cn("overflow-hidden rounded-2xl border border-border bg-white shadow-sm dark:bg-muted/25 hover:dark:bg-muted/35 hover:border-primary/40 hover:shadow-lg transition-all duration-200 backdrop-blur-sm", THEMES.amber.border)}>
             <PanelHeader
               theme="amber"
               icon={<CheckCircle2 className="h-4 w-4" />}
               title="Pending Till Closings"
               subtitle="Awaiting manager approval"
               right={
-                <span className={`rounded-full px-2.5 py-0.5 text-xs font-black ${pendingTills > 0 ? THEMES.amber.badge : 'bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-400'}`}>
+                <span className={`rounded-full px-2.5 py-0.5 text-xs font-black ${pendingTills > 0 ? THEMES.amber.badge : 'bg-secondary text-muted-foreground'}`}>
                   {pendingTills} pending
                 </span>
               }
             />
-            <div className="divide-y divide-slate-100 dark:divide-slate-800">
-              {(data?.pendingCloseTills ?? []).map((till: any) => (
+            <div className="divide-y divide-border">
+              {(data?.pendingCloseTills ?? []).map((till) => (
                 <div key={till.sessionId} className="grid gap-3 px-5 py-4 md:grid-cols-[1fr_auto] md:items-center">
                   <div>
                     <div className="flex items-center gap-2">
-                      <p className="font-bold text-slate-950 dark:text-white">{till.terminalName}</p>
-                      <span className="rounded bg-amber-100 px-1.5 py-0.5 text-[10px] font-black text-amber-700">PENDING</span>
+                      <p className="font-bold text-foreground dark:text-white">{till.terminalName}</p>
+                      <span className="rounded bg-warning-subtle px-1.5 py-0.5 text-2xs font-black text-warning-text">PENDING</span>
                     </div>
-                    <p className="mt-0.5 text-xs text-slate-500">
+                    <p className="mt-0.5 text-xs text-muted-foreground">
                       {till.openedBy || 'Cashier'} · submitted {till.submittedAt ? formatTime(till.submittedAt) : '—'}
                     </p>
                     <div className="mt-2 flex gap-4 text-sm">
-                      <span className="font-semibold text-slate-700 dark:text-slate-200">
-                        Closing <span className="text-slate-950 dark:text-white font-bold" style={{ fontFamily: "'Roboto', sans-serif", fontSize: '14.5px' }}>{formatCurrency((till.closingCashPaisa ?? 0) / 100)}</span>
+                      <span className="font-semibold text-foreground">
+                        Closing <span className="text-foreground dark:text-white font-bold" style={{ fontSize: '14.5px' }}>{formatCurrency((till.closingCashPaisa ?? 0) / 100)}</span>
                       </span>
-                      <span className={`font-semibold ${(till.variance ?? 0) === 0 ? 'text-emerald-600' : 'text-red-600'}`}>
-                        Variance <span className="font-bold" style={{ fontFamily: "'Roboto', sans-serif", fontSize: '14.5px' }}>{formatCurrency((till.variance ?? 0) / 100)}</span>
+                      <span className={`font-semibold ${(till.variance ?? 0) === 0 ? 'text-success-text' : 'text-danger-text'}`}>
+                        Variance <span className="font-bold" style={{ fontSize: '14.5px' }}>{formatCurrency((till.variance ?? 0) / 100)}</span>
                       </span>
                     </div>
                   </div>
@@ -144,7 +146,7 @@ export function TillsManagementTab({
                         });
                       }}
                       disabled={approveClose.isPending}
-                      className="inline-flex h-9 items-center gap-1.5 rounded-xl bg-emerald-600 px-4 text-xs font-black text-white hover:bg-emerald-700 disabled:opacity-50 transition"
+                      className="inline-flex h-9 items-center gap-1.5 rounded-xl bg-success px-4 text-xs font-black text-white hover:bg-success/90 disabled:opacity-50 transition"
                     >
                       <CheckCircle2 className="h-4 w-4" /> Approve
                     </button>
@@ -160,7 +162,7 @@ export function TillsManagementTab({
                         });
                       }}
                       disabled={rejectClose.isPending}
-                      className="inline-flex h-9 items-center rounded-xl border border-red-200 px-4 text-xs font-black text-red-700 hover:bg-red-50 dark:border-red-800 dark:text-red-400 dark:hover:bg-red-950/40 disabled:opacity-50 transition"
+                      className="inline-flex h-9 items-center rounded-xl border border-danger-border px-4 text-xs font-black text-danger-text hover:bg-danger-subtle disabled:opacity-50 transition"
                     >
                       Reject
                     </button>
@@ -168,7 +170,7 @@ export function TillsManagementTab({
                 </div>
               ))}
               {!isLoading && pendingTills === 0 && (
-                <p className="px-5 py-10 text-center text-sm text-slate-400">No till closings are waiting for approval.</p>
+                <p className="px-5 py-10 text-center text-sm text-muted-foreground/70">No till closings are waiting for approval.</p>
               )}
             </div>
           </div>
